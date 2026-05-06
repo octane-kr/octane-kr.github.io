@@ -19,7 +19,8 @@ const posts = Object.entries(modules)
       url: module.url ?? `/posts/${slug}/`,
       title: frontmatter.title ?? slug,
       description: frontmatter.description ?? '',
-      category: frontmatter.category ?? 'note',
+      category: frontmatter.category ?? 'PS',
+      subcategory: frontmatter.subcategory ?? '',
       date,
       hasValidDate,
       draft: frontmatter.draft === true,
@@ -41,12 +42,14 @@ const formatDate = (date: Date | null, hasValidDate: boolean) => {
     day: '2-digit',
   });
 };
+
+const formatCategory = (category: string, subcategory: string) =>
+  subcategory ? `${category} / ${subcategory}` : category;
 ---
 
-<BlogLayout title="octane" description="대회 후기와 알고리즘 노트">
+<BlogLayout title="octane">
   <section class="hero">
     <h1>octane</h1>
-    <p>대회 후기, 알고리즘 설명, PS 노트.</p>
   </section>
 
   <section class="post-list">
@@ -58,7 +61,7 @@ const formatDate = (date: Date | null, hasValidDate: boolean) => {
           </a>
 
           <div class="post-meta">
-            <span>{post.category}</span>
+            <span>{formatCategory(post.category, post.subcategory)}</span>
             <span>{formatDate(post.date, post.hasValidDate)}</span>
           </div>
 

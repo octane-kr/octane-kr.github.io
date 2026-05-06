@@ -4,7 +4,7 @@ import '../styles/global.css';
 
 const {
   title = 'octane',
-  description = '대회 후기와 알고리즘 노트',
+  description = '',
 } = Astro.props;
 
 const siteTitle = 'octane';
@@ -17,7 +17,7 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} · ${siteTitle}`;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
-    <meta name="description" content={description} />
+    {description && <meta name="description" content={description} />}
   </head>
 
   <body>
@@ -39,7 +39,6 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} · ${siteTitle}`;
     <footer class="site-footer">
       <div>
         <strong>octane</strong>
-        <span>대회 후기와 알고리즘 노트</span>
       </div>
     </footer>
   </body>
