@@ -1,0 +1,105 @@
+---
+import BlogLayout from './BlogLayout.astro';
+
+const { frontmatter } = Astro.props;
+
+const title = frontmatter.title ?? '코끼리 뿌우';
+const description = frontmatter.description ?? '';
+const showTitle = frontmatter.showTitle === true;
+const recentPostsLimit = Number(frontmatter.recentPosts ?? 0);
+
+const modules = import.meta.glob('../pages/posts/*.md', { eager: true });
+
+const recentPosts = Object.entries(modules)
+  .map(([path, rawModule]) => {
+    const module = rawModule as any;
+    const postFrontmatter = module.frontmatter ?? {};
+
+    const filename = path.split('/').pop() ?? 'untitled.md';
+    const slug = filename.replace(/\.md$/, '');
+
+    const rawDate = postFrontmatter.date;
+    const date = rawDate ? new Date(rawDate) : null;
+    const hasValidDate = date !== null && !Number.isNaN(date.valueOf());
+
+    return {
+      url: module.url ?? `/posts/${slug}/`,
+      title: postFrontmatter.title ?? slug,
+      description: postFrontmatter.description ?? '',
+      category: postFrontmatter.category ?? 'PS',
+      subcategory: postFrontmatter.subcategory ?? '',
+      date,
+      hasValidDate,
+      draft: postFrontmatter.draft === true,
+    };
+  })
+  .filter((post) => !post.draft)
+  .sort((a, b) => {
+    const av = a.hasValidDate ? a.date!.valueOf() : 0;
+    const bv = b.hasValidDate ? b.date!.valueOf() : 0;
+    return bv - av;
+  })
+  .slice(0, recentPostsLimit);
+
+const formatDate = (date: Date | null, hasValidDate: boolean) => {
+  if (!hasValidDate || date === null) return '날짜 없음';
+
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
+
+const formatCategory = (category: string, subcategory: string) =>
+  subcategory ? `${category} / ${subcategory}` : category;
+---
+
+<BlogLayout title={title} description={description}>
+  <article class="article">
+    {
+      showTitle && (
+        <header class="article-header">
+          <h1>{title}</h1>
+          {description && <p>{description}</p>}
+        </header>
+      )
+    }
+
+    <div class="article-body">
+      <slot />
+    </div>
+
+    {
+      recentPostsLimit > 0 && (
+        <section class="post-list-section recent-posts" aria-labelledby="recent-posts-heading">
+          <h2 id="recent-posts-heading">Recent Posts</h2>
+          {
+            recentPosts.length === 0 ? (
+              <p class="empty-state">아직 작성된 글이 없습니다.</p>
+            ) : (
+              <div class="post-list">
+                {recentPosts.map((post) => (
+                  <article class="post-card">
+                    <a class="post-title" href={post.url}>
+                      {post.title}
+                    </a>
+
+                    <div class="post-meta">
+                      <span>{formatCategory(post.category, post.subcategory)}</span>
+                      <span>{formatDate(post.date, post.hasValidDate)}</span>
+                    </div>
+
+                    {post.description && (
+                      <p class="post-description">{post.description}</p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )
+          }
+        </section>
+      )
+    }
+  </article>
+</BlogLayout>

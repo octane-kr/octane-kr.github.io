@@ -1,0 +1,306 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import categoriesText from '../../data/categories.txt?raw';
+
+type CategoryGroup = {
+  category: string;
+  subcategories: string[];
+};
+
+const categoryStructure = categoriesText
+  .split(/\r?\n/)
+  .map((line) => line.trim())
+  .filter((line) => line && !line.startsWith('#'))
+  .reduce<CategoryGroup[]>((groups, line) => {
+    if (line.startsWith('-')) {
+      const subcategory = line.replace(/^-+\s*/, '').trim();
+
+      if (subcategory && groups.length > 0) {
+        groups[groups.length - 1].subcategories.push(subcategory);
+      }
+
+      return groups;
+    }
+
+    groups.push({
+      category: line,
+      subcategories: [],
+    });
+
+    return groups;
+  }, []);
+
+const modules = import.meta.glob('./*.md', { eager: true });
+
+const posts = Object.entries(modules)
+  .map(([path, rawModule]) => {
+    const module = rawModule as any;
+    const frontmatter = module.frontmatter ?? {};
+
+    const filename = path.split('/').pop() ?? 'untitled.md';
+    const slug = filename.replace(/\.md$/, '');
+
+    const rawDate = frontmatter.date;
+    const date = rawDate ? new Date(rawDate) : null;
+    const hasValidDate = date !== null && !Number.isNaN(date.valueOf());
+
+    return {
+      url: module.url ?? `/posts/${slug}/`,
+      title: frontmatter.title ?? slug,
+      description: frontmatter.description ?? '',
+      category: frontmatter.category ?? 'PS',
+      subcategory: frontmatter.subcategory ?? '',
+      date,
+      hasValidDate,
+      draft: frontmatter.draft === true,
+    };
+  })
+  .filter((post) => !post.draft)
+  .sort((a, b) => {
+    const av = a.hasValidDate ? a.date!.valueOf() : 0;
+    const bv = b.hasValidDate ? b.date!.valueOf() : 0;
+    return bv - av;
+  });
+
+const formatDate = (date: Date | null, hasValidDate: boolean) => {
+  if (!hasValidDate || date === null) return '날짜 없음';
+
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
+
+const formatCategory = (category: string, subcategory: string) =>
+  subcategory ? `${category} / ${subcategory}` : category;
+---
+
+<BlogLayout title="Posts" description="글 목록">
+  <section class="hero">
+    <h1>Posts</h1>
+  </section>
+
+  <section class="category-section" aria-label="카테고리 필터">
+    <ul class="category-tree">
+      <li>
+        <button
+          class="category-filter is-active"
+          type="button"
+          data-filter-button
+          data-category=""
+          data-subcategory=""
+        >
+          전체
+        </button>
+
+        <ul>
+          {
+            categoryStructure.map(({ category, subcategories }) => (
+              <li>
+                <button
+                  class="category-filter"
+                  type="button"
+                  data-filter-button
+                  data-category={category}
+                  data-subcategory=""
+                >
+                  {category}
+                </button>
+
+                {subcategories.length > 0 && (
+                  <ul>
+                    {subcategories.map((subcategory) => (
+                      <li>
+                        <button
+                          class="category-filter"
+                          type="button"
+                          data-filter-button
+                          data-category={category}
+                          data-subcategory={subcategory}
+                        >
+                          {subcategory}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section class="post-list-section" aria-label="글 목록">
+    <p class="empty-state" data-empty-state hidden={posts.length > 0}>
+      아직 작성된 글이 없습니다.
+    </p>
+
+    <div class="post-list" data-post-list>
+      {
+        posts.map((post) => (
+          <article
+            class="post-card"
+            data-post-card
+            data-category={post.category}
+            data-subcategory={post.subcategory}
+          >
+            <a class="post-title" href={post.url}>
+              {post.title}
+            </a>
+
+            <div class="post-meta">
+              <span>{formatCategory(post.category, post.subcategory)}</span>
+              <span>{formatDate(post.date, post.hasValidDate)}</span>
+            </div>
+
+            {post.description && (
+              <p class="post-description">{post.description}</p>
+            )}
+          </article>
+        ))
+      }
+    </div>
+
+    <nav class="pagination" data-pagination hidden aria-label="글 페이지">
+      <button type="button" data-page-prev>이전</button>
+      <span data-page-status></span>
+      <button type="button" data-page-next>다음</button>
+    </nav>
+  </section>
+
+  <script>
+    const pageSize = 5;
+    const filters = Array.from(document.querySelectorAll('[data-filter-button]'));
+    const cards = Array.from(document.querySelectorAll('[data-post-card]'));
+    const emptyState = document.querySelector('[data-empty-state]');
+    const pagination = document.querySelector('[data-pagination]');
+    const prevButton = document.querySelector('[data-page-prev]');
+    const nextButton = document.querySelector('[data-page-next]');
+    const pageStatus = document.querySelector('[data-page-status]');
+
+    const params = new URLSearchParams(window.location.search);
+
+    let activeCategory = params.get('category') ?? '';
+    let activeSubcategory = params.get('subcategory') ?? '';
+    let currentPage = 1;
+
+    const getMatchingCards = () =>
+      cards.filter((card) => {
+        if (!(card instanceof HTMLElement)) return false;
+
+        if (!activeCategory) return true;
+        if (card.dataset.category !== activeCategory) return false;
+        if (!activeSubcategory) return true;
+
+        return card.dataset.subcategory === activeSubcategory;
+      });
+
+    const syncActiveFilter = () => {
+      const activeFilter = filters.find((filter) => {
+        if (!(filter instanceof HTMLElement)) return false;
+
+        return (
+          (filter.dataset.category ?? '') === activeCategory &&
+          (filter.dataset.subcategory ?? '') === activeSubcategory
+        );
+      });
+
+      filters.forEach((filter) => filter.classList.remove('is-active'));
+
+      if (activeFilter) {
+        activeFilter.classList.add('is-active');
+        return;
+      }
+
+      activeCategory = '';
+      activeSubcategory = '';
+      filters[0]?.classList.add('is-active');
+    };
+
+    const updateFilterUrl = () => {
+      const url = new URL(window.location.href);
+
+      if (activeCategory) {
+        url.searchParams.set('category', activeCategory);
+      } else {
+        url.searchParams.delete('category');
+      }
+
+      if (activeSubcategory) {
+        url.searchParams.set('subcategory', activeSubcategory);
+      } else {
+        url.searchParams.delete('subcategory');
+      }
+
+      window.history.replaceState(null, '', url);
+    };
+
+    const renderPosts = () => {
+      syncActiveFilter();
+
+      const matchingCards = getMatchingCards();
+      const totalPages = Math.max(1, Math.ceil(matchingCards.length / pageSize));
+
+      currentPage = Math.min(currentPage, totalPages);
+
+      const firstVisibleIndex = (currentPage - 1) * pageSize;
+      const visibleCards = new Set(
+        matchingCards.slice(firstVisibleIndex, firstVisibleIndex + pageSize),
+      );
+
+      cards.forEach((card) => {
+        if (card instanceof HTMLElement) {
+          card.hidden = !visibleCards.has(card);
+        }
+      });
+
+      if (emptyState instanceof HTMLElement) {
+        emptyState.hidden = matchingCards.length > 0;
+      }
+
+      if (pagination instanceof HTMLElement) {
+        pagination.hidden = matchingCards.length <= pageSize;
+      }
+
+      if (prevButton instanceof HTMLButtonElement) {
+        prevButton.disabled = currentPage <= 1;
+      }
+
+      if (nextButton instanceof HTMLButtonElement) {
+        nextButton.disabled = currentPage >= totalPages;
+      }
+
+      if (pageStatus) {
+        pageStatus.textContent = `${currentPage} / ${totalPages}`;
+      }
+    };
+
+    filters.forEach((filter) => {
+      filter.addEventListener('click', () => {
+        if (!(filter instanceof HTMLElement)) return;
+
+        activeCategory = filter.dataset.category ?? '';
+        activeSubcategory = filter.dataset.subcategory ?? '';
+        currentPage = 1;
+
+        updateFilterUrl();
+        renderPosts();
+      });
+    });
+
+    prevButton?.addEventListener('click', () => {
+      currentPage -= 1;
+      renderPosts();
+    });
+
+    nextButton?.addEventListener('click', () => {
+      currentPage += 1;
+      renderPosts();
+    });
+
+    renderPosts();
+  </script>
+</BlogLayout>

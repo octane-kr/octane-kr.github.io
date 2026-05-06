@@ -101,6 +101,70 @@ a {
   gap: 0;
 }
 
+.category-section,
+.post-list-section {
+  margin-bottom: 36px;
+}
+
+.category-section h2,
+.post-list-section h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+}
+
+.empty-state {
+  margin: 0;
+  color: var(--muted);
+}
+
+.category-tree,
+.category-tree ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.category-tree ul {
+  margin-top: 4px;
+  margin-left: 12px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+}
+
+.category-tree li {
+  margin: 4px 0;
+}
+
+.category-filter {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.45;
+  padding: 0;
+  text-align: left;
+}
+
+.category-filter:hover {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.category-filter.is-active {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.recent-posts {
+  margin-top: 42px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
 .post-card {
   padding: 22px 0;
   border-bottom: 1px solid var(--line);
@@ -137,10 +201,47 @@ a {
   background: var(--line);
 }
 
+.article-category-meta {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.article-category-meta a:hover {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .post-description {
   margin: 10px 0 0;
   color: #4b5563;
   font-size: 15px;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.pagination button {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  padding: 6px 10px;
+}
+
+.pagination button:disabled {
+  color: var(--muted);
+  cursor: default;
+  opacity: 0.45;
 }
 
 .article {
@@ -169,6 +270,13 @@ a {
 .article-body {
   font-size: 16.5px;
   line-height: 1.82;
+}
+
+.article-body h1 {
+  margin: 0 0 0.35em;
+  font-size: 42px;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
 }
 
 .article-body h2 {
@@ -258,20 +366,6 @@ a {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0.25em 0;
-}
-
-.site-footer {
-  max-width: var(--max);
-  margin: 60px auto 0;
-  padding: 34px 20px 42px;
-  border-top: 1px solid var(--line);
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.site-footer strong {
-  color: var(--text);
-  margin-right: 8px;
 }
 
 @media (max-width: 720px) {

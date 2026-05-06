@@ -19,6 +19,11 @@ const formatDate = (value) => {
 
 const formatCategory = (category, subcategory) =>
   subcategory ? `${category} / ${subcategory}` : category;
+
+const categoryHref = `/posts/?category=${encodeURIComponent(category)}`;
+const subcategoryHref = subcategory
+  ? `${categoryHref}&subcategory=${encodeURIComponent(subcategory)}`
+  : '';
 ---
 
 <BlogLayout title={title} description={description}>
@@ -26,7 +31,17 @@ const formatCategory = (category, subcategory) =>
     <header class="article-header">
       <h1>{title}</h1>
       <div class="article-meta">
-        <span>{formatCategory(category, subcategory)}</span>
+        <span class="article-category-meta">
+          <a href={categoryHref}>{category}</a>
+          {
+            subcategory && (
+              <>
+                <span aria-hidden="true">/</span>
+                <a href={subcategoryHref}>{subcategory}</a>
+              </>
+            )
+          }
+        </span>
         <span>{formatDate(frontmatter.date)}</span>
       </div>
       {description && <p>{description}</p>}

@@ -3,12 +3,12 @@ import 'katex/dist/katex.min.css';
 import '../styles/global.css';
 
 const {
-  title = 'octane',
+  title = '코끼리 뿌우',
   description = '',
 } = Astro.props;
 
-const siteTitle = 'octane';
-const pageTitle = title === siteTitle ? siteTitle : `${title} · ${siteTitle}`;
+const siteTitle = '코끼리 뿌우';
+const pageTitle = title === siteTitle ? siteTitle : `${title} - ${siteTitle}`;
 ---
 
 <!doctype html>
@@ -25,9 +25,8 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} · ${siteTitle}`;
       <div class="site-header-inner">
         <a class="site-title" href="/">{siteTitle}</a>
         <nav class="site-nav" aria-label="main navigation">
-          <a href="/">posts</a>
-          <a href="/about/">about</a>
-          <a href="https://github.com/octane-kr">github</a>
+          <a href="/">Home</a>
+          <a href="/posts/">Posts</a>
         </nav>
       </div>
     </header>
@@ -35,11 +34,5 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} · ${siteTitle}`;
     <main class="site-main">
       <slot />
     </main>
-
-    <footer class="site-footer">
-      <div>
-        <strong>octane</strong>
-      </div>
-    </footer>
   </body>
 </html>
