@@ -1,0 +1,35 @@
+---
+import BlogLayout from './BlogLayout.astro';
+
+const { frontmatter } = Astro.props;
+
+const title = frontmatter.title ?? 'Untitled';
+const description = frontmatter.description ?? '';
+const category = frontmatter.category ?? 'note';
+
+const formatDate = (value) => {
+  const date = new Date(value);
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
+---
+
+<BlogLayout title={title} description={description}>
+  <article class="article">
+    <header class="article-header">
+      <h1>{title}</h1>
+      <div class="article-meta">
+        <span>{category}</span>
+        <span>{formatDate(frontmatter.date)}</span>
+      </div>
+      {description && <p>{description}</p>}
+    </header>
+
+    <div class="article-body">
+      <slot />
+    </div>
+  </article>
+</BlogLayout>

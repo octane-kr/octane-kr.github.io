@@ -1,0 +1,69 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+
+type PostModule = {
+  frontmatter: {
+    title: string;
+    description?: string;
+    date: string | Date;
+    category?: string;
+    draft?: boolean;
+  };
+  url?: string;
+};
+
+const modules = import.meta.glob('./posts/*.md', { eager: true });
+
+const posts = Object.entries(modules)
+  .map(([path, module]) => {
+    const post = module as PostModule;
+    const filename = path.split('/').pop() ?? '';
+    const slug = filename.replace(/\.md$/, '');
+
+    return {
+      url: post.url ?? `/posts/${slug}/`,
+      frontmatter: post.frontmatter,
+    };
+  })
+  .filter((post) => !post.frontmatter.draft)
+  .sort(
+    (a, b) =>
+      new Date(b.frontmatter.date).valueOf() -
+      new Date(a.frontmatter.date).valueOf(),
+  );
+
+const formatDate = (value: string | Date) =>
+  new Date(value).toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+---
+
+<BlogLayout title="octane" description="대회 후기와 알고리즘 노트">
+  <section class="hero">
+    <h1>octane</h1>
+    <p>대회 후기, 알고리즘 설명, PS 노트.</p>
+  </section>
+
+  <section class="post-list">
+    {
+      posts.map((post) => (
+        <article class="post-card">
+          <a class="post-title" href={post.url}>
+            {post.frontmatter.title}
+          </a>
+
+          <div class="post-meta">
+            <span>{post.frontmatter.category ?? 'note'}</span>
+            <span>{formatDate(post.frontmatter.date)}</span>
+          </div>
+
+          {post.frontmatter.description && (
+            <p class="post-description">{post.frontmatter.description}</p>
+          )}
+        </article>
+      ))
+    }
+  </section>
+</BlogLayout>
