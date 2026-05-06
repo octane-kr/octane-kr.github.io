@@ -1,43 +1,46 @@
 ---
 import BlogLayout from '../layouts/BlogLayout.astro';
 
-type PostModule = {
-  frontmatter: {
-    title: string;
-    description?: string;
-    date: string | Date;
-    category?: string;
-    draft?: boolean;
-  };
-  url?: string;
-};
-
 const modules = import.meta.glob('./posts/*.md', { eager: true });
 
 const posts = Object.entries(modules)
-  .map(([path, module]) => {
-    const post = module as PostModule;
-    const filename = path.split('/').pop() ?? '';
+  .map(([path, rawModule]) => {
+    const module = rawModule as any;
+    const frontmatter = module.frontmatter ?? {};
+
+    const filename = path.split('/').pop() ?? 'untitled.md';
     const slug = filename.replace(/\.md$/, '');
 
+    const rawDate = frontmatter.date;
+    const date = rawDate ? new Date(rawDate) : null;
+    const hasValidDate = date !== null && !Number.isNaN(date.valueOf());
+
     return {
-      url: post.url ?? `/posts/${slug}/`,
-      frontmatter: post.frontmatter,
+      url: module.url ?? `/posts/${slug}/`,
+      title: frontmatter.title ?? slug,
+      description: frontmatter.description ?? '',
+      category: frontmatter.category ?? 'note',
+      date,
+      hasValidDate,
+      draft: frontmatter.draft === true,
     };
   })
-  .filter((post) => !post.frontmatter.draft)
-  .sort(
-    (a, b) =>
-      new Date(b.frontmatter.date).valueOf() -
-      new Date(a.frontmatter.date).valueOf(),
-  );
+  .filter((post) => !post.draft)
+  .sort((a, b) => {
+    const av = a.hasValidDate ? a.date!.valueOf() : 0;
+    const bv = b.hasValidDate ? b.date!.valueOf() : 0;
+    return bv - av;
+  });
 
-const formatDate = (value: string | Date) =>
-  new Date(value).toLocaleDateString('ko-KR', {
+const formatDate = (date: Date | null, hasValidDate: boolean) => {
+  if (!hasValidDate || date === null) return '날짜 없음';
+
+  return date.toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
   });
+};
 ---
 
 <BlogLayout title="octane" description="대회 후기와 알고리즘 노트">
@@ -51,16 +54,16 @@ const formatDate = (value: string | Date) =>
       posts.map((post) => (
         <article class="post-card">
           <a class="post-title" href={post.url}>
-            {post.frontmatter.title}
+            {post.title}
           </a>
 
           <div class="post-meta">
-            <span>{post.frontmatter.category ?? 'note'}</span>
-            <span>{formatDate(post.frontmatter.date)}</span>
+            <span>{post.category}</span>
+            <span>{formatDate(post.date, post.hasValidDate)}</span>
           </div>
 
-          {post.frontmatter.description && (
-            <p class="post-description">{post.frontmatter.description}</p>
+          {post.description && (
+            <p class="post-description">{post.description}</p>
           )}
         </article>
       ))
