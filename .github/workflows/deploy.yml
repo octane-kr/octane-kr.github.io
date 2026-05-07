@@ -26,6 +26,9 @@ jobs:
 
       - name: Build with Astro
         uses: withastro/action@v5
+        env:
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_KEY: ${{ vars.PUBLIC_SUPABASE_KEY }}
         with:
           node-version: 22
           package-manager: npm
