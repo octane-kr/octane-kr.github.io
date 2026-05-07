@@ -1,0 +1,77 @@
+---
+const {
+  postSlug,
+  placement = 'bottom',
+  showComments = false,
+} = Astro.props;
+---
+
+<div
+  class:list={['post-like-control', `post-like-control-${placement}`]}
+  data-like-control
+  data-post-slug={postSlug}
+>
+  <button
+    class="like-button"
+    type="button"
+    aria-label="좋아요"
+    aria-pressed="false"
+    data-like-button
+  >
+    <span aria-hidden="true" data-like-icon>♡</span>
+  </button>
+  <span class="like-count" aria-live="polite">
+    <span data-like-count>0</span>
+  </span>
+  <span class="interaction-message" role="status" data-like-message></span>
+</div>
+
+{
+  showComments && (
+    <section class="post-comments" data-comments-root data-post-slug={postSlug}>
+      <h2>댓글</h2>
+
+      <p class="empty-state" data-comments-empty hidden>
+        아직 작성된 댓글이 없습니다.
+      </p>
+
+      <div class="comment-list" data-comments-list></div>
+
+      <form class="comment-form" data-comment-form>
+        <label>
+          <span>닉네임</span>
+          <input
+            type="text"
+            name="nickname"
+            maxlength="40"
+            placeholder="익명"
+            data-comment-nickname
+          />
+        </label>
+
+        <label>
+          <span>댓글</span>
+          <textarea
+            name="body"
+            rows="4"
+            required
+            data-comment-body
+          ></textarea>
+        </label>
+
+        <p class="comment-notice">
+          댓글의 수정 및 삭제는 불가능합니다. 관련 문의는 octanec8h18@kaist.ac.kr로 연락주세요.
+        </p>
+
+        <div class="comment-form-actions">
+          <button type="submit">댓글 작성</button>
+          <span class="interaction-message" role="status" data-comment-message></span>
+        </div>
+      </form>
+
+      <script>
+        import '../scripts/postInteractions.ts';
+      </script>
+    </section>
+  )
+}

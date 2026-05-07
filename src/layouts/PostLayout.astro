@@ -1,5 +1,6 @@
 ---
 import BlogLayout from './BlogLayout.astro';
+import PostInteractions from '../components/PostInteractions.astro';
 
 const { frontmatter } = Astro.props;
 
@@ -24,25 +25,32 @@ const categoryHref = `/posts/?category=${encodeURIComponent(category)}`;
 const subcategoryHref = subcategory
   ? `${categoryHref}&subcategory=${encodeURIComponent(subcategory)}`
   : '';
+
+const pathnameParts = Astro.url.pathname.split('/').filter(Boolean);
+const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
 ---
 
 <BlogLayout title={title} description={description}>
   <article class="article">
     <header class="article-header">
       <h1>{title}</h1>
-      <div class="article-meta">
-        <span class="article-category-meta">
-          <a href={categoryHref}>{category}</a>
-          {
-            subcategory && (
-              <>
-                <span aria-hidden="true">/</span>
-                <a href={subcategoryHref}>{subcategory}</a>
-              </>
-            )
-          }
-        </span>
-        <span>{formatDate(frontmatter.date)}</span>
+      <div class="article-meta-row">
+        <div class="article-meta">
+          <span class="article-category-meta">
+            <a href={categoryHref}>{category}</a>
+            {
+              subcategory && (
+                <>
+                  <span aria-hidden="true">/</span>
+                  <a href={subcategoryHref}>{subcategory}</a>
+                </>
+              )
+            }
+          </span>
+          <span>{formatDate(frontmatter.date)}</span>
+        </div>
+
+        <PostInteractions postSlug={postSlug} placement="top" />
       </div>
       {description && <p>{description}</p>}
     </header>
@@ -50,5 +58,7 @@ const subcategoryHref = subcategory
     <div class="article-body">
       <slot />
     </div>
+
+    <PostInteractions postSlug={postSlug} placement="bottom" showComments={true} />
   </article>
 </BlogLayout>
