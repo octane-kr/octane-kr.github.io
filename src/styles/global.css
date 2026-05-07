@@ -538,6 +538,118 @@ a {
   padding: 0.25em 0;
 }
 
+.cv-page {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.cv-header {
+  margin-bottom: 38px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cv-kicker {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.cv-header h1 {
+  margin: 0 0 8px;
+  font-size: 42px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.cv-header p:last-child {
+  max-width: 600px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.cv-section {
+  margin-bottom: 36px;
+}
+
+.cv-section h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.cv-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+
+.cv-item-main h3,
+.cv-subsection h3 {
+  margin: 0 0 5px;
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.cv-item-main p {
+  margin: 3px 0 0;
+  color: #4b5563;
+}
+
+.cv-meta {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.cv-profile-list {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.cv-profile-list li {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.cv-profile-list a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cv-profile-list span {
+  color: #4b5563;
+}
+
+.cv-subsection {
+  padding: 16px 0 0;
+  border-top: 1px solid var(--line);
+}
+
+.cv-subsection ul {
+  margin: 8px 0 0;
+  padding-left: 1.2em;
+}
+
+.cv-subsection li {
+  margin-bottom: 0.35em;
+}
+
 @media (max-width: 720px) {
   .site-header-inner {
     padding: 22px 18px;
@@ -571,5 +683,15 @@ a {
   .article-body {
     font-size: 16px;
     line-height: 1.78;
+  }
+
+  .cv-header h1 {
+    font-size: 34px;
+  }
+
+  .cv-item,
+  .cv-profile-list li {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }
