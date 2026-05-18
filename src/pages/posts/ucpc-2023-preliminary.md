@@ -3,7 +3,7 @@ layout: ../../layouts/PostLayout.astro
 title: "UCPC 2023 예선 후기"
 date: 2023-07-02
 category: "PS"
-subcategory: "대회 후기"
+subcategory: "Contests"
 ---
 
 작년 이맘때 solved.ac 디스코드에서 UCPC 이야기를 하는 대학생들을 보면서 뭔가 부러웠던 적이 있었다. 그렇기에 대학생이 된 올해 UCPC는 꼭 참여하고 싶었고, 얼마 전 짜여진 ICPC 팀원들과 참여하게 되었다. 팀원은 [이예린(abra_stone)](https://solved.ac/profile/abra_stone) 누나와 [이서현(seorii)](https://solved.ac/profile/seorii) 형. 팀명은 딱히 생각나는 게 없어서, 이서현 형이 팀명을 정하는 도중 보낸 이모티콘에서 딴 "안아줘요"로 정했다.

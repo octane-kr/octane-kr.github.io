@@ -3,7 +3,7 @@ layout: ../../layouts/PostLayout.astro
 title: "2024 SCPC 2차 예선 후기 및 풀이"
 date: 2024-07-27
 category: "PS"
-subcategory: "대회 후기"
+subcategory: "Contests"
 ---
 
 기분 좋게 12시쯤 일어나서 디스코드를 보니 9시에 SCPC가 시작해 있었다.

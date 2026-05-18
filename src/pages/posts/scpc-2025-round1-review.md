@@ -3,7 +3,7 @@ layout: ../../layouts/PostLayout.astro
 title: "SCPC 2025 1차 후기"
 date: 2025-07-13
 category: "PS"
-subcategory: "대회 후기"
+subcategory: "Contests"
 ---
 
 ## 1. 거스름돈

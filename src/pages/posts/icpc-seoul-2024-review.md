@@ -3,7 +3,7 @@ layout: ../../layouts/PostLayout.astro
 title: "2024 ICPC Asia Seoul Regional 후기"
 date: 2024-12-14
 category: "PS"
-subcategory: "대회 후기"
+subcategory: "Contests"
 ---
 
 팀원: abra_stone, gs20036

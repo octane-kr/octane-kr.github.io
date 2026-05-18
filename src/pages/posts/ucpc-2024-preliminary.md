@@ -3,7 +3,7 @@ layout: ../../layouts/PostLayout.astro
 title: "UCPC 2024 예선 후기"
 date: 2024-07-15
 category: "PS"
-subcategory: "대회 후기"
+subcategory: "Contests"
 ---
 
 ICPC 팀원 두 명이 모두 방학에 바쁘다고 탈주를 해버렸다. 그래서 고등학교 친구들([crescmoon](https://solved.ac/profile/crescmoon), [menzrach02](https://solved.ac/profile/menzrach02))과 함께 즐겜팟을 꾸려 올해 UCPC에 참가하게 되었다. 즐겜팟이지만 나름 SNU X KAIST X MIT라는 멋있는 간판까지 달고 있는 팀으로, 본선 진출을 목표로 참가했다.
