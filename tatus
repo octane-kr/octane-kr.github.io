@@ -1,0 +1,118 @@
+warning: in the working copy of 'src/pages/posts/branching-algorithms-1-vertex-cover-feedback-vertex-set.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/styles/global.css', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/pages/posts/branching-algorithms-1-vertex-cover-feedback-vertex-set.md b/src/pages/posts/branching-algorithms-1-vertex-cover-feedback-vertex-set.md[m
+[1mindex 03adefc..771332f 100644[m
+[1m--- a/src/pages/posts/branching-algorithms-1-vertex-cover-feedback-vertex-set.md[m
+[1m+++ b/src/pages/posts/branching-algorithms-1-vertex-cover-feedback-vertex-set.md[m
+[36m@@ -8,15 +8,15 @@[m [mlayout: ../../layouts/PostLayout.astro[m
+ [m
+ 이 글은 2026년 봄학기에 KAIST에서 수강한 Algorithms for NP-hard Problems 강의의 [lecture note](https://github.com/ssimplexity/CS492_spring2026/blob/main/Lecture_Note_CS492.pdf)를 기반으로 한다.[m
+ [m
+[31m-이 글은 PS에서 다루는 그래프 이론에 익숙한 사람을 예상 독자로 하여, 쉬운 전달을 목표로 한다. 엄밀한 정의와 서술은 lecture note 원본에서 확인할 수 있다. 그래프에 관련된 일반적인 notation은 따로 정의하지 않는다. 정점 $n$개, 간선 $m$개를 가진 그래프를 다룰 때 $O^*(f(k, n))$은 $O(f(k, n) \cdot \text{poly}(n+m))$ 정도의 뜻을 가진다. 즉, polynomial factor는 무시한다.[m
+[32m+[m[32m이 글은 PS에서 다루는 그래프 이론에 익숙한 사람을 예상 독자로 하여, 쉬운 전달을 목표로 한다. 엄밀한 정의와 서술은 lecture note 원본에서 확인할 수 있다. 그래프에 관련된 일반적인 notation은 따로 정의하지 않는다. 정점 $n$개, 간선 $m$개를 가진 그래프를 다룰 때 $O^*(f(k, n, m))$은 $O(f(k, n, m) \cdot \text{poly}(k+n+m))$ 정도의 뜻을 가진다. 즉, polynomial factor는 무시한다.[m
+ [m
+ ## $O^*(2^k)$-time algorithm for VERTEX COVER[m
+ [m
+[31m-### VERTEX COVER[m
+[31m-[m
+[31m-**입력:** Graph $G$와 양의 정수 $k$가 주어진다.[m
+[31m-[m
+[31m-**출력:** $G$의 크기 $k$ 이하인 vertex cover가 존재하는가?[m
+[32m+[m[32m> ### VERTEX COVER[m
+[32m+[m[32m>[m
+[32m+[m[32m> **입력:** Graph $G$와 양의 정수 $k$가 주어진다.[m
+[32m+[m[32m>[m
+[32m+[m[32m> **출력:** $G$의 크기 $k$ 이하인 vertex cover가 존재하는가?[m
+ [m
+ VERTEX COVER 문제는 NP-hard 문제의 유명한 예시이다. 그래프 $G$에 대해 $X \subseteq V(G)$가 $G$의 vertex cover라는 것은 $G$의 모든 edge에 대해 최소 한 개의 endpoint가 $X$에 포함된다는 것을 의미한다.[m
+ [m
+[36m@@ -26,20 +26,20 @@[m [mVERTEX COVER 문제는 NP-hard 문제의 유명한 예시이다. 그래프 $G$[m
+ [m
+ ## $O^*((3k)^k)$-time algorithm for FEEDBACK VERTEX SET[m
+ [m
+[31m-### FEEDBACK VERTEX SET[m
+[31m-[m
+[31m-**입력:** Graph $G$와 양의 정수 $k$가 주어진다.[m
+[31m-[m
+[31m-**출력:** $G$의 크기 $k$ 이하인 feedback vertex set이 존재하는가?[m
+[32m+[m[32m> ### FEEDBACK VERTEX SET[m
+[32m+[m[32m>[m
+[32m+[m[32m> **입력:** Graph $G$와 양의 정수 $k$가 주어진다.[m
+[32m+[m[32m>[m
+[32m+[m[32m> **출력:** $G$의 크기 $k$ 이하인 feedback vertex set이 존재하는가?[m
+ [m
+ 그래프 $G$에 대해 $X \subseteq V(G)$가 $G$의 feedback vertex set이라는 것은 $G-X$가 forest라는 것을 의미한다.[m
+ [m
+[31m-위의 vertex cover와 비슷한 알고리즘을 설계하려고 보니, 어떤 edge는 두 endpoint가 모두 $V(G) \setminus X$에 포함되어도 문제가 없다. 게다가 해당 edge를 미리 알 수 있는 방법도 없다. 즉 '최소 한 개의 정점은 FVS에 들어가는' 작은 vertex set을 찾을 필요가 생긴다. 이를 위해 아래 관찰이 필요하다.[m
+[32m+[m[32m위의 vertex cover와 비슷한 알고리즘을 설계하려고 보니, 어떤 edge는 두 endpoint가 모두 $V(G) \setminus X$에 포함되어도 문제가 없다. 게다가 해당 edge를 미리 알 수 있는 방법도 없다. 즉 '최소 한 개의 정점은 FVS에 들어가는 작은 vertex set'을 찾을 필요가 생긴다. 이를 위해 아래 관찰이 필요하다.[m
+ [m
+ $G = (V, E)$라고 하자. $X$가 $G$의 FVS라면 $G-X$는 forest이므로 최대 $|V|-|X|-1$개의 간선을 가진다. $E$는 $G-X$ 내부의 간선과 $X$에 연결된 간선으로 분리할 수 있으므로, $|E| \leq (|V|-|X|-1) + \sum \limits _{v \in X} \deg(v)$를 얻는다. 이를 정리하면 $\sum \limits _{v \in X} (\deg(v)-1) \geq |E|-|V|+1$이 된다.[m
+ [m
+[31m-이제 차수가 가장 큰 $3k$개의 정점을 생각하자. 이들의 집합을 $S$라 할 때, $X \cap S = \emptyset$이라고 해보자. 그러면 $\sum \limits_{v \in S} (\deg(v)-1) \geq 3 \sum \limits_{v \in X} (\deg(v)-1) \geq 3(|E|-|V|+1)$을 얻는다. 또한 $X$는 $V \setminus S$에 포함되어야 하므로 $\sum \limits_{v \in V(G) \setminus S} (\deg(v)-1) \geq \sum \limits_{v \in X} (\deg(v)-1) \geq |E|-|V|+1$ 역시 자명하다. 두 식을 더하면 $\sum \limits _{v \in V} (\deg(v)-1) \geq 4(|E|-|V|+1)$을 얻는데, 좌변이 $2|E|-|V|$임은 쉽게 관찰할 수 있다. 이를 정리하면 $3|V| > 2|E| = \sum \limits _{v \in V} \deg(v)$을 얻는다.[m
+[32m+[m[32m이제 차수가 가장 큰 $3k$개의 정점을 생각하자. 이들의 집합을 $S$라 할 때, $X \cap S = \emptyset$이라고 해보자. 그러면 $\sum \limits_{v \in S} (\deg(v)-1) \geq 3 \sum \limits_{v \in X} (\deg(v)-1) \geq 3(|E|-|V|+1)$을 얻는다. 또한 $X$는 $V \setminus S$에 포함되어야 하므로 $\sum \limits_{v \in V \setminus S} (\deg(v)-1) \geq \sum \limits_{v \in X} (\deg(v)-1) \geq |E|-|V|+1$ 역시 자명하다. 두 식을 더하면 $\sum \limits _{v \in V} (\deg(v)-1) \geq 4(|E|-|V|+1)$을 얻는데, 좌변이 $2|E|-|V|$임은 쉽게 관찰할 수 있다. 이를 정리하면 $3|V| > 2|E| = \sum \limits _{v \in V} \deg(v)$을 얻는다.[m
+ [m
+ 만약 위 식이 거짓이라면 우리는 언제나 $S \cap X$가 nonempty임을 얻고, 자연스럽게 매번 차수가 가장 큰 $3k$개의 정점 중 하나를 택하는 branching algorithm을 얻게 된다. 위 식을 거짓으로 만드는 쉬운 방법 중 하나는 모든 정점의 차수를 3 이상으로 만드는 것인데, 생각해보면 어렵지 않다. 차수가 1인 정점은 FVS에 아무런 영향을 주지 않으므로 incident한 edge와 함께 제거해도 문제 없고, 차수가 2인 정점은 incident한 두 edge를 하나로 합치면서 해당 정점을 제거해도 문제가 없다. 즉, 이런 전처리 과정을 끝낸 후에는 임의의 FVS $X$에 대해 $S \cap X \neq \emptyset$라고 할 수 있다.[m
+ [m
+[31m-Lecture note에는 이 알고리즘의 running time이 $O^*((3k)^k)$라고 되어 있으나, 한 branch로 내려갈 때 $k$도 1 줄어드므로 running time은 $O^*(3^k \cdot k!)$이며, 스털링 근사를 적용하면 $O^*((3k/e)^k)$라고 생각한다.[m
+\ No newline at end of file[m
+[32m+[m[32mLecture note에는 이 알고리즘의 running time이 $O^*((3k)^k)$라고 되어 있으나, 한 branch로 내려갈 때 $k$도 1 줄어드므로 running time은 $O^*(3^k \cdot k!)$이며, [스털링 근사](https://namu.wiki/w/%EC%8A%A4%ED%84%B8%EB%A7%81%20%EA%B7%BC%EC%82%AC)를 적용하면 $O^*((3k/e)^k)$로 보인다.[m
+\ No newline at end of file[m
+[1mdiff --git a/src/styles/global.css b/src/styles/global.css[m
+[1mindex d8538fb..279ab61 100644[m
+[1m--- a/src/styles/global.css[m
+[1m+++ b/src/styles/global.css[m
+[36m@@ -280,8 +280,18 @@[m [ma {[m
+ }[m
+ [m
+ .article-body {[m
+[31m-  font-size: 16.5px;[m
+[31m-  line-height: 1.82;[m
+[32m+[m[32m  font-family:[m
+[32m+[m[32m    "Pretendard",[m
+[32m+[m[32m    "Noto Sans KR",[m
+[32m+[m[32m    "Apple SD Gothic Neo",[m
+[32m+[m[32m    "Malgun Gothic",[m
+[32m+[m[32m    system-ui,[m
+[32m+[m[32m    -apple-system,[m
+[32m+[m[32m    BlinkMacSystemFont,[m
+[32m+[m[32m    "Segoe UI",[m
+[32m+[m[32m    sans-serif;[m
+[32m+[m[32m  font-size: 16px;[m
+[32m+[m[32m  line-height: 1.8;[m
+ }[m
+ [m
+ .post-like-control {[m
+[36m@@ -486,9 +496,30 @@[m [ma {[m
+ [m
+ .article-body blockquote {[m
+   margin: 1.3em 0;[m
+[31m-  padding-left: 1em;[m
+[31m-  border-left: 4px solid #9ca3af;[m
+[31m-  color: #555;[m
+[32m+[m[32m  padding: 1em 1.1em;[m
+[32m+[m[32m  border: 1px solid var(--line);[m
+[32m+[m[32m  border-left: 4px solid #cbd5e1;[m
+[32m+[m[32m  border-radius: 8px;[m
+[32m+[m[32m  background: var(--soft);[m
+[32m+[m[32m  color: var(--text);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.article-body blockquote > :first-child {[m
+[32m+[m[32m  margin-top: 0;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.article-body blockquote > :last-child {[m
+[32m+[m[32m  margin-bottom: 0;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.article-body blockquote h2,[m
+[32m+[m[32m.article-body blockquote h3,[m
+[32m+[m[32m.article-body blockquote h4 {[m
+[32m+[m[32m  margin: 0 0 0.75em;[m
+[32m+[m[32m  padding-bottom: 0;[m
+[32m+[m[32m  border-bottom: 0;[m
+[32m+[m[32m  font-size: 18px;[m
+[32m+[m[32m  letter-spacing: -0.02em;[m
+ }[m
+ [m
+ .article-body :not(pre) > code {[m

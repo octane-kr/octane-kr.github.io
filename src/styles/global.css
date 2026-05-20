@@ -280,8 +280,18 @@ a {
 }
 
 .article-body {
-  font-size: 16.5px;
-  line-height: 1.82;
+  font-family:
+    "Pretendard",
+    "Noto Sans KR",
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
 }
 
 .post-like-control {
@@ -486,9 +496,30 @@ a {
 
 .article-body blockquote {
   margin: 1.3em 0;
-  padding-left: 1em;
-  border-left: 4px solid #9ca3af;
-  color: #555;
+  padding: 1em 1.1em;
+  border: 1px solid var(--line);
+  border-left: 4px solid #cbd5e1;
+  border-radius: 8px;
+  background: var(--soft);
+  color: var(--text);
+}
+
+.article-body blockquote > :first-child {
+  margin-top: 0;
+}
+
+.article-body blockquote > :last-child {
+  margin-bottom: 0;
+}
+
+.article-body blockquote h2,
+.article-body blockquote h3,
+.article-body blockquote h4 {
+  margin: 0 0 0.75em;
+  padding-bottom: 0;
+  border-bottom: 0;
+  font-size: 18px;
+  letter-spacing: -0.02em;
 }
 
 .article-body :not(pre) > code {
