@@ -1,5 +1,5 @@
 ---
-title: "Branching Algorithms 1 (VERTEX COVER, FEEDBACK VERTEX SET)"
+title: "Branching Algorithms 1 (Vertex Cover, Feedback Vertex Set)"
 date: 2026-05-20
 category: "Graph Theory"
 subcategory: "Algorithms for NP-hard Problems"
