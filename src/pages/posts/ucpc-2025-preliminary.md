@@ -1,9 +1,11 @@
 ---
-layout: ../../layouts/PostLayout.astro
 title: "UCPC 2025 예선 후기"
 date: 2025-07-13
+publishedAt: 2025-07-13T14:41:00+09:00
+updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"
 subcategory: "Contests"
+layout: ../../layouts/PostLayout.astro
 ---
 
 ICPC 팀원인 abra_stone이 전대프연 부회장으로 끌려가서 팀이 터졌다. gs20036도 고등학교 친구들과 팀 한다고 사라져서 런 친구들이랑 직전에 팀 꾸려서 신청했다. juneharold는 코포 퍼플도 찍었던 고수고, dylan0301은 대충 요상한 수학 문제 나오면 먹일 역할로 팀을 구성했다.

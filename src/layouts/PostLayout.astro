@@ -9,13 +9,26 @@ const description = frontmatter.description ?? '';
 const category = frontmatter.category ?? 'PS';
 const subcategory = frontmatter.subcategory ?? '';
 
-const formatDate = (value) => {
-  const date = new Date(value);
-  return date.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
+const parseDate = (value) => {
+  if (!value) return null;
+
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.valueOf()) ? null : date;
+};
+
+const publishedAt = parseDate(frontmatter.publishedAt ?? frontmatter.date);
+const updatedAt = parseDate(frontmatter.updatedAt);
+const hasUpdatedAt =
+  publishedAt !== null &&
+  updatedAt !== null &&
+  updatedAt.valueOf() !== publishedAt.valueOf();
+
+const pad2 = (value) => String(value).padStart(2, '0');
+
+const formatDate = (date) => {
+  if (date === null) return '날짜 없음';
+
+  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}. ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 };
 
 const formatCategory = (category, subcategory) =>
@@ -47,7 +60,8 @@ const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
               )
             }
           </span>
-          <span>{formatDate(frontmatter.date)}</span>
+          <span>{formatDate(publishedAt)}</span>
+          {hasUpdatedAt && <span>최근 수정 {formatDate(updatedAt)}</span>}
         </div>
 
         <PostInteractions postSlug={postSlug} placement="top" />

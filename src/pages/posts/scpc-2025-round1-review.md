@@ -1,9 +1,11 @@
 ---
-layout: ../../layouts/PostLayout.astro
 title: "SCPC 2025 1차 후기"
 date: 2025-07-13
+publishedAt: 2025-07-13T13:42:00+09:00
+updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"
 subcategory: "Contests"
+layout: ../../layouts/PostLayout.astro
 ---
 
 ## 1. 거스름돈

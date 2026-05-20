@@ -1,9 +1,11 @@
 ---
-layout: ../../layouts/PostLayout.astro
 title: "2025 ICPC Asia Seoul Regional + The 2025 ICPC Asia HoChiMinh City Regional Contest 후기"
 date: 2025-12-14
+publishedAt: 2025-12-14T07:18:00+09:00
+updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"
 subcategory: "Contests"
+layout: ../../layouts/PostLayout.astro
 ---
 
 올해 ICPC 팀원은 octane, abra_stone, cywohoy이다. 서울 인터넷 예선 이후 조금의 팀연습과 많은 개인 연습을 통해 팀원 역할 분배를 아래와 같이 확정했다.

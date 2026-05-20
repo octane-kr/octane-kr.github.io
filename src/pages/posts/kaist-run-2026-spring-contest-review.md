@@ -1,9 +1,11 @@
 ---
-layout: ../../layouts/PostLayout.astro
 title: "2026 KAIST RUN Spring Contest 후기"
 date: 2026-05-06
+publishedAt: 2026-05-06T14:30:00+09:00
+updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"
 subcategory: "Contests"
+layout: ../../layouts/PostLayout.astro
 ---
 
 올해도 역시 런 봄 대회가 열렸고, **졸업못함연구쉬었음청년**이라는 핸들로 참가했다. 닉네임의 유래는 잘 모르겠지만, 작년에 KAIST의 누군가가 대학원에 합격해놓고 마지막 학기에 과제를 안 내고 놀다가 F를 받으면서 졸업을 못 했다는 것 같다. 참고로 내 2023~2025 ICPC 팀원이었던 abra_stone의 핸들은 **@오태인 졸업 축하해**였다.

@@ -1,9 +1,11 @@
 ---
-layout: ../../layouts/PostLayout.astro
 title: "2025 ICPC Korea National First Round 후기"
 date: 2025-10-17
+publishedAt: 2025-10-17T16:59:00+09:00
+updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"
 subcategory: "Contests"
+layout: ../../layouts/PostLayout.astro
 ---
 
 작년 Hey Jinhwi 팀의 버스기사 gs20036이 군대에 가서, 올해는 25학번 신입생 cywohoy를 납치해서 ICPC에 나갔다. 팀에 종이(cywohoy)와 돌(abra_stone)이 있었기에 대충 팀명은 Rock kokiri Paper로 정했다(k가 소문자인 건 실수다). 몇 번의 팀 연습을 한 뒤 정해진 전략은 다음과 같다:

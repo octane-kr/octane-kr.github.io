@@ -10,6 +10,14 @@ const recentPostsLimit = Number(frontmatter.recentPosts ?? 0);
 
 const modules = import.meta.glob('../pages/posts/*.md', { eager: true });
 
+const parseDate = (value: unknown) => {
+  if (!value) return null;
+
+  const date =
+    value instanceof Date ? value : new Date(value as string | number);
+  return Number.isNaN(date.valueOf()) ? null : date;
+};
+
 const recentPosts = Object.entries(modules)
   .map(([path, rawModule]) => {
     const module = rawModule as any;
@@ -18,12 +26,12 @@ const recentPosts = Object.entries(modules)
     const filename = path.split('/').pop() ?? 'untitled.md';
     const slug = filename.replace(/\.md$/, '');
 
-    const rawDate = postFrontmatter.date;
-    const date = rawDate ? new Date(rawDate) : null;
-    const hasValidDate = date !== null && !Number.isNaN(date.valueOf());
+    const date = parseDate(postFrontmatter.publishedAt ?? postFrontmatter.date);
+    const hasValidDate = date !== null;
 
     return {
       url: module.url ?? `/posts/${slug}/`,
+      slug,
       title: postFrontmatter.title ?? slug,
       description: postFrontmatter.description ?? '',
       category: postFrontmatter.category ?? 'PS',
@@ -37,18 +45,18 @@ const recentPosts = Object.entries(modules)
   .sort((a, b) => {
     const av = a.hasValidDate ? a.date!.valueOf() : 0;
     const bv = b.hasValidDate ? b.date!.valueOf() : 0;
-    return bv - av;
+    if (bv !== av) return bv - av;
+
+    return a.slug.localeCompare(b.slug) || a.title.localeCompare(b.title);
   })
   .slice(0, recentPostsLimit);
+
+const pad2 = (value: number) => String(value).padStart(2, '0');
 
 const formatDate = (date: Date | null, hasValidDate: boolean) => {
   if (!hasValidDate || date === null) return '날짜 없음';
 
-  return date.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
+  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}. ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 };
 
 const formatCategory = (category: string, subcategory: string) =>

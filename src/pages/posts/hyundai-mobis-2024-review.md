@@ -1,9 +1,11 @@
 ---
-layout: ../../layouts/PostLayout.astro
 title: "2024 현대모비스 알고리즘 경진대회 후기"
 date: 2024-07-15
+publishedAt: 2024-07-15T03:31:00+09:00
+updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"
 subcategory: "Contests"
+layout: ../../layouts/PostLayout.astro
 ---
 
 작년 여름에 SCPC, UCPC는 본선까지 갔으나 현대모비스만 예선에서 탈락했던 기억이 있다. 결론부터 말하자면 올해는 본선 진출에 성공했다! 오늘은 현대모비스 후기를 풀어보도록 하겠다.
