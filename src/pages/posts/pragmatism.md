@@ -1,8 +1,8 @@
 ---
 title: "Pragmatism"
 date: 2026-05-20
-publishedAt: 2026-05-20T14:34:09+09:00
-updatedAt: 2026-05-20T15:07:37+09:00
+publishedAt: 2026-05-20T14:34:00+09:00
+updatedAt: 2026-05-20T15:07:00+09:00
 category: "PS"
 subcategory: "Problems"
 layout: ../../layouts/PostLayout.astro

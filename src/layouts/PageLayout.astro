@@ -10,13 +10,30 @@ const recentPostsLimit = Number(frontmatter.recentPosts ?? 0);
 
 const modules = import.meta.glob('../pages/posts/*.md', { eager: true });
 
-const parseDate = (value: unknown) => {
+const parseDate = (value: unknown, isDateOnly = false) => {
   if (!value) return null;
+
+  if (isDateOnly) {
+    const dateText =
+      value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
+    const date = new Date(`${dateText}T00:00:00+09:00`);
+    return Number.isNaN(date.valueOf()) ? null : date;
+  }
 
   const date =
     value instanceof Date ? value : new Date(value as string | number);
   return Number.isNaN(date.valueOf()) ? null : date;
 };
+
+const dateTimeFormatter = new Intl.DateTimeFormat('ko-KR', {
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
 
 const recentPosts = Object.entries(modules)
   .map(([path, rawModule]) => {
@@ -26,7 +43,10 @@ const recentPosts = Object.entries(modules)
     const filename = path.split('/').pop() ?? 'untitled.md';
     const slug = filename.replace(/\.md$/, '');
 
-    const date = parseDate(postFrontmatter.publishedAt ?? postFrontmatter.date);
+    const date = parseDate(
+      postFrontmatter.publishedAt ?? postFrontmatter.date,
+      !postFrontmatter.publishedAt,
+    );
     const hasValidDate = date !== null;
 
     return {
@@ -51,12 +71,10 @@ const recentPosts = Object.entries(modules)
   })
   .slice(0, recentPostsLimit);
 
-const pad2 = (value: number) => String(value).padStart(2, '0');
-
 const formatDate = (date: Date | null, hasValidDate: boolean) => {
   if (!hasValidDate || date === null) return '날짜 없음';
 
-  return `${date.getFullYear()}. ${date.getMonth() + 1}. ${date.getDate()}. ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+  return dateTimeFormatter.format(date);
 };
 
 const formatCategory = (category: string, subcategory: string) =>
