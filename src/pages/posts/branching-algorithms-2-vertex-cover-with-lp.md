@@ -20,6 +20,8 @@ layout: ../../layouts/PostLayout.astro
 >
 > **출력:** $G$의 크기 $k$ 이하인 vertex cover가 존재하는가?
 
+그래프 $G$에 대해 $X \subseteq V(G)$가 $G$의 vertex cover라는 것은 $G$의 모든 간선에 대해 최소 한 개의 endpoint가 $X$에 포함된다는 것을 의미한다.
+
 [1편](https://octane-kr.github.io/posts/branching-algorithms-1-vertex-cover-feedback-vertex-set/)에서는 vertex cover 문제를 간단한 branching으로 접근했었다. 이번에는 linear programming이라는 도구를 사용한 방법을 알아보자.
 
 Linear programming은 주어진 문제를 선형 연립부등식과 선형 목표 함수로 모델링하여 푸는 기법이다. 최적화 문제를 풀기 위해 아주 많이 연구되어 왔으며, 따라서 이를 푸는 빠른 알고리즘이 많이 알려져 있고 다항 시간에 해를 찾을 수 있음 역시 [알려져 있다](https://en.wikipedia.org/wiki/Ellipsoid_method).
