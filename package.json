@@ -6,7 +6,10 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "generate:lens": "node scripts/generateLensIndex.mjs",
+    "predev": "node scripts/generateLensIndex.mjs",
     "dev": "astro dev",
+    "prebuild": "node scripts/generateLensIndex.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

@@ -1,0 +1,88 @@
+---
+import lensIndex from '../data/lens.generated.json';
+import { postLensScopes } from '../data/lensScopeMap.js';
+
+const { postSlug } = Astro.props;
+
+const namedScopes = postLensScopes[postSlug] ?? [];
+const activeScopes = [postSlug, ...namedScopes, 'global'];
+const scopePriority = new Map(
+  activeScopes.map((scope, index) => [scope, index]),
+);
+const activeScopeSet = new Set(activeScopes);
+
+const activeEntries = lensIndex
+  .filter((entry) => activeScopeSet.has(entry.scope))
+  .sort((a, b) => {
+    const ap = scopePriority.get(a.scope) ?? Number.MAX_SAFE_INTEGER;
+    const bp = scopePriority.get(b.scope) ?? Number.MAX_SAFE_INTEGER;
+
+    if (ap !== bp) return ap - bp;
+    return a.id.localeCompare(b.id);
+  });
+
+const lensData = JSON.stringify(activeEntries).replace(/</g, '\\u003c');
+const panelId = `reference-lens-${postSlug}`;
+---
+
+<div class="reference-lens" data-reference-lens>
+  <button
+    class="reference-lens-open"
+    type="button"
+    aria-label="Open Reference Lens"
+    title="Open Reference Lens"
+    aria-expanded="true"
+    aria-controls={panelId}
+    data-reference-lens-open
+    hidden
+  >
+    ⌕
+  </button>
+
+  <aside
+    id={panelId}
+    class="reference-lens-panel"
+    role="complementary"
+    aria-label="Reference Lens"
+    data-reference-lens-panel
+  >
+    <button
+      class="reference-lens-resize"
+      type="button"
+      aria-label="Resize Reference Lens"
+      data-reference-lens-resize
+    ></button>
+
+    <div class="reference-lens-header">
+      <h2>Reference Lens</h2>
+      <button
+        class="reference-lens-close"
+        type="button"
+        aria-label="Reference Lens 닫기"
+        data-reference-lens-close
+      >
+        닫기
+      </button>
+    </div>
+
+    <input
+      class="reference-lens-input"
+      type="search"
+      placeholder="키워드 검색"
+      autocomplete="off"
+      data-reference-lens-input
+    />
+
+    <p class="reference-lens-empty" data-reference-lens-empty>
+      Notation, definition, theorem 등을 검색할 수 있습니다.<br />
+      e.g. G[X], tree decomposition, Theorem 4.1, Lemma 10.2
+    </p>
+
+    <div class="reference-lens-results" data-reference-lens-results></div>
+  </aside>
+
+  <script type="application/json" data-reference-lens-data set:html={lensData}></script>
+  <script>
+    import '../scripts/referenceLens.ts';
+  </script>
+</div>

@@ -178,8 +178,24 @@ const formatCategory = (category: string, subcategory: string) =>
             </a>
 
             <div class="post-meta">
-              <span>{formatCategory(post.category, post.subcategory)}</span>
-              <span>{formatDate(post.date, post.hasValidDate)}</span>
+              <span class="post-meta-main">
+                <span>{formatCategory(post.category, post.subcategory)}</span>
+                <span>{formatDate(post.date, post.hasValidDate)}</span>
+              </span>
+              <span
+                class="post-list-stats"
+                data-post-list-stats
+                data-post-slug={post.slug}
+              >
+                <span class="post-list-stat" aria-label="좋아요">
+                  <span aria-hidden="true">♡</span>
+                  <span data-post-list-like-count>0</span>
+                </span>
+                <span class="post-list-stat" aria-label="댓글">
+                  <span aria-hidden="true">댓글</span>
+                  <span data-post-list-comment-count>0</span>
+                </span>
+              </span>
             </div>
 
             {post.description && (
@@ -198,6 +214,8 @@ const formatCategory = (category: string, subcategory: string) =>
   </section>
 
   <script>
+    import '../../scripts/postListStats.ts';
+
     const pageSize = 5;
     const filters = Array.from(document.querySelectorAll('[data-filter-button]'));
     const cards = Array.from(document.querySelectorAll('[data-post-card]'));

@@ -1,6 +1,7 @@
 ---
 import BlogLayout from './BlogLayout.astro';
 import PostInteractions from '../components/PostInteractions.astro';
+import ReferenceLens from '../components/ReferenceLens.astro';
 
 const { frontmatter } = Astro.props;
 
@@ -90,4 +91,6 @@ const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
 
     <PostInteractions postSlug={postSlug} placement="bottom" showComments={true} />
   </article>
+
+  <ReferenceLens postSlug={postSlug} />
 </BlogLayout>
