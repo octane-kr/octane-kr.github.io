@@ -1,5 +1,5 @@
 ---
-title: "Colorful Minors 1 (Incomplete)"
+title: "Colorful Minors 1"
 date: 2026-05-21
 publishedAt: 2026-05-21T22:35:00+09:00
 updatedAt: 2026-05-27T18:47:00+09:00
