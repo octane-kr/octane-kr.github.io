@@ -30,7 +30,59 @@ const categoryStructure = categoriesText
     return groups;
   }, []);
 
+type PostSearchEntry = {
+  slug: string;
+  title: string;
+  category: string;
+  publishedAt: string;
+  updatedAt: string;
+  titleText: string;
+  bodyText: string;
+};
+
 const modules = import.meta.glob('./*.md', { eager: true });
+const rawModules = import.meta.glob<string>('./*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+});
+
+const normalizeSearchText = (value: string) =>
+  value.normalize('NFKC').toLowerCase().replace(/\s+/gu, '');
+
+const removeFrontmatter = (markdown: string) =>
+  markdown.replace(/^\uFEFF?---\r?\n[\s\S]*?\r?\n---\s*/u, '');
+
+const removeLensMarkerComments = (markdown: string) =>
+  markdown
+    .split(/\r?\n/)
+    .filter(
+      (line) =>
+        !/^\s*<!--\s*lens:[^\r\n]*-->\s*$/u.test(line) &&
+        !/^\s*<!--\s*\/lens\s*-->\s*$/u.test(line),
+    )
+    .join('\n');
+
+const stripMarkdownForSearch = (markdown: string) =>
+  removeLensMarkerComments(removeFrontmatter(markdown))
+    .replace(/^\s*(```|~~~).*$/gmu, ' ')
+    .replace(/!\[([^\]]*)\]\([^)]+\)/gu, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/gu, '$1')
+    .replace(/`([^`]+)`/gu, '$1')
+    .replace(/<!--[\s\S]*?-->/gu, ' ')
+    .replace(/^\s{0,3}#{1,6}\s+/gmu, '')
+    .replace(/^\s{0,3}>\s?/gmu, '')
+    .replace(/^\s{0,3}(?:[-*+]|\d+[.)])\s+/gmu, '')
+    .replace(/[*_~]/gu, '')
+    .replace(/[()[\]{}|\\]/gu, ' ')
+    .replace(/<[^>\n]+>/gu, ' ');
+
+const stringifyDateValue = (value: unknown) => {
+  if (!value) return '';
+  if (value instanceof Date) return value.toISOString();
+
+  return String(value);
+};
 
 const parseDate = (value: unknown, isDateOnly = false) => {
   if (!value) return null;
@@ -70,14 +122,19 @@ const posts = Object.entries(modules)
       !frontmatter.publishedAt,
     );
     const hasValidDate = date !== null;
+    const title = String(frontmatter.title ?? slug);
+    const category = String(frontmatter.category ?? 'PS');
+    const subcategory = String(frontmatter.subcategory ?? '');
 
     return {
       url: module.url ?? `/posts/${slug}/`,
       slug,
-      title: frontmatter.title ?? slug,
-      description: frontmatter.description ?? '',
-      category: frontmatter.category ?? 'PS',
-      subcategory: frontmatter.subcategory ?? '',
+      title,
+      description: String(frontmatter.description ?? ''),
+      category,
+      subcategory,
+      publishedAt: frontmatter.publishedAt ?? frontmatter.date,
+      updatedAt: frontmatter.updatedAt,
       date,
       hasValidDate,
       draft: frontmatter.draft === true,
@@ -100,11 +157,61 @@ const formatDate = (date: Date | null, hasValidDate: boolean) => {
 
 const formatCategory = (category: string, subcategory: string) =>
   subcategory ? `${category} / ${subcategory}` : category;
+
+const postSearchIndex: PostSearchEntry[] = posts.map((post) => {
+  const rawMarkdown = rawModules[`./${post.slug}.md`] ?? '';
+  const bodyText = stripMarkdownForSearch(rawMarkdown);
+
+  return {
+    slug: post.slug,
+    title: post.title,
+    category: post.category,
+    publishedAt: stringifyDateValue(post.publishedAt),
+    updatedAt: stringifyDateValue(post.updatedAt),
+    titleText: normalizeSearchText(post.title),
+    bodyText: normalizeSearchText(bodyText),
+  };
+});
+
+const postSearchIndexJson = JSON.stringify(postSearchIndex).replace(/</gu, '\\u003c');
 ---
 
 <BlogLayout title="Posts" description="글 목록">
   <section class="hero">
     <h1>Posts</h1>
+  </section>
+
+  <section class="post-search-section" aria-label="글 검색">
+    <div class="post-search-controls">
+      <input
+        class="post-search-input"
+        type="search"
+        placeholder="글 검색"
+        aria-label="글 검색"
+        autocomplete="off"
+        data-post-search-input
+      />
+
+      <div class="post-search-mode" role="group" aria-label="검색 범위">
+        <button
+          class="post-search-mode-button is-active"
+          type="button"
+          data-search-mode="title"
+          aria-pressed="true"
+        >
+          제목
+        </button>
+        <button
+          class="post-search-mode-button"
+          type="button"
+          data-search-mode="body"
+          aria-pressed="false"
+        >
+          제목+본문
+        </button>
+      </div>
+    </div>
+    <p class="post-search-count" data-search-count hidden></p>
   </section>
 
   <section class="category-section" aria-label="카테고리 필터">
@@ -170,6 +277,7 @@ const formatCategory = (category: string, subcategory: string) =>
           <article
             class="post-card"
             data-post-card
+            data-post-slug={post.slug}
             data-category={post.category}
             data-subcategory={post.subcategory}
           >
@@ -213,12 +321,22 @@ const formatCategory = (category: string, subcategory: string) =>
     </nav>
   </section>
 
+  <script
+    type="application/json"
+    data-post-search-index
+    set:html={postSearchIndexJson}
+  ></script>
+
   <script>
     import '../../scripts/postListStats.ts';
 
     const pageSize = 5;
     const filters = Array.from(document.querySelectorAll('[data-filter-button]'));
     const cards = Array.from(document.querySelectorAll('[data-post-card]'));
+    const searchIndexElement = document.querySelector('[data-post-search-index]');
+    const searchInput = document.querySelector('[data-post-search-input]');
+    const searchModeButtons = Array.from(document.querySelectorAll('[data-search-mode]'));
+    const searchCount = document.querySelector('[data-search-count]');
     const emptyState = document.querySelector('[data-empty-state]');
     const pagination = document.querySelector('[data-pagination]');
     const prevButton = document.querySelector('[data-page-prev]');
@@ -230,16 +348,47 @@ const formatCategory = (category: string, subcategory: string) =>
     let activeCategory = params.get('category') ?? '';
     let activeSubcategory = params.get('subcategory') ?? '';
     let currentPage = 1;
+    let searchMode = 'title';
+    let searchQuery = '';
+
+    const defaultEmptyText = emptyState?.textContent ?? '';
+
+    const postSearchIndex = JSON.parse(searchIndexElement?.textContent ?? '[]');
+    const searchEntries = new Map(
+      postSearchIndex.map((entry) => [entry.slug, entry]),
+    );
+
+    const normalizeSearchText = (value) =>
+      value.normalize('NFKC').toLowerCase().replace(/\s+/gu, '');
+
+    const matchesCategory = (card) => {
+      if (!activeCategory) return true;
+      if (card.dataset.category !== activeCategory) return false;
+      if (!activeSubcategory) return true;
+
+      return card.dataset.subcategory === activeSubcategory;
+    };
+
+    const matchesSearch = (card) => {
+      if (!searchQuery) return true;
+
+      const postSlug = card.dataset.postSlug ?? '';
+      const entry = searchEntries.get(postSlug);
+      if (!entry) return false;
+
+      const haystack =
+        searchMode === 'body'
+          ? `${entry.titleText}${entry.bodyText}`
+          : entry.titleText;
+
+      return haystack.includes(searchQuery);
+    };
 
     const getMatchingCards = () =>
       cards.filter((card) => {
         if (!(card instanceof HTMLElement)) return false;
 
-        if (!activeCategory) return true;
-        if (card.dataset.category !== activeCategory) return false;
-        if (!activeSubcategory) return true;
-
-        return card.dataset.subcategory === activeSubcategory;
+        return matchesCategory(card) && matchesSearch(card);
       });
 
     const syncActiveFilter = () => {
@@ -264,6 +413,16 @@ const formatCategory = (category: string, subcategory: string) =>
       filters[0]?.classList.add('is-active');
     };
 
+    const syncActiveSearchMode = () => {
+      searchModeButtons.forEach((button) => {
+        if (!(button instanceof HTMLElement)) return;
+
+        const isActive = button.dataset.searchMode === searchMode;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', String(isActive));
+      });
+    };
+
     const updateFilterUrl = () => {
       const url = new URL(window.location.href);
 
@@ -284,6 +443,7 @@ const formatCategory = (category: string, subcategory: string) =>
 
     const renderPosts = () => {
       syncActiveFilter();
+      syncActiveSearchMode();
 
       const matchingCards = getMatchingCards();
       const totalPages = Math.max(1, Math.ceil(matchingCards.length / pageSize));
@@ -303,6 +463,16 @@ const formatCategory = (category: string, subcategory: string) =>
 
       if (emptyState instanceof HTMLElement) {
         emptyState.hidden = matchingCards.length > 0;
+        emptyState.textContent = searchQuery
+          ? '검색 결과가 없습니다.'
+          : defaultEmptyText;
+      }
+
+      if (searchCount instanceof HTMLElement) {
+        searchCount.hidden = !searchQuery;
+        searchCount.textContent = searchQuery
+          ? `검색 결과 ${matchingCards.length}개`
+          : '';
       }
 
       if (pagination instanceof HTMLElement) {
@@ -331,6 +501,24 @@ const formatCategory = (category: string, subcategory: string) =>
         currentPage = 1;
 
         updateFilterUrl();
+        renderPosts();
+      });
+    });
+
+    searchInput?.addEventListener('input', () => {
+      if (!(searchInput instanceof HTMLInputElement)) return;
+
+      searchQuery = normalizeSearchText(searchInput.value);
+      currentPage = 1;
+      renderPosts();
+    });
+
+    searchModeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!(button instanceof HTMLElement)) return;
+
+        searchMode = button.dataset.searchMode === 'body' ? 'body' : 'title';
+        currentPage = 1;
         renderPosts();
       });
     });
