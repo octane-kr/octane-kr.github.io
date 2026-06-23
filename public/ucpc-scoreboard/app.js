@@ -81,8 +81,8 @@
     freezeMinute = null;
     currentInput.value = "0:00";
     freezeInput.value = "";
-    startClockInput.value = "";
-    currentClockInput.value = "";
+    startClockInput.value = "0:00";
+    currentClockInput.value = "0:00";
     searchInput.value = "";
     syncModeControls();
 

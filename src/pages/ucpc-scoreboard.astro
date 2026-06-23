@@ -2,7 +2,7 @@
 import BlogLayout from '../layouts/BlogLayout.astro';
 
 const description =
-  'UCPC archive Spotboard data를 특정 contest time 기준으로 다시 보는 정적 도구';
+  'UCPC archive Spotboard data를 특정 contest time 기준으로 다시 보는 스코어보드';
 ---
 
 <BlogLayout title="UCPC 동적 스코어보드" description={description}>
@@ -88,7 +88,7 @@ const description =
               data-start-clock-time
               type="text"
               inputmode="numeric"
-              placeholder="13:00"
+              value="0:00"
               autocomplete="off"
             />
           </label>
@@ -98,7 +98,7 @@ const description =
               data-current-clock-time
               type="text"
               inputmode="numeric"
-              placeholder="15:17"
+              value="0:00"
               autocomplete="off"
             />
           </label>
@@ -141,7 +141,9 @@ const description =
 
 <style is:global>
   .ucpc-page {
-    max-width: 820px;
+    --ucpc-work-width: min(1160px, calc(100vw - 40px));
+    width: var(--ucpc-work-width);
+    max-width: none;
     margin: 0 auto;
   }
 
@@ -159,7 +161,7 @@ const description =
   }
 
   .ucpc-heading p {
-    max-width: 820px;
+    max-width: 100%;
     margin: 8px 0 0;
     color: #4b5563;
   }
@@ -176,7 +178,7 @@ const description =
 
   .ucpc-controls {
     display: grid;
-    grid-template-columns: minmax(220px, 1.35fr) minmax(96px, 0.55fr) auto minmax(108px, 0.75fr) minmax(160px, 1fr);
+    grid-template-columns: minmax(220px, 1.35fr) minmax(96px, 0.55fr) auto minmax(220px, 0.9fr) minmax(160px, 1fr);
     gap: 14px 18px;
     align-items: end;
     margin-bottom: 20px;
@@ -191,6 +193,7 @@ const description =
   .ucpc-control span {
     color: var(--muted);
     font-size: 13px;
+    white-space: nowrap;
   }
 
   .ucpc-control select,
@@ -222,6 +225,7 @@ const description =
     align-items: baseline;
     padding-bottom: 7px;
     color: var(--muted);
+    white-space: nowrap;
   }
 
   .ucpc-mode-button {
@@ -273,7 +277,7 @@ const description =
   }
 
   .ucpc-clock-fields {
-    grid-template-columns: minmax(92px, 1fr) minmax(92px, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
   }
 
@@ -308,9 +312,7 @@ const description =
   }
 
   .ucpc-table-wrap {
-    width: min(1160px, calc(100vw - 40px));
-    margin-left: 50%;
-    transform: translateX(-50%);
+    width: 100%;
     overflow: auto;
     border-top: 1px solid var(--text);
     border-bottom: 1px solid var(--line);
@@ -424,6 +426,7 @@ const description =
 
   @media (max-width: 840px) {
     .ucpc-page {
+      width: 100%;
       max-width: 100%;
     }
 
