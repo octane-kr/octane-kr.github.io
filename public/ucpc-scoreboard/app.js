@@ -11,9 +11,14 @@
   const scoreboardSelect = root.querySelector("[data-scoreboard-select]");
   const currentInput = root.querySelector("[data-current-time]");
   const freezeInput = root.querySelector("[data-freeze-time]");
+  const modeButtons = Array.from(root.querySelectorAll("[data-time-mode]"));
+  const timePanels = Array.from(root.querySelectorAll("[data-time-panel]"));
+  const startClockInput = root.querySelector("[data-start-clock-time]");
+  const currentClockInput = root.querySelector("[data-current-clock-time]");
   const searchInput = root.querySelector("[data-team-search]");
   const titleNode = root.querySelector("[data-contest-title]");
   const metaNode = root.querySelector("[data-scoreboard-meta]");
+  const computedTimeNode = root.querySelector("[data-computed-time]");
   const bodyNode = root.querySelector("[data-scoreboard-body]");
   const footnoteNode = root.querySelector("[data-scoreboard-footnote]");
   const errorNode = root.querySelector("[data-scoreboard-error]");
@@ -31,6 +36,7 @@
   let problemById = new Map();
   let currentMinute = 0;
   let freezeMinute = null;
+  let timeMode = "elapsed";
 
   populateScoreboardSelect();
   bindControls();
@@ -75,7 +81,10 @@
     freezeMinute = null;
     currentInput.value = "0:00";
     freezeInput.value = "";
+    startClockInput.value = "";
+    currentClockInput.value = "";
     searchInput.value = "";
+    syncModeControls();
 
     titleNode.textContent = contest.title || entry.label;
     metaNode.textContent = makeMetaText(entry);
@@ -255,6 +264,7 @@
     if (shouldSyncCurrentInput) {
       currentInput.value = formatTime(currentMinute);
     }
+    updateComputedTimeText();
   }
 
   function renderHeader() {
@@ -365,6 +375,13 @@
       loadScoreboard(scoreboardSelect.value).catch(showFatalError);
     });
 
+    modeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        if (!(button instanceof HTMLElement)) return;
+        setTimeMode(button.dataset.timeMode === "clock" ? "clock" : "elapsed");
+      });
+    });
+
     currentInput.addEventListener("input", () => applyTimeInput(currentInput, "current", false));
     currentInput.addEventListener("change", () => applyTimeInput(currentInput, "current", true));
     currentInput.addEventListener("blur", () => {
@@ -391,7 +408,42 @@
       }
     });
 
+    startClockInput.addEventListener("input", () => applyClockInputs(false));
+    currentClockInput.addEventListener("input", () => applyClockInputs(false));
+    startClockInput.addEventListener("change", () => applyClockInputs(true));
+    currentClockInput.addEventListener("change", () => applyClockInputs(true));
+    startClockInput.addEventListener("blur", () => syncClockInput(startClockInput));
+    currentClockInput.addEventListener("blur", () => syncClockInput(currentClockInput));
+    startClockInput.addEventListener("keydown", handleClockKeydown);
+    currentClockInput.addEventListener("keydown", handleClockKeydown);
+
     searchInput.addEventListener("input", () => renderAt(currentMinute, { syncCurrentInput: false }));
+  }
+
+  function setTimeMode(nextMode) {
+    timeMode = nextMode;
+    syncModeControls();
+    clearTimeInputErrors();
+    if (timeMode === "elapsed") {
+      currentInput.value = formatTime(currentMinute);
+      updateComputedTimeText();
+      return;
+    }
+    applyClockInputs(false);
+  }
+
+  function syncModeControls() {
+    modeButtons.forEach((button) => {
+      if (!(button instanceof HTMLElement)) return;
+      const isActive = button.dataset.timeMode === timeMode;
+      button.classList.toggle("is-active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+
+    timePanels.forEach((panel) => {
+      if (!(panel instanceof HTMLElement)) return;
+      panel.hidden = panel.dataset.timePanel !== timeMode;
+    });
   }
 
   function applyTimeInput(input, kind, commit) {
@@ -415,6 +467,58 @@
     if (commit) input.value = formatTime(currentMinute);
   }
 
+  function applyClockInputs(commit) {
+    if (!contest || timeMode !== "clock") return;
+
+    const startMinute = parseClockInput(startClockInput.value);
+    const nowMinute = parseClockInput(currentClockInput.value);
+    const hasStart = startClockInput.value.trim() !== "";
+    const hasNow = currentClockInput.value.trim() !== "";
+
+    startClockInput.classList.toggle("is-invalid", hasStart && startMinute == null);
+    currentClockInput.classList.toggle("is-invalid", hasNow && nowMinute == null);
+
+    if (startMinute == null || nowMinute == null) {
+      updateComputedTimeText("시작 시간과 현재 시간을 HH:MM으로 입력하면 경과 시간이 계산됩니다.");
+      return;
+    }
+
+    const elapsed = computeElapsedClockMinutes(startMinute, nowMinute);
+    renderAt(elapsed, { syncCurrentInput: false });
+    if (commit) {
+      startClockInput.value = formatClockTime(startMinute);
+      currentClockInput.value = formatClockTime(nowMinute);
+    }
+  }
+
+  function handleClockKeydown(event) {
+    if (event.key === "Enter") {
+      applyClockInputs(true);
+      event.currentTarget.blur();
+    }
+  }
+
+  function syncClockInput(input) {
+    const parsed = parseClockInput(input.value);
+    if (input.value.trim() === "") {
+      input.classList.remove("is-invalid");
+      updateComputedTimeText();
+      return;
+    }
+    if (parsed == null) {
+      input.classList.add("is-invalid");
+      return;
+    }
+    input.value = formatClockTime(parsed);
+    input.classList.remove("is-invalid");
+  }
+
+  function clearTimeInputErrors() {
+    currentInput.classList.remove("is-invalid");
+    startClockInput.classList.remove("is-invalid");
+    currentClockInput.classList.remove("is-invalid");
+  }
+
   function parseTimeInput(value, options = {}) {
     const raw = String(value).trim();
     if (!raw) return options.allowBlank ? null : undefined;
@@ -430,6 +534,25 @@
     return clampMinute(hours * 60 + minutes);
   }
 
+  function parseClockInput(value) {
+    const raw = String(value).trim();
+    if (!raw) return null;
+
+    const match = raw.match(/^(\d{1,2}):(\d{1,2})$/);
+    if (!match) return null;
+
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    if (hours >= 24 || minutes >= 60) return null;
+    return hours * 60 + minutes;
+  }
+
+  function computeElapsedClockMinutes(startMinute, nowMinute) {
+    let elapsed = nowMinute - startMinute;
+    if (elapsed < 0) elapsed += 24 * 60;
+    return clampMinute(elapsed);
+  }
+
   function clampMinute(minute) {
     if (!Number.isFinite(minute)) return 0;
     return Math.max(0, Math.min(contestMinutes, Math.floor(minute)));
@@ -440,6 +563,25 @@
     const hours = Math.floor(boundedMinute / 60);
     const minutes = String(boundedMinute % 60).padStart(2, "0");
     return `${hours}:${minutes}`;
+  }
+
+  function formatClockTime(minute) {
+    const bounded = Math.max(0, Math.min(24 * 60 - 1, Math.floor(minute)));
+    const hours = String(Math.floor(bounded / 60)).padStart(2, "0");
+    const minutes = String(bounded % 60).padStart(2, "0");
+    return `${hours}:${minutes}`;
+  }
+
+  function updateComputedTimeText(message = "") {
+    if (message) {
+      computedTimeNode.textContent = message;
+      return;
+    }
+    if (timeMode === "clock") {
+      computedTimeNode.textContent = `계산된 경과 시각: ${formatTime(currentMinute)}`;
+      return;
+    }
+    computedTimeNode.textContent = "";
   }
 
   function showFatalError(error) {
@@ -455,5 +597,7 @@
     loadScoreboard,
     formatTime,
     parseTimeInput,
+    parseClockInput,
+    computeElapsedClockMinutes,
   };
 })();

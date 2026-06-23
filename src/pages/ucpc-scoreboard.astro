@@ -5,22 +5,26 @@ const description =
   'UCPC archive Spotboard data를 특정 contest time 기준으로 다시 보는 정적 도구';
 ---
 
-<BlogLayout title="UCPC Scoreboard" description={description}>
+<BlogLayout title="UCPC 동적 스코어보드" description={description}>
   <article class="ucpc-page">
     <header class="ucpc-heading">
-      <h1>UCPC 스코어보드 타임머신</h1>
+      <h1>UCPC 동적 스코어보드</h1>
       <p>
-        UCPC 버추얼 컨테스트를 돌 때 쓰려고 만든 정적 도구입니다.
-        <a href="https://static.ucpc.me/archive/ucpc/">UCPC archive</a>의 Spotboard
-        데이터를 특정 시점 기준으로 다시 계산합니다.
+        UCPC 버추얼 컨테스트를 돌 때 쓰려고 만든 정적 도구입니다. UCPC archive에
+        올라온 Spotboard 데이터를 특정 시점 기준으로 다시 계산합니다.
       </p>
       <p>
-        프리즈 시각과 보고 싶은 시각을 넣으면 해당 시점의 스코어보드가 보이고,
-        팀명 검색도 됩니다. 전부 Codex로 만든 것이라 오류가 있을 수 있습니다.
+        원본 데이터는
+        <a href="https://static.ucpc.me/archive/ucpc/">static.ucpc.me/archive/ucpc</a>에서
+        가져왔습니다. 프리즈 시각을 비우면 프리즈 없는 스코어보드가 보입니다.
+        팀명 검색도 됩니다.
+      </p>
+      <p>
+        전부 Codex로 만든 것이라 오류가 있을 수 있습니다.
       </p>
     </header>
 
-    <section class="ucpc-tool" aria-label="UCPC scoreboard time machine" data-ucpc-tool>
+    <section class="ucpc-tool" aria-label="UCPC dynamic scoreboard" data-ucpc-tool>
       <div class="ucpc-controls">
         <label class="ucpc-control ucpc-control-contest">
           <span>대회</span>
@@ -38,16 +42,60 @@ const description =
           />
         </label>
 
-        <label class="ucpc-control">
-          <span>시각</span>
-          <input
-            data-current-time
-            type="text"
-            inputmode="numeric"
-            value="0:00"
-            autocomplete="off"
-          />
-        </label>
+        <div class="ucpc-mode-control" role="group" aria-label="시간 입력 모드">
+          <button
+            class="ucpc-mode-button is-active"
+            type="button"
+            data-time-mode="elapsed"
+            aria-pressed="true"
+          >
+            경과
+          </button>
+          <button
+            class="ucpc-mode-button"
+            type="button"
+            data-time-mode="clock"
+            aria-pressed="false"
+          >
+            시계
+          </button>
+        </div>
+
+        <div class="ucpc-time-fields" data-time-panel="elapsed">
+          <label class="ucpc-control">
+            <span>시각</span>
+            <input
+              data-current-time
+              type="text"
+              inputmode="numeric"
+              value="0:00"
+              autocomplete="off"
+            />
+          </label>
+        </div>
+
+        <div class="ucpc-time-fields ucpc-clock-fields" data-time-panel="clock" hidden>
+          <label class="ucpc-control">
+            <span>시작 시간</span>
+            <input
+              data-start-clock-time
+              type="text"
+              inputmode="numeric"
+              placeholder="13:00"
+              autocomplete="off"
+            />
+          </label>
+          <label class="ucpc-control">
+            <span>현재 시간</span>
+            <input
+              data-current-clock-time
+              type="text"
+              inputmode="numeric"
+              placeholder="15:17"
+              autocomplete="off"
+            />
+          </label>
+        </div>
 
         <label class="ucpc-control ucpc-control-search">
           <span>검색</span>
@@ -63,6 +111,7 @@ const description =
         <strong data-contest-title>Loading...</strong>
         <span data-scoreboard-meta></span>
       </div>
+      <p class="ucpc-computed-time" data-computed-time></p>
 
       <div class="ucpc-table-wrap" data-scoreboard-wrap>
         <table class="ucpc-scoreboard" data-scoreboard-table>
@@ -85,9 +134,8 @@ const description =
 
 <style is:global>
   .ucpc-page {
-    width: min(1160px, calc(100vw - 40px));
-    margin-left: 50%;
-    transform: translateX(-50%);
+    max-width: 820px;
+    margin: 0 auto;
   }
 
   .ucpc-heading {
@@ -121,7 +169,7 @@ const description =
 
   .ucpc-controls {
     display: grid;
-    grid-template-columns: minmax(260px, 1.5fr) minmax(108px, 0.55fr) minmax(108px, 0.55fr) minmax(180px, 1fr);
+    grid-template-columns: minmax(220px, 1.35fr) minmax(96px, 0.55fr) auto minmax(108px, 0.75fr) minmax(160px, 1fr);
     gap: 14px 18px;
     align-items: end;
     margin-bottom: 20px;
@@ -162,6 +210,66 @@ const description =
     color: #b91c1c;
   }
 
+  .ucpc-mode-control {
+    display: inline-flex;
+    align-items: baseline;
+    padding-bottom: 7px;
+    color: var(--muted);
+  }
+
+  .ucpc-mode-button {
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font: inherit;
+    padding: 0 0 2px;
+  }
+
+  .ucpc-mode-button + .ucpc-mode-button {
+    position: relative;
+    margin-left: 20px;
+  }
+
+  .ucpc-mode-button + .ucpc-mode-button::before {
+    content: "/";
+    position: absolute;
+    left: -13px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .ucpc-mode-button:hover,
+  .ucpc-mode-button.is-active {
+    color: var(--text);
+  }
+
+  .ucpc-mode-button.is-active {
+    border-bottom-color: var(--text);
+    font-weight: 700;
+  }
+
+  .ucpc-mode-button:focus-visible {
+    outline: 1px solid var(--text);
+    outline-offset: 3px;
+  }
+
+  .ucpc-time-fields {
+    display: grid;
+    min-width: 0;
+  }
+
+  .ucpc-time-fields[hidden] {
+    display: none;
+  }
+
+  .ucpc-clock-fields {
+    grid-template-columns: minmax(92px, 1fr) minmax(92px, 1fr);
+    gap: 12px;
+  }
+
   .ucpc-status {
     display: flex;
     flex-wrap: wrap;
@@ -176,10 +284,16 @@ const description =
   }
 
   .ucpc-status span,
+  .ucpc-computed-time,
   .ucpc-footnote,
   .ucpc-error {
     color: var(--muted);
     font-size: 13px;
+  }
+
+  .ucpc-computed-time {
+    min-height: 1.35em;
+    margin: -4px 0 10px;
   }
 
   .ucpc-error {
@@ -187,6 +301,9 @@ const description =
   }
 
   .ucpc-table-wrap {
+    width: min(1160px, calc(100vw - 40px));
+    margin-left: 50%;
+    transform: translateX(-50%);
     overflow: auto;
     border-top: 1px solid var(--text);
     border-bottom: 1px solid var(--line);
@@ -300,7 +417,7 @@ const description =
 
   @media (max-width: 840px) {
     .ucpc-page {
-      width: min(100%, calc(100vw - 36px));
+      max-width: 100%;
     }
 
     .ucpc-heading h1 {
@@ -312,6 +429,8 @@ const description =
     }
 
     .ucpc-control-contest,
+    .ucpc-mode-control,
+    .ucpc-time-fields,
     .ucpc-control-search {
       grid-column: 1 / -1;
     }
