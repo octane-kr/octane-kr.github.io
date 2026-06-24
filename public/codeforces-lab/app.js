@@ -29,10 +29,8 @@
   const form = root.querySelector("[data-handle-form]");
   const handlesInput = root.querySelector("[data-handles]");
   const statusNode = root.querySelector("[data-status]");
-  const clearCacheButton = root.querySelector("[data-clear-cache]");
   const userListNode = root.querySelector("[data-user-list]");
   const ratingChartNode = root.querySelector("[data-rating-chart]");
-  const ratingTableNode = root.querySelector("[data-rating-table]");
   const loadPerformanceButton = root.querySelector("[data-load-performance]");
   const performanceChartNode = root.querySelector("[data-performance-chart]");
   const performanceSummaryNode = root.querySelector("[data-performance-summary]");
@@ -84,11 +82,6 @@
     runExclusive(async () => {
       await loadCoreData();
     });
-  });
-
-  clearCacheButton.addEventListener("click", () => {
-    clearLocalCache();
-    setStatus("캐시를 비웠습니다.");
   });
 
   loadPerformanceButton.addEventListener("click", () => {
@@ -192,7 +185,6 @@
 
     renderEmptyState("핸들을 불러오는 중입니다...", userListNode);
     renderEmptyState("레이팅 기록을 불러오는 중입니다...", ratingChartNode);
-    ratingTableNode.replaceChildren();
     renderEmptyState("레이팅 기록을 먼저 불러온 뒤 추정치를 불러오세요.", performanceChartNode);
     renderEmptyState("기간을 비우면 전체 rated contest를 대상으로 합니다.", performanceSummaryNode);
     renderEmptyState("핸들 2개를 불러오면 함께 친 rated contest를 비교합니다.", headToHeadNode);
@@ -269,6 +261,13 @@
           x: change.ratingUpdateTimeSeconds,
           y: change.newRating,
           label: `${formatDate(change.ratingUpdateTimeSeconds)} - ${change.contestName}: ${change.oldRating} -> ${change.newRating}`,
+          tooltipTitle: handle,
+          tooltipLines: [
+            `${formatDate(change.ratingUpdateTimeSeconds)} · ${change.contestName}`,
+            `순위 ${formatNumber(change.rank)}`,
+            `레이팅 ${formatNumber(change.oldRating)} → ${formatNumber(change.newRating)}`,
+            `변동 ${formatSigned(change.newRating - change.oldRating)}`,
+          ],
         })),
     }));
     renderLineChart(ratingChartNode, series, {
@@ -276,31 +275,6 @@
       yLabel: "레이팅",
     });
 
-    const rows = [];
-    for (const handle of state.handles) {
-      for (const change of getHistory(handle)) {
-        if (!isInDateRange(change.ratingUpdateTimeSeconds, range)) continue;
-        rows.push({
-          handle,
-          contestName: change.contestName,
-          rank: change.rank,
-          oldRating: change.oldRating,
-          newRating: change.newRating,
-          delta: change.newRating - change.oldRating,
-          ratingUpdateTimeSeconds: change.ratingUpdateTimeSeconds,
-        });
-      }
-    }
-    rows.sort((left, right) => right.ratingUpdateTimeSeconds - left.ratingUpdateTimeSeconds);
-    renderTable(ratingTableNode, ["날짜", "핸들", "대회", "순위", "이전", "이후", "변동"], rows.slice(0, 40), (row) => [
-      formatDate(row.ratingUpdateTimeSeconds),
-      row.handle,
-      row.contestName,
-      formatNumber(row.rank),
-      formatNumber(row.oldRating),
-      formatNumber(row.newRating),
-      formatSigned(row.delta),
-    ]);
   }
 
   function renderHeadToHead() {
@@ -534,16 +508,33 @@
 
     const selectedHandles = new Set(state.handles.map(normalizeHandle));
     const selectedHistoryContext = buildSelectedHistoryContext();
-    const rows = [];
+    const rowsByKey = new Map();
     state.performanceRows = [];
     state.performanceLoadedContestIds = new Set();
     renderEmptyState("퍼포먼스 데이터를 불러오는 중입니다...", performanceChartNode);
     renderPerformanceLoadSummary(contests, 0);
 
-    for (let index = 0; index < contests.length; index += 1) {
-      const contest = contests[index];
-      renderPerformanceLoadSummary(contests, index);
-      setStatus(`퍼포먼스 데이터를 불러오는 중입니다 (${index + 1}/${contests.length})...`);
+    const addRows = (nextRows) => {
+      nextRows.forEach((row) => {
+        const key = `${normalizeHandle(row.handle)}:${Number(row.contestId)}`;
+        rowsByKey.set(key, normalizePerformanceRow(row));
+      });
+    };
+
+    const derivedRows = await requestDerivedPerformanceRows(contests);
+    addRows(derivedRows);
+
+    const missingContests = contests.filter((contest) => (
+      state.handles.some((handle) => !rowsByKey.has(`${normalizeHandle(handle)}:${Number(contest.contestId)}`))
+    ));
+
+    renderPerformanceLoadSummary(contests, contests.length - missingContests.length);
+
+    for (let index = 0; index < missingContests.length; index += 1) {
+      const contest = missingContests[index];
+      const loadedCount = contests.length - missingContests.length + index;
+      renderPerformanceLoadSummary(contests, loadedCount);
+      setStatus(`퍼포먼스 데이터를 불러오는 중입니다 (${loadedCount + 1}/${contests.length})...`);
       const ratingChanges = await fetchCodeforces("contest.ratingChanges", {
         contestId: String(contest.contestId),
       }, {
@@ -552,14 +543,63 @@
       });
 
       const contestRows = estimateContestPerformance(ratingChanges, contest, selectedHandles, selectedHistoryContext);
-      rows.push(...contestRows);
+      addRows(contestRows);
       await nextFrame();
     }
 
+    const rows = Array.from(rowsByKey.values());
     state.performanceRows = rows;
     state.performanceLoadedContestIds = new Set(contests.map((contest) => Number(contest.contestId)));
     renderPerformanceGraphAndTable();
     setStatus(`퍼포먼스 추정치 ${rows.length}개를 계산했습니다.`);
+  }
+
+  async function requestDerivedPerformanceRows(contests) {
+    if (!remoteCache?.derivedEndpoint || contests.length === 0 || state.handles.length === 0) {
+      return [];
+    }
+
+    const rows = [];
+    const contestIds = contests.map((contest) => Number(contest.contestId)).filter(Number.isFinite);
+    for (let index = 0; index < contestIds.length; index += 450) {
+      const chunk = contestIds.slice(index, index + 450);
+      try {
+        const response = await fetch(remoteCache.derivedEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": remoteCache.anonKey,
+            "Authorization": `Bearer ${remoteCache.anonKey}`,
+          },
+          body: JSON.stringify({
+            kind: "performance-estimates",
+            handles: state.handles,
+            contestIds: chunk,
+          }),
+        });
+        if (!response.ok) continue;
+        const payload = await response.json();
+        if (payload.status === "OK" && Array.isArray(payload.result)) {
+          rows.push(...payload.result);
+        }
+      } catch {
+        return rows;
+      }
+    }
+    return rows;
+  }
+
+  function normalizePerformanceRow(row) {
+    const performance = Number(row.performance);
+    return {
+      ...row,
+      contestId: Number(row.contestId),
+      rank: Number(row.rank),
+      participantCount: Number(row.participantCount),
+      ratingUpdateTimeSeconds: Number(row.ratingUpdateTimeSeconds),
+      performance: Number.isFinite(performance) ? performance : MAX_RATING,
+      performanceLabel: row.performanceLabel || formatPerformance(performance),
+    };
   }
 
   function getPerformanceContests(range) {
@@ -581,7 +621,8 @@
 
   function renderPerformanceLoadSummary(contests, loadedCount = 0) {
     const cachedCount = countCachedRatingChanges(contests);
-    const remainingRequests = Math.max(0, contests.length - cachedCount);
+    const readyCount = Math.max(cachedCount, loadedCount);
+    const remainingRequests = Math.max(0, contests.length - readyCount);
     const estimatedSeconds = Math.ceil((remainingRequests * REQUEST_GAP_MS) / 1000);
     renderSummaryList(performanceSummaryNode, [
       ["선택된 contest", formatNumber(contests.length)],
@@ -1104,6 +1145,7 @@
     try {
       return {
         endpoint: new URL(String(config.endpoint)).toString(),
+        derivedEndpoint: config.derivedEndpoint ? new URL(String(config.derivedEndpoint)).toString() : null,
         anonKey: String(config.anonKey),
       };
     } catch {

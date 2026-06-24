@@ -9,6 +9,7 @@ const codeforcesCacheConfig =
   supabaseUrl && supabaseKey
     ? {
         endpoint: `${supabaseUrl}/functions/v1/codeforces-cache`,
+        derivedEndpoint: `${supabaseUrl}/functions/v1/codeforces-derived`,
         anonKey: supabaseKey,
       }
     : null;
@@ -42,7 +43,6 @@ const codeforcesCacheConfig =
         </label>
         <div class="cf-form-actions">
           <button type="submit">기록 불러오기</button>
-          <button type="button" data-clear-cache>캐시 비우기</button>
         </div>
       </form>
 
@@ -78,17 +78,17 @@ const codeforcesCacheConfig =
 
         <div class="cf-filter-grid">
           <fieldset class="cf-fieldset">
-            <legend>공식 라운드</legend>
+            <legend>대회 종류</legend>
             <label><input type="checkbox" data-official-division value="div4" checked /> Div. 4</label>
             <label><input type="checkbox" data-official-division value="div3" checked /> Div. 3</label>
             <label><input type="checkbox" data-official-division value="div2" checked /> Div. 2</label>
             <label><input type="checkbox" data-official-division value="div1" checked /> Div. 1</label>
             <label><input type="checkbox" data-official-division value="div1+2" checked /> Div. 1 + Div. 2</label>
+            <label><input type="checkbox" data-include-gym checked /> 공개 Gym contest 포함</label>
           </fieldset>
 
           <fieldset class="cf-fieldset">
-            <legend>Gym</legend>
-            <label><input type="checkbox" data-include-gym checked /> 공개 Gym contest 포함</label>
+            <legend>Gym 시간</legend>
             <div class="cf-duration-fields">
               <label class="cf-field cf-small-field">
                 <span>최소 시간</span>
@@ -141,16 +141,14 @@ const codeforcesCacheConfig =
         <div class="cf-chart" data-rating-chart>
           <p class="cf-empty">핸들을 불러오면 레이팅 그래프가 표시됩니다.</p>
         </div>
-        <div class="cf-table-wrap" data-rating-table></div>
       </section>
 
       <section class="cf-section cf-tab-panel" aria-labelledby="cf-performance-title" data-cf-panel="performance" hidden>
         <div class="cf-section-head">
           <div>
-            <h2 id="cf-performance-title">추정 퍼포먼스</h2>
+            <h2 id="cf-performance-title">퍼포먼스 그래프</h2>
             <p>
-              공식 레이팅 변동 참가자 목록과 초반 6회 보너스 보정을 이용해
-              퍼포먼스를 추정합니다.
+              퍼포먼스 추정은 부정확할 수 있습니다.
             </p>
           </div>
           <div class="cf-inline-controls">

@@ -3,3 +3,11 @@ project_id = "kokiri-blog"
 [functions.codeforces-cache]
 enabled = true
 verify_jwt = false
+
+[functions.codeforces-derived]
+enabled = true
+verify_jwt = false
+
+[functions.codeforces-cache-warmer]
+enabled = true
+verify_jwt = false
