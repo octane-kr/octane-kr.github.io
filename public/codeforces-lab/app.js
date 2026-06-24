@@ -33,16 +33,15 @@
   const userListNode = root.querySelector("[data-user-list]");
   const ratingChartNode = root.querySelector("[data-rating-chart]");
   const ratingTableNode = root.querySelector("[data-rating-table]");
-  const performanceLimitInput = root.querySelector("[data-performance-limit]");
   const loadPerformanceButton = root.querySelector("[data-load-performance]");
   const performanceChartNode = root.querySelector("[data-performance-chart]");
-  const performanceTableNode = root.querySelector("[data-performance-table]");
+  const performanceSummaryNode = root.querySelector("[data-performance-summary]");
   const findFreshButton = root.querySelector("[data-find-fresh]");
   const officialDivisionInputs = Array.from(root.querySelectorAll("[data-official-division]"));
   const includeGymInput = root.querySelector("[data-include-gym]");
   const gymMinInput = root.querySelector("[data-gym-min]");
   const gymMaxInput = root.querySelector("[data-gym-max]");
-  const statusPagesInput = root.querySelector("[data-status-pages]");
+  const scanDepthSelect = root.querySelector("[data-scan-depth]");
   const freshLimitInput = root.querySelector("[data-fresh-limit]");
   const freshResultsNode = root.querySelector("[data-fresh-results]");
   const headToHeadNode = root.querySelector("[data-head-to-head]");
@@ -53,6 +52,13 @@
   const performanceStartInput = root.querySelector("[data-performance-start]");
   const performanceEndInput = root.querySelector("[data-performance-end]");
 
+  const SCAN_DEPTHS = {
+    quick: { value: "quick", label: "빠르게", maxPages: 1, complete: false },
+    standard: { value: "standard", label: "보통", maxPages: 20, complete: false },
+    careful: { value: "careful", label: "꼼꼼히", maxPages: 100, complete: false },
+    complete: { value: "complete", label: "전체 제출", maxPages: Infinity, complete: true },
+  };
+
   const state = {
     requestedHandles: [],
     handles: [],
@@ -60,6 +66,7 @@
     histories: new Map(),
     touchedByHandle: new Map(),
     performanceRows: [],
+    performanceLoadedContestIds: new Set(),
   };
 
   let requestChain = Promise.resolve();
@@ -180,12 +187,13 @@
     state.histories = new Map();
     state.touchedByHandle = new Map();
     state.performanceRows = [];
+    state.performanceLoadedContestIds = new Set();
 
     renderEmptyState("핸들을 불러오는 중입니다...", userListNode);
     renderEmptyState("레이팅 기록을 불러오는 중입니다...", ratingChartNode);
     ratingTableNode.replaceChildren();
     renderEmptyState("레이팅 기록을 먼저 불러온 뒤 추정치를 불러오세요.", performanceChartNode);
-    performanceTableNode.replaceChildren();
+    renderEmptyState("기간을 비우면 전체 rated contest를 대상으로 합니다.", performanceSummaryNode);
     renderEmptyState("핸들 2개를 불러오면 함께 친 rated contest를 비교합니다.", headToHeadNode);
 
     setStatus(`공개 프로필 ${requestedHandles.length}개를 불러오는 중입니다...`);
@@ -216,6 +224,7 @@
     }
 
     renderRatingGraphAndTable();
+    renderPerformanceGraphAndTable();
     renderHeadToHead();
     setStatus(`${canonicalHandles.length}개 핸들을 불러왔습니다.`);
   }
@@ -376,7 +385,7 @@
       throw new Error("공식 라운드나 Gym 중 하나는 선택해 주세요.");
     }
 
-    const maxPages = clampInteger(Number(statusPagesInput.value), 1, 200);
+    const scanDepth = readScanDepth();
     const resultLimit = clampInteger(Number(freshLimitInput.value), 5, 200);
     const hasGymMin = String(gymMinInput.value || "").trim() !== "";
     const hasGymMax = String(gymMaxInput.value || "").trim() !== "";
@@ -403,7 +412,7 @@
     const touched = new Set();
     for (const handle of state.handles) {
       setStatus(`${handle}이 이미 친 대회를 확인하는 중입니다...`);
-      const ids = await loadTouchedContestIds(handle, maxPages);
+      const ids = await loadTouchedContestIds(handle, scanDepth);
       ids.forEach((id) => touched.add(id));
     }
 
@@ -434,28 +443,39 @@
       return rightTime - leftTime || Number(right.id) - Number(left.id);
     });
 
-    renderFreshContestTable(candidates.slice(0, resultLimit), candidates.length, maxPages);
+    renderFreshContestTable(candidates.slice(0, resultLimit), candidates.length, scanDepth);
     setStatus(`안 친 후보 대회 ${candidates.length}개를 찾았습니다.`);
   }
 
-  async function loadTouchedContestIds(handle, maxPages) {
+  function readScanDepth() {
+    return SCAN_DEPTHS[scanDepthSelect.value] || SCAN_DEPTHS.standard;
+  }
+
+  async function loadTouchedContestIds(handle, scanDepth) {
     const normalized = normalizeHandle(handle);
     const existing = state.touchedByHandle.get(normalized);
-    if (existing && existing.maxPages >= maxPages) {
+    if (existing && (existing.complete || (!scanDepth.complete && existing.maxPages >= scanDepth.maxPages))) {
       return existing.ids;
     }
 
     const ids = new Set(getHistory(handle).map((change) => Number(change.contestId)));
-    for (let page = 0; page < maxPages; page += 1) {
+    for (let page = 0; page < scanDepth.maxPages; page += 1) {
       const from = page * PAGE_SIZE + 1;
-      setStatus(`${handle} 제출 기록 ${page + 1}/${maxPages}페이지를 확인하는 중입니다...`);
+      const progress = Number.isFinite(scanDepth.maxPages)
+        ? `${page + 1}/${scanDepth.maxPages}페이지`
+        : `${page + 1}페이지`;
+      setStatus(`${handle} 제출 기록을 확인하는 중입니다 (${progress})...`);
       const compact = await fetchStatusContestIdsPage(handle, from, PAGE_SIZE);
       compact.contestIds.forEach((id) => ids.add(id));
       if (compact.rowCount < PAGE_SIZE) break;
       await nextFrame();
     }
 
-    state.touchedByHandle.set(normalized, { maxPages, ids });
+    state.touchedByHandle.set(normalized, {
+      complete: !Number.isFinite(scanDepth.maxPages),
+      maxPages: scanDepth.maxPages,
+      ids,
+    });
     return ids;
   }
 
@@ -480,11 +500,14 @@
     return compact;
   }
 
-  function renderFreshContestTable(rows, totalCount, maxPages) {
+  function renderFreshContestTable(rows, totalCount, scanDepth) {
     const fragment = document.createDocumentFragment();
+    const scanText = Number.isFinite(scanDepth.maxPages)
+      ? `${scanDepth.label}, 핸들별 최근 제출 최대 ${formatNumber(scanDepth.maxPages * PAGE_SIZE)}개`
+      : `${scanDepth.label}, 핸들별 공개 제출 전체`;
     fragment.appendChild(el("p", {
       className: "cf-note",
-      textContent: `후보 ${totalCount}개 중 ${rows.length}개를 표시합니다. 핸들별 최근 제출은 최대 ${maxPages * PAGE_SIZE}개까지 확인했습니다.`,
+      textContent: `후보 ${totalCount}개 중 ${rows.length}개를 표시합니다. 검사 범위: ${scanText}.`,
     }));
     const wrap = el("div", { className: "cf-table-wrap" });
     renderTable(wrap, ["종류", "구분", "대회", "길이", "시작", "링크"], rows, (row) => [
@@ -502,23 +525,8 @@
   async function loadPerformanceEstimates() {
     await ensureCoreData();
 
-    const limit = clampInteger(Number(performanceLimitInput.value), 1, 30);
     const range = readDateRange(performanceStartInput, performanceEndInput);
-    const contestsById = new Map();
-    for (const handle of state.handles) {
-      const history = getHistory(handle).filter((change) => isInDateRange(change.ratingUpdateTimeSeconds, range));
-      for (const change of history.slice(-limit)) {
-        const existing = contestsById.get(change.contestId);
-        contestsById.set(change.contestId, {
-          contestId: change.contestId,
-          contestName: change.contestName,
-          ratingUpdateTimeSeconds: Math.max(existing?.ratingUpdateTimeSeconds || 0, change.ratingUpdateTimeSeconds),
-        });
-      }
-    }
-
-    const contests = Array.from(contestsById.values())
-      .sort((left, right) => left.ratingUpdateTimeSeconds - right.ratingUpdateTimeSeconds);
+    const contests = getPerformanceContests(range);
     if (contests.length === 0) {
       throw new Error("선택한 기간에 불러올 rated contest가 없습니다.");
     }
@@ -527,12 +535,14 @@
     const selectedHistoryContext = buildSelectedHistoryContext();
     const rows = [];
     state.performanceRows = [];
-    renderEmptyState("추정치를 계산하는 중입니다...", performanceChartNode);
-    performanceTableNode.replaceChildren();
+    state.performanceLoadedContestIds = new Set();
+    renderEmptyState("퍼포먼스 데이터를 불러오는 중입니다...", performanceChartNode);
+    renderPerformanceLoadSummary(contests, 0);
 
     for (let index = 0; index < contests.length; index += 1) {
       const contest = contests[index];
-      setStatus(`${contest.contestName} 레이팅 변동을 불러오는 중입니다 (${index + 1}/${contests.length})...`);
+      renderPerformanceLoadSummary(contests, index);
+      setStatus(`퍼포먼스 데이터를 불러오는 중입니다 (${index + 1}/${contests.length})...`);
       const ratingChanges = await fetchCodeforces("contest.ratingChanges", {
         contestId: String(contest.contestId),
       }, {
@@ -540,15 +550,53 @@
         label: `contest.ratingChanges ${contest.contestId}`,
       });
 
-      setStatus(`${contest.contestName} 퍼포먼스를 추정하는 중입니다...`);
       const contestRows = estimateContestPerformance(ratingChanges, contest, selectedHandles, selectedHistoryContext);
       rows.push(...contestRows);
-      state.performanceRows = rows;
-      renderPerformanceGraphAndTable();
       await nextFrame();
     }
 
+    state.performanceRows = rows;
+    state.performanceLoadedContestIds = new Set(contests.map((contest) => Number(contest.contestId)));
+    renderPerformanceGraphAndTable();
     setStatus(`퍼포먼스 추정치 ${rows.length}개를 계산했습니다.`);
+  }
+
+  function getPerformanceContests(range) {
+    const contestsById = new Map();
+    for (const handle of state.handles) {
+      const history = getHistory(handle).filter((change) => isInDateRange(change.ratingUpdateTimeSeconds, range));
+      for (const change of history) {
+        const existing = contestsById.get(change.contestId);
+        contestsById.set(change.contestId, {
+          contestId: change.contestId,
+          contestName: change.contestName,
+          ratingUpdateTimeSeconds: Math.max(existing?.ratingUpdateTimeSeconds || 0, change.ratingUpdateTimeSeconds),
+        });
+      }
+    }
+    return Array.from(contestsById.values())
+      .sort((left, right) => left.ratingUpdateTimeSeconds - right.ratingUpdateTimeSeconds);
+  }
+
+  function renderPerformanceLoadSummary(contests, loadedCount = 0) {
+    const cachedCount = countCachedRatingChanges(contests);
+    const remainingRequests = Math.max(0, contests.length - cachedCount);
+    const estimatedSeconds = Math.ceil((remainingRequests * REQUEST_GAP_MS) / 1000);
+    renderSummaryList(performanceSummaryNode, [
+      ["선택된 contest", formatNumber(contests.length)],
+      ["캐시됨", formatNumber(cachedCount)],
+      ["최소 대기", formatDurationText(estimatedSeconds)],
+      ["진행", `${formatNumber(loadedCount)} / ${formatNumber(contests.length)}`],
+    ]);
+  }
+
+  function countCachedRatingChanges(contests) {
+    return contests.reduce((count, contest) => {
+      const cached = getCache(buildCacheKey("contest.ratingChanges", {
+        contestId: String(contest.contestId),
+      }), hours(24));
+      return count + (cached ? 1 : 0);
+    }, 0);
   }
 
   function buildSelectedHistoryContext() {
@@ -752,6 +800,7 @@
       .filter((row) => isInDateRange(row.ratingUpdateTimeSeconds, range))
       .slice()
       .sort((left, right) => left.ratingUpdateTimeSeconds - right.ratingUpdateTimeSeconds);
+    const contests = getPerformanceContests(range);
     const rowsByHandle = new Map();
     for (const row of rows) {
       if (!rowsByHandle.has(normalizeHandle(row.handle))) rowsByHandle.set(normalizeHandle(row.handle), []);
@@ -765,6 +814,12 @@
         x: row.ratingUpdateTimeSeconds,
         y: row.performance,
         label: `${formatDate(row.ratingUpdateTimeSeconds)} - ${row.contestName}: ${row.performanceLabel}`,
+        tooltipTitle: row.handle,
+        tooltipLines: [
+          `${formatDate(row.ratingUpdateTimeSeconds)} · ${row.contestName}`,
+          `퍼포먼스 ${row.performanceLabel}`,
+          `순위 ${formatNumber(row.rank)} / ${formatNumber(row.participantCount)}`,
+        ],
       })),
     }));
 
@@ -773,20 +828,20 @@
       yLabel: "추정 퍼포먼스",
     });
 
-    const newest = rows.slice().sort((left, right) => right.ratingUpdateTimeSeconds - left.ratingUpdateTimeSeconds);
-    renderTable(performanceTableNode, ["날짜", "핸들", "대회", "순위", "퍼포먼스", "표시 변동", "실제 변동 추정", "예측 변동", "보정 이전 레이팅", "초반 보너스", "Rated 회차", "Rated 인원"], newest, (row) => [
-      formatDate(row.ratingUpdateTimeSeconds),
-      row.handle,
-      row.contestName,
-      formatNumber(row.rank),
-      row.performanceLabel,
-      formatSigned(row.officialDelta),
-      formatSigned(row.estimatedTrueDelta),
-      formatSigned(row.predictedDelta),
-      formatNumber(row.effectiveOldRating),
-      row.displayBonus ? formatNumber(row.displayBonus) : "-",
-      row.ratedContestNumber == null ? "-" : formatNumber(row.ratedContestNumber),
-      formatNumber(row.participantCount),
+    if (state.handles.length === 0) {
+      renderEmptyState("핸들을 먼저 불러오세요.", performanceSummaryNode);
+      return;
+    }
+    if (state.performanceRows.length === 0) {
+      renderPerformanceLoadSummary(contests, 0);
+      return;
+    }
+    const loadedContestCount = contests.filter((contest) => state.performanceLoadedContestIds.has(Number(contest.contestId))).length;
+    renderSummaryList(performanceSummaryNode, [
+      ["표시된 점", formatNumber(rows.length)],
+      ["로드된 contest", `${formatNumber(loadedContestCount)} / ${formatNumber(contests.length)}`],
+      ["핸들", formatNumber(state.handles.length)],
+      ["상세", "그래프 점에 마우스를 올리거나 포커스하세요"],
     ]);
   }
 
@@ -898,7 +953,7 @@
         } catch (error) {
           lastError = error;
           if (attempt < 2) {
-            setStatus(`${label} 요청이 흔들려서 한 번 더 시도합니다...`);
+            setStatus("요청이 흔들려서 한 번 더 시도합니다...");
             await sleep(REQUEST_GAP_MS);
           }
         }
@@ -913,10 +968,10 @@
     const run = requestChain.then(async () => {
       const waitMs = Math.max(0, lastNetworkAt + REQUEST_GAP_MS - Date.now());
       if (waitMs > 0) {
-        setStatus(`Codeforces API 제한 때문에 ${label} 요청을 잠시 기다리는 중입니다...`);
+        setStatus("Codeforces 제한 때문에 잠시 기다리는 중입니다...");
         await sleep(waitMs);
       }
-      setStatus(`${label} 요청 중입니다...`);
+      setStatus("Codeforces에서 데이터를 불러오는 중입니다...");
       lastNetworkAt = Date.now();
       return work();
     });
@@ -1048,6 +1103,25 @@
       }));
     }
 
+    const xTicks = buildTimeTicks(minX, maxX);
+    for (const tick of xTicks) {
+      const x = xScale(tick);
+      svg.appendChild(svgEl("line", {
+        x1: x,
+        x2: x,
+        y1: margin.top,
+        y2: height - margin.bottom,
+        class: "cf-chart-grid",
+      }));
+      svg.appendChild(svgEl("text", {
+        x,
+        y: height - 14,
+        "text-anchor": "middle",
+        class: "cf-chart-label",
+        textContent: formatAxisDate(tick, maxX - minX),
+      }));
+    }
+
     svg.appendChild(svgEl("line", {
       x1: margin.left,
       x2: width - margin.right,
@@ -1080,32 +1154,24 @@
         "stroke-linecap": "round",
       }));
       for (const point of usablePoints) {
+        const cx = xScale(point.x);
+        const cy = yScale(point.y);
         const circle = svgEl("circle", {
-          cx: xScale(point.x),
-          cy: yScale(point.y),
+          cx,
+          cy,
           r: pointRadius,
           fill: item.color,
+          tabindex: "0",
+          "aria-label": point.label,
         });
-        circle.appendChild(svgEl("title", { textContent: point.label }));
+        circle.addEventListener("pointerenter", (event) => showChartTooltip(container, tooltip, point, event, cx, cy, width));
+        circle.addEventListener("pointermove", (event) => showChartTooltip(container, tooltip, point, event, cx, cy, width));
+        circle.addEventListener("focus", (event) => showChartTooltip(container, tooltip, point, event, cx, cy, width));
+        circle.addEventListener("pointerleave", () => hideChartTooltip(tooltip));
+        circle.addEventListener("blur", () => hideChartTooltip(tooltip));
         svg.appendChild(circle);
       }
     }
-
-    const firstDate = formatDate(minX);
-    const lastDate = formatDate(maxX);
-    svg.appendChild(svgEl("text", {
-      x: margin.left,
-      y: height - 14,
-      class: "cf-chart-label",
-      textContent: firstDate,
-    }));
-    svg.appendChild(svgEl("text", {
-      x: width - margin.right,
-      y: height - 14,
-      "text-anchor": "end",
-      class: "cf-chart-label",
-      textContent: lastDate,
-    }));
 
     const legend = el("div", { className: "cf-legend" });
     for (const item of series) {
@@ -1116,7 +1182,102 @@
       legend.appendChild(legendItem);
     }
 
-    container.replaceChildren(svg, legend);
+    const tooltip = el("div", { className: "cf-chart-tooltip" });
+    container.replaceChildren(svg, legend, tooltip);
+  }
+
+  function showChartTooltip(container, tooltip, point, event, svgX, svgY, svgWidth) {
+    const title = point.tooltipTitle || point.series?.name || "";
+    const lines = point.tooltipLines || [point.label];
+    const children = [];
+    if (title) children.push(el("strong", { textContent: title }));
+    lines.forEach((line) => children.push(el("span", { textContent: line })));
+    tooltip.replaceChildren(...children);
+    tooltip.classList.add("is-visible");
+
+    const containerRect = container.getBoundingClientRect();
+    const svgRect = container.querySelector("svg").getBoundingClientRect();
+    const hasPointer = event && Number.isFinite(event.clientX) && Number.isFinite(event.clientY);
+    let left = hasPointer
+      ? event.clientX - containerRect.left + container.scrollLeft + 12
+      : svgRect.left - containerRect.left + container.scrollLeft + (svgX / svgWidth) * svgRect.width + 12;
+    let top = hasPointer
+      ? event.clientY - containerRect.top + 12
+      : svgRect.top - containerRect.top + (svgY / 320) * svgRect.height + 12;
+
+    const visibleLeft = left - container.scrollLeft;
+    if (visibleLeft + tooltip.offsetWidth + 12 > container.clientWidth) {
+      left = container.scrollLeft + container.clientWidth - tooltip.offsetWidth - 12;
+    }
+    if (left < container.scrollLeft + 8) left = container.scrollLeft + 8;
+    if (top + tooltip.offsetHeight + 8 > container.clientHeight) {
+      top = Math.max(8, top - tooltip.offsetHeight - 24);
+    }
+    tooltip.style.left = `${Math.round(left)}px`;
+    tooltip.style.top = `${Math.round(top)}px`;
+  }
+
+  function hideChartTooltip(tooltip) {
+    tooltip.classList.remove("is-visible");
+  }
+
+  function buildTimeTicks(minSeconds, maxSeconds) {
+    const spanSeconds = maxSeconds - minSeconds;
+    const spanDays = spanSeconds / (24 * 60 * 60);
+    const tickRule = spanDays > 365 * 3
+      ? { unit: "year", step: Math.max(1, Math.ceil(spanDays / 365 / 6)) }
+      : spanDays > 365
+        ? { unit: "month", step: 6 }
+        : spanDays > 120
+          ? { unit: "month", step: 3 }
+          : spanDays > 45
+            ? { unit: "month", step: 1 }
+            : spanDays > 14
+              ? { unit: "day", step: 7 }
+              : { unit: "day", step: Math.max(1, Math.ceil(spanDays / 5)) };
+    const ticks = [];
+    const cursor = alignTickDate(new Date(minSeconds * 1000), tickRule.unit);
+    while (Math.floor(cursor.getTime() / 1000) < minSeconds) {
+      addTickStep(cursor, tickRule.unit, tickRule.step);
+    }
+    while (Math.floor(cursor.getTime() / 1000) <= maxSeconds && ticks.length < 10) {
+      ticks.push(Math.floor(cursor.getTime() / 1000));
+      addTickStep(cursor, tickRule.unit, tickRule.step);
+    }
+    if (ticks.length < 2) return [minSeconds, maxSeconds];
+    return ticks;
+  }
+
+  function alignTickDate(date, unit) {
+    const aligned = new Date(date.getTime());
+    aligned.setHours(0, 0, 0, 0);
+    if (unit === "year") {
+      aligned.setMonth(0, 1);
+    } else if (unit === "month") {
+      aligned.setDate(1);
+    }
+    return aligned;
+  }
+
+  function addTickStep(date, unit, step) {
+    if (unit === "year") {
+      date.setFullYear(date.getFullYear() + step);
+    } else if (unit === "month") {
+      date.setMonth(date.getMonth() + step);
+    } else {
+      date.setDate(date.getDate() + step);
+    }
+  }
+
+  function formatAxisDate(seconds, spanSeconds) {
+    const date = new Date(Number(seconds) * 1000);
+    if (spanSeconds > 365 * 24 * 60 * 60 * 2) {
+      return new Intl.DateTimeFormat("ko-KR", { year: "numeric" }).format(date);
+    }
+    if (spanSeconds > 90 * 24 * 60 * 60) {
+      return new Intl.DateTimeFormat("ko-KR", { year: "2-digit", month: "short" }).format(date);
+    }
+    return new Intl.DateTimeFormat("ko-KR", { month: "short", day: "numeric" }).format(date);
   }
 
   function renderTable(container, headings, rows, mapRow) {
@@ -1161,6 +1322,17 @@
     container.replaceChildren(el("p", { className: "cf-empty", textContent: message }));
   }
 
+  function renderSummaryList(container, items) {
+    const list = el("p", { className: "cf-summary-list" });
+    for (const [label, value] of items) {
+      const item = el("span");
+      item.appendChild(document.createTextNode(`${label} `));
+      item.appendChild(el("strong", { textContent: String(value) }));
+      list.appendChild(item);
+    }
+    container.replaceChildren(list);
+  }
+
   function el(tagName, options = {}) {
     const node = document.createElement(tagName);
     if (options.className) node.className = options.className;
@@ -1201,6 +1373,16 @@
     const hours = Math.floor(totalMinutes / 60);
     const minutes = String(totalMinutes % 60).padStart(2, "0");
     return `${hours}:${minutes}`;
+  }
+
+  function formatDurationText(seconds) {
+    const safeSeconds = Math.max(0, Math.ceil(Number(seconds) || 0));
+    if (safeSeconds < 60) return `${safeSeconds}초`;
+    const minutes = Math.ceil(safeSeconds / 60);
+    if (minutes < 60) return `${minutes}분`;
+    const hours = Math.floor(minutes / 60);
+    const rest = minutes % 60;
+    return rest ? `${hours}시간 ${rest}분` : `${hours}시간`;
   }
 
   function formatDate(seconds) {

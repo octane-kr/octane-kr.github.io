@@ -95,8 +95,13 @@ const description =
           <fieldset class="cf-fieldset">
             <legend>스캔</legend>
             <label class="cf-field cf-small-field">
-              <span>핸들별 제출 페이지</span>
-              <input data-status-pages type="number" min="1" max="200" value="20" />
+              <span>검사 범위</span>
+              <select data-scan-depth>
+                <option value="standard" selected>보통</option>
+                <option value="quick">빠르게</option>
+                <option value="careful">꼼꼼히</option>
+                <option value="complete">전체 제출</option>
+              </select>
             </label>
             <label class="cf-field cf-small-field">
               <span>결과 수</span>
@@ -115,11 +120,11 @@ const description =
           <h2 id="cf-rating-title">레이팅 그래프</h2>
           <div class="cf-inline-controls">
             <label class="cf-field cf-small-field">
-              <span>시작일</span>
+              <span>시작일 선택</span>
               <input data-rating-start type="date" />
             </label>
             <label class="cf-field cf-small-field">
-              <span>끝일</span>
+              <span>끝일 선택</span>
               <input data-rating-end type="date" />
             </label>
           </div>
@@ -141,16 +146,12 @@ const description =
           </div>
           <div class="cf-inline-controls">
             <label class="cf-field cf-small-field">
-              <span>시작일</span>
+              <span>시작일 선택</span>
               <input data-performance-start type="date" />
             </label>
             <label class="cf-field cf-small-field">
-              <span>끝일</span>
+              <span>끝일 선택</span>
               <input data-performance-end type="date" />
-            </label>
-            <label class="cf-field cf-small-field">
-              <span>핸들별 contest 수</span>
-              <input data-performance-limit type="number" min="1" max="30" value="6" />
             </label>
             <button type="button" data-load-performance>추정치 불러오기</button>
           </div>
@@ -158,7 +159,9 @@ const description =
         <div class="cf-chart" data-performance-chart>
           <p class="cf-empty">핸들을 불러온 뒤 추정치를 불러오세요.</p>
         </div>
-        <div class="cf-table-wrap" data-performance-table></div>
+        <div class="cf-performance-summary" data-performance-summary>
+          <p class="cf-empty">기간을 비우면 전체 rated contest를 대상으로 합니다.</p>
+        </div>
       </section>
 
       <section class="cf-section cf-tab-panel" aria-labelledby="cf-head-title" data-cf-panel="head" hidden>
@@ -238,7 +241,8 @@ const description =
   }
 
   .cf-field input,
-  .cf-field textarea {
+  .cf-field textarea,
+  .cf-field select {
     width: 100%;
     min-width: 0;
     border: 0;
@@ -256,7 +260,8 @@ const description =
   }
 
   .cf-field input:focus,
-  .cf-field textarea:focus {
+  .cf-field textarea:focus,
+  .cf-field select:focus {
     border-bottom-color: var(--text);
     outline: 0;
   }
@@ -387,6 +392,7 @@ const description =
   }
 
   .cf-chart {
+    position: relative;
     min-height: 260px;
     min-width: 0;
     max-width: 100%;
@@ -394,6 +400,34 @@ const description =
     border-bottom: 1px solid var(--line);
     overflow-x: auto;
     padding: 10px 0 8px;
+  }
+
+  .cf-chart-tooltip {
+    position: absolute;
+    z-index: 2;
+    display: none;
+    max-width: min(320px, calc(100% - 24px));
+    border: 1px solid var(--text);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.45;
+    pointer-events: none;
+    padding: 8px 10px;
+  }
+
+  .cf-chart-tooltip.is-visible {
+    display: block;
+  }
+
+  .cf-chart-tooltip strong {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .cf-chart-tooltip span {
+    display: block;
+    color: var(--muted);
   }
 
   .cf-chart svg {
@@ -433,6 +467,25 @@ const description =
     display: inline-block;
     width: 18px;
     height: 2px;
+  }
+
+  .cf-performance-summary {
+    min-width: 0;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+  }
+
+  .cf-summary-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .cf-summary-list strong {
+    color: var(--text);
   }
 
   .cf-table-wrap {
