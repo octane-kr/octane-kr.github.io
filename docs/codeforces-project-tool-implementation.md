@@ -290,3 +290,69 @@ Verification plan for this slice:
   - x-axis ticks;
   - fresh finder scan-depth selector;
   - mobile layout.
+
+## Supabase Cache Implementation: 2026-06-25
+
+Added a server-backed cache for Codeforces Lab using the existing Supabase
+project (`kokiri-blog`, ref `vmevutajjkkxwlfphahz`).
+
+Architecture:
+
+- Browser code keeps the existing localStorage cache as the first layer.
+- If localStorage misses, the browser calls the public Supabase Edge Function
+  `codeforces-cache` in `cacheOnly` mode.
+- If the server cache misses, the browser uses the existing conservative
+  request queue and asks the Edge Function to fetch Codeforces, upsert the
+  response into Postgres, and return the result.
+- If the Edge Function is unavailable or rejects a request, the browser falls
+  back to the direct Codeforces API path so the static site remains usable.
+
+Database:
+
+- Added `public.cf_api_cache`.
+- Enabled RLS and granted table access only to `service_role`.
+- No browser writes are allowed directly to the cache table. The public anon
+  key can call the function, but all database writes happen server-side inside
+  the Edge Function.
+- Added `delete_expired_cf_api_cache()` for occasional manual cleanup of rows
+  that expired more than seven days ago.
+
+Cached methods:
+
+- `contest.list`
+- `contest.ratingChanges`
+- `user.info`
+- `user.rating`
+- `user.status`
+
+TTL policy:
+
+- `contest.ratingChanges`: 30 days from the browser request, capped to one
+  year in the Edge Function.
+- `contest.list`: 24 hours from the browser request, capped to two days in the
+  Edge Function.
+- `user.info` and `user.rating`: one hour from the browser request.
+- `user.status`: six hours for visible-submission scan pages.
+
+Security notes:
+
+- The Supabase service role key is not stored in the repository and is not sent
+  to the browser.
+- The Edge Function relies on Supabase-provided function secrets
+  (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`).
+- The Codeforces method and parameter set is allowlisted in the function.
+
+Deployment and verification:
+
+- Applied the migration with Supabase CLI after linking the project.
+- Deployed `codeforces-cache` with `--no-verify-jwt --use-api`.
+- Verified `user.info`:
+  - first function call returned `cached=false`;
+  - second cache-only call returned `cached=true`.
+- Verified `contest.ratingChanges` on contest `2233`:
+  - first function call returned 15,735 rows with `cached=false`;
+  - second cache-only call returned 15,735 rows with `cached=true`.
+- Verified local Codeforces Lab UI:
+  - `user.rating?handle=octane` was a server-cache miss before loading;
+  - after loading `octane` through the UI, cache-only lookup returned 104
+    rating rows with `cached=true`.

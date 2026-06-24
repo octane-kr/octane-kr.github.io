@@ -72,6 +72,7 @@
   let requestChain = Promise.resolve();
   let lastNetworkAt = 0;
   let activeRunId = 0;
+  const remoteCache = readRemoteCacheConfig();
 
   const lossProbabilityCache = new Float64Array(2 * RATING_RANGE + 1);
   for (let diff = -RATING_RANGE; diff <= RATING_RANGE; diff += 1) {
@@ -488,7 +489,7 @@
       handle,
       from: String(from),
       count: String(count),
-    }, `user.status ${handle}`);
+    }, `user.status ${handle}`, { ttlMs: hours(6) });
 
     const contestIds = Array.from(new Set(
       rows
@@ -546,7 +547,7 @@
       const ratingChanges = await fetchCodeforces("contest.ratingChanges", {
         contestId: String(contest.contestId),
       }, {
-        ttlMs: hours(24),
+        ttlMs: days(30),
         label: `contest.ratingChanges ${contest.contestId}`,
       });
 
@@ -594,7 +595,7 @@
     return contests.reduce((count, contest) => {
       const cached = getCache(buildCacheKey("contest.ratingChanges", {
         contestId: String(contest.contestId),
-      }), hours(24));
+      }), days(30));
       return count + (cached ? 1 : 0);
     }, 0);
   }
@@ -933,9 +934,26 @@
     return result;
   }
 
-  async function requestCodeforces(method, params, label) {
-    const url = buildApiUrl(method, params);
+  async function requestCodeforces(method, params, label, options = {}) {
+    if (remoteCache) {
+      try {
+        const cachedResult = await requestRemoteCodeforces(method, params, options, true);
+        if (cachedResult !== null) return cachedResult;
+      } catch {
+        // Remote cache is an optimization. Fall back to the direct path silently.
+      }
+    }
+
     return scheduleNetwork(label, async () => {
+      if (remoteCache) {
+        try {
+          return await requestRemoteCodeforces(method, params, options, false);
+        } catch {
+          setStatus("캐시 서버 응답이 흔들려 Codeforces에서 직접 불러오는 중입니다...");
+        }
+      }
+
+      const url = buildApiUrl(method, params);
       let lastError = null;
       for (let attempt = 1; attempt <= 2; attempt += 1) {
         try {
@@ -962,6 +980,40 @@
       const reason = lastError instanceof Error ? lastError.message : String(lastError);
       throw new Error(`Codeforces 응답을 받지 못했습니다: ${reason}`);
     });
+  }
+
+  async function requestRemoteCodeforces(method, params, options, cacheOnly) {
+    const response = await fetch(remoteCache.endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": remoteCache.anonKey,
+        "Authorization": `Bearer ${remoteCache.anonKey}`,
+      },
+      body: JSON.stringify({
+        method,
+        params,
+        ttlSeconds: Math.ceil((options.ttlMs || hours(1)) / 1000),
+        cacheOnly,
+      }),
+    });
+
+    if (cacheOnly && response.status === 404) {
+      return null;
+    }
+    if (!response.ok) {
+      throw new Error(`Cache HTTP ${response.status}`);
+    }
+
+    const payload = await response.json();
+    if (payload.status === "MISS") return null;
+    if (payload.status === "FAILED") {
+      throw new Error(payload.comment || "Codeforces API 요청에 실패했습니다.");
+    }
+    if (payload.status !== "OK") {
+      throw new Error("캐시 서버 응답을 읽지 못했습니다.");
+    }
+    return payload.result;
   }
 
   function scheduleNetwork(label, work) {
@@ -1044,6 +1096,19 @@
     }
     keys.forEach((key) => localStorage.removeItem(key));
     state.touchedByHandle = new Map();
+  }
+
+  function readRemoteCacheConfig() {
+    const config = window.CodeforcesLabCache;
+    if (!config || !config.endpoint || !config.anonKey) return null;
+    try {
+      return {
+        endpoint: new URL(String(config.endpoint)).toString(),
+        anonKey: String(config.anonKey),
+      };
+    } catch {
+      return null;
+    }
   }
 
   function renderLineChart(container, series, options) {
@@ -1426,6 +1491,10 @@
 
   function hours(value) {
     return value * 60 * 60 * 1000;
+  }
+
+  function days(value) {
+    return value * 24 * 60 * 60 * 1000;
   }
 
   window.CodeforcesLab = {

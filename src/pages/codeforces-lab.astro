@@ -3,6 +3,15 @@ import BlogLayout from '../layouts/BlogLayout.astro';
 
 const description =
   'Codeforces 공개 데이터를 이용해 안 친 셋, 레이팅 그래프, 추정 퍼포먼스, 맞대결 기록을 확인하는 도구.';
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseKey = import.meta.env.PUBLIC_SUPABASE_KEY;
+const codeforcesCacheConfig =
+  supabaseUrl && supabaseKey
+    ? {
+        endpoint: `${supabaseUrl}/functions/v1/codeforces-cache`,
+        anonKey: supabaseKey,
+      }
+    : null;
 ---
 
 <BlogLayout title="Codeforces Lab" description={description}>
@@ -175,6 +184,9 @@ const description =
     </section>
   </article>
 
+  <script define:vars={{ codeforcesCacheConfig }}>
+    window.CodeforcesLabCache = codeforcesCacheConfig;
+  </script>
   <script is:inline src="/codeforces-lab/app.js"></script>
 </BlogLayout>
 

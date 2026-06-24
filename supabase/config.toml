@@ -1,0 +1,5 @@
+project_id = "kokiri-blog"
+
+[functions.codeforces-cache]
+enabled = true
+verify_jwt = false
