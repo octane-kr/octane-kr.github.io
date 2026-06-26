@@ -1,6 +1,5 @@
 ---
 title: "2024 ICPC Asia Seoul Regional 후기"
-date: 2024-12-14
 publishedAt: 2024-12-14T08:03:00+09:00
 updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"

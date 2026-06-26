@@ -1,6 +1,5 @@
 ---
 title: "Kernelization (Vertex Cover)"
-date: 2026-05-21
 publishedAt: 2026-05-21T18:16:00+09:00
 updatedAt: 2026-05-21T18:16:00+09:00
 category: "Graph Theory"

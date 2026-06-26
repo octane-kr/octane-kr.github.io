@@ -1,6 +1,5 @@
 ---
 title: "Branching Algorithms 1 (Vertex Cover, Feedback Vertex Set)"
-date: 2026-05-20
 publishedAt: 2026-05-20T18:30:00+09:00
 updatedAt: 2026-05-21T15:54:00+09:00
 category: "Graph Theory"

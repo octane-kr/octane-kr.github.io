@@ -1,6 +1,5 @@
 ---
 title: "UCPC 2023 예선 후기"
-date: 2023-07-02
 publishedAt: 2023-07-02T02:32:00+09:00
 updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"

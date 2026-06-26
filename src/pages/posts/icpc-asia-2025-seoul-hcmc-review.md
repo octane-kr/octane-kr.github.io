@@ -1,6 +1,5 @@
 ---
 title: "2025 ICPC Asia Seoul Regional + The 2025 ICPC Asia HoChiMinh City Regional Contest 후기"
-date: 2025-12-14
 publishedAt: 2025-12-14T07:18:00+09:00
 updatedAt: 2026-05-07T02:40:00+09:00
 category: "PS"
