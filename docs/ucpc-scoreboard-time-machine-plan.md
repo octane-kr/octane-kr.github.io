@@ -105,3 +105,8 @@ The mode control should be low-chrome and consistent with the blog style. A smal
      - clock mode computes elapsed time from `시작 시간` and `현재 시간`,
      - clock mode handles current time earlier than start time as next-day time,
      - intro text is not clipped at desktop and mobile widths.
+
+## UCPC 2026 Qualifier Note
+
+- Added `UCPC 2026 예선` from the archived rendered scoreboard HTML as an AC-only payload.
+- The archive page did not expose full submission-history data, so this payload includes only accepted submissions reconstructed from solved cells and shows a user-facing notice when selected.

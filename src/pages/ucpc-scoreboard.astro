@@ -119,6 +119,7 @@ const description =
         <span data-scoreboard-meta></span>
       </div>
       <p class="ucpc-computed-time" data-computed-time></p>
+      <p class="ucpc-notice" data-scoreboard-notice hidden></p>
 
       <div class="ucpc-table-wrap" data-scoreboard-wrap>
         <table class="ucpc-scoreboard" data-scoreboard-table>
@@ -297,6 +298,7 @@ const description =
 
   .ucpc-status span,
   .ucpc-computed-time,
+  .ucpc-notice,
   .ucpc-footnote,
   .ucpc-error {
     color: var(--muted);
@@ -306,6 +308,11 @@ const description =
   .ucpc-computed-time {
     min-height: 1.35em;
     margin: -4px 0 10px;
+  }
+
+  .ucpc-notice {
+    margin: -2px 0 12px;
+    color: #92400e;
   }
 
   .ucpc-error {
