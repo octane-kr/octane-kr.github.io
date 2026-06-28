@@ -43,8 +43,7 @@
   loadScoreboard(defaultEntryId()).catch(showFatalError);
 
   function defaultEntryId() {
-    const latestFinal = entries.find((entry) => entry.round === "final");
-    return latestFinal?.id || entries[0]?.id;
+    return entries[0]?.id;
   }
 
   function populateScoreboardSelect() {
