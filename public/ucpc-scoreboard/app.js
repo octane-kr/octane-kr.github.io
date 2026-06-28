@@ -20,7 +20,6 @@
   const metaNode = root.querySelector("[data-scoreboard-meta]");
   const computedTimeNode = root.querySelector("[data-computed-time]");
   const bodyNode = root.querySelector("[data-scoreboard-body]");
-  const noticeNode = root.querySelector("[data-scoreboard-notice]");
   const footnoteNode = root.querySelector("[data-scoreboard-footnote]");
   const errorNode = root.querySelector("[data-scoreboard-error]");
 
@@ -65,10 +64,6 @@
     scoreboardSelect.value = id;
     titleNode.textContent = "Loading...";
     metaNode.textContent = "";
-    if (noticeNode) {
-      noticeNode.textContent = "";
-      noticeNode.hidden = true;
-    }
     footnoteNode.textContent = "";
     errorNode.hidden = true;
     bodyNode.replaceChildren(renderLoadingRow());
@@ -93,10 +88,6 @@
 
     titleNode.textContent = contest.title || entry.label;
     metaNode.textContent = makeMetaText(entry);
-    if (noticeNode) {
-      noticeNode.textContent = entry.notice || "";
-      noticeNode.hidden = !entry.notice;
-    }
     footnoteNode.textContent = `${entry.sourceUrl} · ${entry.teams} teams · ${entry.problems} problems · ${entry.runs} submissions`;
     renderAt(0);
   }
@@ -596,10 +587,6 @@
   function showFatalError(error) {
     titleNode.textContent = "UCPC 스코어보드를 불러올 수 없습니다";
     metaNode.textContent = "";
-    if (noticeNode) {
-      noticeNode.textContent = "";
-      noticeNode.hidden = true;
-    }
     bodyNode.replaceChildren(renderEmptyRow("Load failed."));
     errorNode.textContent = error.message || String(error);
     errorNode.hidden = false;

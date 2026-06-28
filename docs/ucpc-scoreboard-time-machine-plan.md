@@ -108,5 +108,5 @@ The mode control should be low-chrome and consistent with the blog style. A smal
 
 ## UCPC 2026 Qualifier Note
 
-- Added `UCPC 2026 예선` from the archived rendered scoreboard HTML as an AC-only payload.
-- The archive page did not expose full submission-history data, so this payload includes only accepted submissions reconstructed from solved cells and shows a user-facing notice when selected.
+- Updated `UCPC 2026 예선` to use the archived `contest.json` and `runs.json` files after they became available.
+- The payload now includes full accepted and rejected submission history, so the temporary AC-only notice was removed.
