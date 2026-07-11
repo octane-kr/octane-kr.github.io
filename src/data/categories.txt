@@ -9,5 +9,3 @@ Graph Theory
 - Algorithms for NP-hard Problems
 
 Paper Reading
-
-Others

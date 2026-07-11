@@ -149,20 +149,6 @@ const posts = Object.entries(modules)
     return a.slug.localeCompare(b.slug) || a.title.localeCompare(b.title);
   });
 
-const publishedCategories = new Set(posts.map((post) => post.category));
-const publishedSubcategories = new Set(
-  posts.map((post) => `${post.category}\u0000${post.subcategory}`),
-);
-
-const visibleCategoryStructure = categoryStructure
-  .filter(({ category }) => publishedCategories.has(category))
-  .map(({ category, subcategories }) => ({
-    category,
-    subcategories: subcategories.filter((subcategory) =>
-      publishedSubcategories.has(`${category}\u0000${subcategory}`),
-    ),
-  }));
-
 const formatDate = (date: Date | null, hasValidDate: boolean) => {
   if (!hasValidDate || date === null) return '날짜 없음';
 
@@ -243,7 +229,7 @@ const postSearchIndexJson = JSON.stringify(postSearchIndex).replace(/</gu, '\\u0
 
         <ul>
           {
-            visibleCategoryStructure.map(({ category, subcategories }) => (
+            categoryStructure.map(({ category, subcategories }) => (
               <li>
                 <button
                   class="category-filter"
