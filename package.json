@@ -7,9 +7,10 @@
   },
   "scripts": {
     "generate:lens": "node scripts/generateLensIndex.mjs",
-    "predev": "node scripts/generateLensIndex.mjs",
+    "check:posts": "node scripts/checkPublishedPosts.mjs",
+    "predev": "npm run check:posts && npm run generate:lens",
     "dev": "astro dev",
-    "prebuild": "node scripts/generateLensIndex.mjs",
+    "prebuild": "npm run check:posts && npm run generate:lens",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

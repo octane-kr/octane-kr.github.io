@@ -3,7 +3,7 @@ import BlogLayout from './BlogLayout.astro';
 import PostInteractions from '../components/PostInteractions.astro';
 import ReferenceLens from '../components/ReferenceLens.astro';
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings = [] } = Astro.props;
 
 const title = frontmatter.title ?? 'Untitled';
 const description = frontmatter.description ?? '';
@@ -57,6 +57,16 @@ const subcategoryHref = subcategory
 
 const pathnameParts = Astro.url.pathname.split('/').filter(Boolean);
 const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
+
+const tableOfContents = headings
+  .filter((heading) => heading.depth >= 2 && heading.depth <= 3 && heading.slug && heading.text)
+  .map((heading) => ({
+    depth: heading.depth,
+    slug: heading.slug,
+    text: heading.text,
+  }));
+
+const hasTableOfContents = frontmatter.toc !== false && tableOfContents.length >= 3;
 ---
 
 <BlogLayout title={title} description={description}>
@@ -84,6 +94,21 @@ const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
       </div>
       {description && <p>{description}</p>}
     </header>
+
+    {
+      hasTableOfContents && (
+        <nav class="article-toc" aria-label="글 목차">
+          <h2>Contents</h2>
+          <ol>
+            {tableOfContents.map((heading) => (
+              <li class={`toc-depth-${heading.depth}`}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
 
     <div class="article-body">
       <slot />

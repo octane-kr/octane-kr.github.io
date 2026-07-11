@@ -1,0 +1,57 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+import { getSortedPosts } from '../lib/posts';
+
+const posts = getSortedPosts();
+const postsByTag = new Map<string, typeof posts>();
+
+for (const post of posts) {
+  for (const tag of post.tags) {
+    if (!postsByTag.has(tag)) {
+      postsByTag.set(tag, []);
+    }
+
+    postsByTag.get(tag)!.push(post);
+  }
+}
+
+const tagGroups = [...postsByTag.entries()].sort(([a], [b]) => a.localeCompare(b));
+
+const toDomId = (value: string) =>
+  `tag-${value.toLowerCase().replace(/[^a-z0-9가-힣_-]+/gu, '-')}`;
+---
+
+<BlogLayout title="Tags" description="태그별 글 목록">
+  <section class="hero">
+    <h1>Tags</h1>
+    <nav class="taxonomy-nav" aria-label="글 분류">
+      <a href="/posts/">Posts</a>
+      <a href="/archives/">Archives</a>
+      <a href="/categories/">Categories</a>
+    </nav>
+  </section>
+
+  <section class="taxonomy-list" aria-label="태그 목록">
+    {
+      tagGroups.length === 0 ? (
+        <p class="empty-state">아직 태그가 없습니다.</p>
+      ) : (
+        tagGroups.map(([tag, tagPosts]) => (
+          <section class="taxonomy-group" aria-labelledby={toDomId(tag)}>
+            <h2 id={toDomId(tag)}>
+              {tag}
+              <span>{tagPosts.length}</span>
+            </h2>
+            <ol class="taxonomy-posts">
+              {tagPosts.map((post) => (
+                <li>
+                  <a href={post.url}>{post.title}</a>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ))
+      )
+    }
+  </section>
+</BlogLayout>
