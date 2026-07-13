@@ -110,3 +110,8 @@ The mode control should be low-chrome and consistent with the blog style. A smal
 
 - Updated `UCPC 2026 예선` to use the archived `contest.json` and `runs.json` files after they became available.
 - The payload now includes full accepted and rejected submission history, so the temporary AC-only notice was removed.
+
+## UCPC 2026 Final Note
+
+- Added `UCPC 2026 본선` from the archived `contest.json` and `runs.json` files.
+- Placed it first in the manifest so the latest contest remains the default selection while the initial rendered time stays at `0:00`.
