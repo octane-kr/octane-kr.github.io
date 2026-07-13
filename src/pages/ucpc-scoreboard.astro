@@ -2,7 +2,8 @@
 import BlogLayout from '../layouts/BlogLayout.astro';
 
 const description =
-  'UCPC archive Spotboard data를 특정 contest time 기준으로 다시 보는 스코어보드';
+  'UCPC Archive의 Spotboard 데이터를 이용해 원하는 시점의 스코어보드를 보여주는 도구';
+const assetVersion = Date.now().toString(36);
 ---
 
 <BlogLayout title="UCPC 동적 스코어보드" description={description}>
@@ -15,23 +16,26 @@ const description =
         확인할 수 있습니다.
       </p>
       <p>
-        <strong>경과</strong> 모드에서는 대회 시작으로부터 특정 시간이 지난
-        시점의 스코어보드를 확인할 수 있습니다. <strong>시계</strong> 모드에서는
-        버추얼 컨테스트를 시작한 시각과 현재 시각을 입력하면 대회 시작으로부터
-        지난 시간이 자동으로 계산됩니다.
+        <strong>경과</strong> 모드에서는 대회 시작 후 원하는 경과 시간의
+        스코어보드를 확인할 수 있습니다. <strong>시계</strong> 모드에서는 버추얼
+        컨테스트의 시작 시각과 현재 시각으로 경과 시간을 계산합니다.
       </p>
       <p>
-        프리즈 시각에는 스코어보드가 대회 시작 후 몇 분 뒤에 프리즈되는지
-        입력하면 됩니다. 공란으로 두면 프리즈가 적용되지 않은 스코어보드를 확인할
-        수 있습니다.
+        프리즈가 시작되는 시점을 대회 시작 후 경과 시간으로 입력하면 됩니다.
+        공란으로 두면 프리즈가 적용되지 않은 스코어보드를 확인할 수 있습니다.
       </p>
       <p>
-        이 기능은 모두 Codex를 이용해 개발했기 때문에 예상치 못한 오류나 틀린
-        데이터가 있을 수 있습니다. 참고용으로만 사용해주세요.
+        이 도구는 Codex를 이용해 개발했기 때문에 예상치 못한 오류나 잘못된 데이터가
+        있을 수 있습니다. 참고용으로만 사용해 주세요.
       </p>
     </header>
 
-    <section class="ucpc-tool" aria-label="UCPC dynamic scoreboard" data-ucpc-tool>
+    <section
+      class="ucpc-tool"
+      aria-label="UCPC 동적 스코어보드"
+      data-ucpc-tool
+      data-asset-version={assetVersion}
+    >
       <div class="ucpc-controls">
         <label class="ucpc-control ucpc-control-contest">
           <span>대회</span>
@@ -39,17 +43,16 @@ const description =
         </label>
 
         <label class="ucpc-control">
-          <span>프리즈</span>
+          <span>프리즈 시점</span>
           <input
             data-freeze-time
             type="text"
-            inputmode="numeric"
             placeholder="-"
             autocomplete="off"
           />
         </label>
 
-        <div class="ucpc-mode-control" role="group" aria-label="시간 입력 모드">
+        <div class="ucpc-mode-control" role="group" aria-label="시간 입력 방식">
           <button
             class="ucpc-mode-button is-active"
             type="button"
@@ -70,11 +73,10 @@ const description =
 
         <div class="ucpc-time-fields" data-time-panel="elapsed">
           <label class="ucpc-control">
-            <span>시각</span>
+            <span>경과 시간</span>
             <input
               data-current-time
               type="text"
-              inputmode="numeric"
               value="0:00"
               autocomplete="off"
             />
@@ -83,26 +85,37 @@ const description =
 
         <div class="ucpc-time-fields ucpc-clock-fields" data-time-panel="clock" hidden>
           <label class="ucpc-control">
-            <span>시작 시간</span>
+            <span>시작 시각</span>
             <input
               data-start-clock-time
-              type="text"
-              inputmode="numeric"
-              value="0:00"
+              type="time"
+              step="60"
               autocomplete="off"
             />
           </label>
-          <label class="ucpc-control">
-            <span>현재 시간</span>
-            <input
-              data-current-clock-time
-              type="text"
-              inputmode="numeric"
-              value="0:00"
-              autocomplete="off"
-            />
-          </label>
+          <div class="ucpc-clock-current">
+            <label class="ucpc-control">
+              <span>현재 시각</span>
+              <input
+                data-current-clock-time
+                type="time"
+                step="60"
+                autocomplete="off"
+              />
+            </label>
+            <button
+              class="ucpc-refresh-button"
+              type="button"
+              data-refresh-current-time
+              aria-label="현재 시각으로 갱신"
+              title="현재 시각으로 갱신"
+            >
+              <span aria-hidden="true">↻</span>
+            </button>
+          </div>
         </div>
+
+        <button class="ucpc-apply-button" type="button" data-apply-time>보기</button>
 
         <label class="ucpc-control ucpc-control-search">
           <span>검색</span>
@@ -115,7 +128,7 @@ const description =
       </div>
 
       <div class="ucpc-status" aria-live="polite">
-        <strong data-contest-title>Loading...</strong>
+        <strong data-contest-title>불러오는 중...</strong>
         <span data-scoreboard-meta></span>
       </div>
       <p class="ucpc-computed-time" data-computed-time></p>
@@ -124,7 +137,7 @@ const description =
         <table class="ucpc-scoreboard" data-scoreboard-table>
           <tbody data-scoreboard-body>
             <tr>
-              <td>Loading...</td>
+              <td>불러오는 중...</td>
             </tr>
           </tbody>
         </table>
@@ -135,8 +148,8 @@ const description =
     </section>
   </article>
 
-  <script is:inline src="/ucpc-scoreboard/data/manifest.js"></script>
-  <script is:inline src="/ucpc-scoreboard/app.js"></script>
+  <script is:inline src={`/ucpc-scoreboard/data/manifest.js?v=${assetVersion}`}></script>
+  <script is:inline src={`/ucpc-scoreboard/app.js?v=${assetVersion}`}></script>
 </BlogLayout>
 
 <style is:global>
@@ -165,6 +178,7 @@ const description =
     max-width: 100%;
     margin: 8px 0 0;
     color: #4b5563;
+    word-break: keep-all;
   }
 
   .ucpc-heading a {
@@ -179,7 +193,7 @@ const description =
 
   .ucpc-controls {
     display: grid;
-    grid-template-columns: minmax(220px, 1.35fr) minmax(96px, 0.55fr) auto minmax(220px, 0.9fr) minmax(160px, 1fr);
+    grid-template-columns: minmax(190px, 1.05fr) minmax(108px, 0.55fr) auto minmax(320px, 1.25fr) auto minmax(140px, 0.8fr);
     gap: 14px 18px;
     align-items: end;
     margin-bottom: 20px;
@@ -280,6 +294,48 @@ const description =
   .ucpc-clock-fields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+  }
+
+  .ucpc-clock-current {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 30px;
+    gap: 6px;
+    align-items: end;
+    min-width: 0;
+  }
+
+  .ucpc-refresh-button,
+  .ucpc-apply-button {
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .ucpc-refresh-button {
+    width: 30px;
+    height: 33px;
+    padding: 0;
+    font-size: 19px;
+    line-height: 1;
+  }
+
+  .ucpc-apply-button {
+    min-width: 56px;
+    height: 33px;
+    padding: 0 10px;
+    font-weight: 700;
+  }
+
+  .ucpc-refresh-button:hover,
+  .ucpc-apply-button:hover,
+  .ucpc-refresh-button:focus-visible,
+  .ucpc-apply-button:focus-visible {
+    border-bottom-color: var(--text);
+    outline: 0;
   }
 
   .ucpc-status {
@@ -425,6 +481,30 @@ const description =
     margin: 12px 0 0;
   }
 
+  .ucpc-footnote a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 1040px) {
+    .ucpc-controls {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .ucpc-control-contest,
+    .ucpc-mode-control,
+    .ucpc-time-fields,
+    .ucpc-apply-button,
+    .ucpc-control-search {
+      grid-column: 1 / -1;
+    }
+
+    .ucpc-apply-button {
+      width: 100%;
+    }
+  }
+
   @media (max-width: 840px) {
     .ucpc-page {
       width: 100%;
@@ -435,17 +515,6 @@ const description =
 
     .ucpc-heading h1 {
       font-size: 30px;
-    }
-
-    .ucpc-controls {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .ucpc-control-contest,
-    .ucpc-mode-control,
-    .ucpc-time-fields,
-    .ucpc-control-search {
-      grid-column: 1 / -1;
     }
   }
 </style>

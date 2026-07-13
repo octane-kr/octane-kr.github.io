@@ -15,6 +15,8 @@
   const timePanels = Array.from(root.querySelectorAll("[data-time-panel]"));
   const startClockInput = root.querySelector("[data-start-clock-time]");
   const currentClockInput = root.querySelector("[data-current-clock-time]");
+  const refreshCurrentTimeButton = root.querySelector("[data-refresh-current-time]");
+  const applyTimeButton = root.querySelector("[data-apply-time]");
   const searchInput = root.querySelector("[data-team-search]");
   const titleNode = root.querySelector("[data-contest-title]");
   const metaNode = root.querySelector("[data-scoreboard-meta]");
@@ -22,6 +24,7 @@
   const bodyNode = root.querySelector("[data-scoreboard-body]");
   const footnoteNode = root.querySelector("[data-scoreboard-footnote]");
   const errorNode = root.querySelector("[data-scoreboard-error]");
+  const assetVersion = root.dataset.assetVersion || archive.generatedAt || "";
 
   const entries = [...archive.scoreboards];
   const entryById = new Map(entries.map((entry) => [entry.id, entry]));
@@ -36,6 +39,8 @@
   let problemById = new Map();
   let currentMinute = 0;
   let freezeMinute = null;
+  let appliedClockStartMinute = null;
+  let appliedClockCurrentMinute = null;
   let timeMode = "elapsed";
 
   populateScoreboardSelect();
@@ -57,11 +62,11 @@
 
   async function loadScoreboard(id) {
     const entry = entryById.get(id);
-    if (!entry) throw new Error(`Unknown scoreboard: ${id}`);
+    if (!entry) throw new Error("선택한 대회를 찾을 수 없습니다.");
 
     activeEntry = entry;
     scoreboardSelect.value = id;
-    titleNode.textContent = "Loading...";
+    titleNode.textContent = "불러오는 중...";
     metaNode.textContent = "";
     footnoteNode.textContent = "";
     errorNode.hidden = true;
@@ -78,16 +83,20 @@
 
     currentMinute = 0;
     freezeMinute = null;
+    appliedClockStartMinute = null;
+    appliedClockCurrentMinute = null;
     currentInput.value = "0:00";
     freezeInput.value = "";
-    startClockInput.value = "0:00";
-    currentClockInput.value = "0:00";
+    startClockInput.value = "";
+    currentClockInput.value = "";
     searchInput.value = "";
+    clearTimeInputErrors();
+    if (timeMode === "clock") setCurrentClockToNow();
     syncModeControls();
 
     titleNode.textContent = contest.title || entry.label;
     metaNode.textContent = makeMetaText(entry);
-    footnoteNode.textContent = `${entry.sourceUrl} · ${entry.teams} teams · ${entry.problems} problems · ${entry.runs} submissions`;
+    renderSourceFootnote(entry);
     renderAt(0);
   }
 
@@ -96,15 +105,17 @@
 
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = new URL(`data/${entry.dataFile}`, window.location.href).toString();
+      const payloadUrl = new URL(`data/${entry.dataFile}`, window.location.href);
+      if (assetVersion) payloadUrl.searchParams.set("v", assetVersion);
+      script.src = payloadUrl.toString();
       script.async = true;
       script.addEventListener("load", () => {
         const payload = payloadCache[entry.id];
         if (payload) resolve(payload);
-        else reject(new Error(`Payload did not register: ${entry.id}`));
+        else reject(new Error("대회 데이터가 올바르게 등록되지 않았습니다."));
       });
       script.addEventListener("error", () => {
-        reject(new Error(`Failed to load ${entry.dataFile}`));
+        reject(new Error("대회 데이터 파일을 불러오지 못했습니다."));
       });
       document.head.appendChild(script);
     });
@@ -115,12 +126,14 @@
   }
 
   function makeMetaText(entry) {
-    const parts = [`contest ${formatTime(entry.contestMinutes)}`];
-    if (entry.firstFrozenMinute != null) parts.push(`first frozen ${formatTime(entry.firstFrozenMinute)}`);
-    if (entry.firstRunMinute != null && entry.lastRunMinute != null) {
-      parts.push(`runs ${formatTime(entry.firstRunMinute)}-${formatTime(entry.lastRunMinute)}`);
-    }
-    return parts.join(" / ");
+    return `대회 시간 ${formatTime(entry.contestMinutes)} · ${entry.teams}팀 · ${entry.problems}문제`;
+  }
+
+  function renderSourceFootnote(entry) {
+    const link = document.createElement("a");
+    link.href = entry.sourceUrl;
+    link.textContent = "원본 스코어보드";
+    footnoteNode.replaceChildren("UCPC Archive의 ", link, "에서 확인할 수 있습니다.");
   }
 
   function splitTeamName(fullName) {
@@ -263,7 +276,7 @@
     if (shouldSyncCurrentInput) {
       currentInput.value = formatTime(currentMinute);
     }
-    updateComputedTimeText();
+    updateAppliedTimeText();
   }
 
   function renderHeader() {
@@ -327,15 +340,15 @@
       cell.classList.add("ucpc-problem-solved");
       if (state.firstSolved) cell.classList.add("ucpc-problem-first");
       label = state.failed === 0 ? "+" : `+${state.failed + 1}`;
-      cell.title = `${state.problem.name}: ${label} at ${formatTime(state.solvedTime)}`;
+      cell.title = `${state.problem.name}: ${formatTime(state.solvedTime)}에 정답 (${label})`;
     } else if (state.frozen > 0) {
       cell.classList.add("ucpc-problem-frozen");
       label = `?${state.frozen}`;
-      cell.title = `${state.problem.name}: ${state.frozen} frozen submission(s)`;
+      cell.title = `${state.problem.name}: 프리즈 제출 ${state.frozen}회`;
     } else if (state.pending > 0) {
       cell.classList.add("ucpc-problem-pending");
       label = `?${state.pending}`;
-      cell.title = `${state.problem.name}: pending`;
+      cell.title = `${state.problem.name}: 채점 대기 ${state.pending}회`;
     } else if (state.failed > 0) {
       cell.classList.add("ucpc-problem-failed");
       label = `-${state.failed}`;
@@ -357,7 +370,7 @@
   }
 
   function renderLoadingRow() {
-    return renderEmptyRow("Loading...");
+    return renderEmptyRow("불러오는 중...");
   }
 
   function renderEmptyRow(text) {
@@ -381,40 +394,16 @@
       });
     });
 
-    currentInput.addEventListener("input", () => applyTimeInput(currentInput, "current", false));
-    currentInput.addEventListener("change", () => applyTimeInput(currentInput, "current", true));
-    currentInput.addEventListener("blur", () => {
-      currentInput.value = formatTime(currentMinute);
-      currentInput.classList.remove("is-invalid");
-    });
-    currentInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        applyTimeInput(currentInput, "current", true);
-        currentInput.blur();
-      }
-    });
+    for (const input of [currentInput, freezeInput, startClockInput, currentClockInput]) {
+      input.addEventListener("input", () => {
+        setInputInvalid(input, false);
+        updateAppliedTimeText();
+      });
+      input.addEventListener("keydown", handleTimeInputKeydown);
+    }
 
-    freezeInput.addEventListener("input", () => applyTimeInput(freezeInput, "freeze", false));
-    freezeInput.addEventListener("change", () => applyTimeInput(freezeInput, "freeze", true));
-    freezeInput.addEventListener("blur", () => {
-      freezeInput.value = freezeMinute == null ? "" : formatTime(freezeMinute);
-      freezeInput.classList.remove("is-invalid");
-    });
-    freezeInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        applyTimeInput(freezeInput, "freeze", true);
-        freezeInput.blur();
-      }
-    });
-
-    startClockInput.addEventListener("input", () => applyClockInputs(false));
-    currentClockInput.addEventListener("input", () => applyClockInputs(false));
-    startClockInput.addEventListener("change", () => applyClockInputs(true));
-    currentClockInput.addEventListener("change", () => applyClockInputs(true));
-    startClockInput.addEventListener("blur", () => syncClockInput(startClockInput));
-    currentClockInput.addEventListener("blur", () => syncClockInput(currentClockInput));
-    startClockInput.addEventListener("keydown", handleClockKeydown);
-    currentClockInput.addEventListener("keydown", handleClockKeydown);
+    refreshCurrentTimeButton.addEventListener("click", setCurrentClockToNow);
+    applyTimeButton.addEventListener("click", applyDraftTime);
 
     searchInput.addEventListener("input", () => renderAt(currentMinute, { syncCurrentInput: false }));
   }
@@ -425,10 +414,10 @@
     clearTimeInputErrors();
     if (timeMode === "elapsed") {
       currentInput.value = formatTime(currentMinute);
-      updateComputedTimeText();
-      return;
+    } else if (!currentClockInput.value) {
+      setCurrentClockToNow();
     }
-    applyClockInputs(false);
+    updateAppliedTimeText();
   }
 
   function syncModeControls() {
@@ -445,77 +434,80 @@
     });
   }
 
-  function applyTimeInput(input, kind, commit) {
-    if (!contest) return;
+  function applyDraftTime() {
+    if (!contest) return false;
 
-    const parsed = parseTimeInput(input.value, { allowBlank: kind === "freeze" });
-    if (parsed === undefined) {
-      input.classList.add("is-invalid");
-      return;
+    const nextFreezeMinute = parseTimeInput(freezeInput.value, { allowBlank: true });
+    const freezeIsInvalid = nextFreezeMinute === undefined;
+    let nextMinute;
+    let nextClockStartMinute = null;
+    let nextClockCurrentMinute = null;
+
+    setInputInvalid(freezeInput, freezeIsInvalid);
+
+    if (timeMode === "elapsed") {
+      nextMinute = parseTimeInput(currentInput.value);
+      setInputInvalid(currentInput, nextMinute === undefined);
+      setInputInvalid(startClockInput, false);
+      setInputInvalid(currentClockInput, false);
+    } else {
+      nextClockStartMinute = parseClockInput(startClockInput.value);
+      nextClockCurrentMinute = parseClockInput(currentClockInput.value);
+      setInputInvalid(startClockInput, nextClockStartMinute == null);
+      setInputInvalid(currentClockInput, nextClockCurrentMinute == null);
+      setInputInvalid(currentInput, false);
+
+      if (nextClockStartMinute != null && nextClockCurrentMinute != null) {
+        nextMinute = computeElapsedClockMinutes(nextClockStartMinute, nextClockCurrentMinute);
+      }
     }
 
-    input.classList.remove("is-invalid");
-    if (kind === "freeze") {
-      freezeMinute = parsed;
-      renderAt(currentMinute, { syncCurrentInput: false });
-      if (commit) input.value = freezeMinute == null ? "" : formatTime(freezeMinute);
-      return;
+    if (freezeIsInvalid || nextMinute === undefined) {
+      computedTimeNode.textContent = "입력한 시간 형식을 확인해 주세요.";
+      return false;
     }
 
-    renderAt(parsed, { syncCurrentInput: commit });
-    if (commit) input.value = formatTime(currentMinute);
+    freezeMinute = nextFreezeMinute;
+    appliedClockStartMinute = timeMode === "clock" ? nextClockStartMinute : null;
+    appliedClockCurrentMinute = timeMode === "clock" ? nextClockCurrentMinute : null;
+    freezeInput.value = freezeMinute == null ? "" : formatTime(freezeMinute);
+
+    if (timeMode === "elapsed") {
+      currentInput.value = formatTime(nextMinute);
+    } else {
+      startClockInput.value = formatClockTime(nextClockStartMinute);
+      currentClockInput.value = formatClockTime(nextClockCurrentMinute);
+    }
+
+    renderAt(nextMinute, { syncCurrentInput: false });
+    return true;
   }
 
-  function applyClockInputs(commit) {
-    if (!contest || timeMode !== "clock") return;
-
-    const startMinute = parseClockInput(startClockInput.value);
-    const nowMinute = parseClockInput(currentClockInput.value);
-    const hasStart = startClockInput.value.trim() !== "";
-    const hasNow = currentClockInput.value.trim() !== "";
-
-    startClockInput.classList.toggle("is-invalid", hasStart && startMinute == null);
-    currentClockInput.classList.toggle("is-invalid", hasNow && nowMinute == null);
-
-    if (startMinute == null || nowMinute == null) {
-      updateComputedTimeText("시작 시간과 현재 시간을 HH:MM으로 입력하면 경과 시간이 계산됩니다.");
-      return;
-    }
-
-    const elapsed = computeElapsedClockMinutes(startMinute, nowMinute);
-    renderAt(elapsed, { syncCurrentInput: false });
-    if (commit) {
-      startClockInput.value = formatClockTime(startMinute);
-      currentClockInput.value = formatClockTime(nowMinute);
-    }
+  function handleTimeInputKeydown(event) {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    applyDraftTime();
   }
 
-  function handleClockKeydown(event) {
-    if (event.key === "Enter") {
-      applyClockInputs(true);
-      event.currentTarget.blur();
-    }
-  }
-
-  function syncClockInput(input) {
-    const parsed = parseClockInput(input.value);
-    if (input.value.trim() === "") {
-      input.classList.remove("is-invalid");
-      updateComputedTimeText();
-      return;
-    }
-    if (parsed == null) {
-      input.classList.add("is-invalid");
-      return;
-    }
-    input.value = formatClockTime(parsed);
-    input.classList.remove("is-invalid");
+  function setCurrentClockToNow() {
+    const now = new Date();
+    const nowMinute = now.getHours() * 60 + now.getMinutes();
+    currentClockInput.value = formatClockTime(nowMinute);
+    setInputInvalid(currentClockInput, false);
+    updateAppliedTimeText();
   }
 
   function clearTimeInputErrors() {
-    currentInput.classList.remove("is-invalid");
-    startClockInput.classList.remove("is-invalid");
-    currentClockInput.classList.remove("is-invalid");
+    setInputInvalid(currentInput, false);
+    setInputInvalid(freezeInput, false);
+    setInputInvalid(startClockInput, false);
+    setInputInvalid(currentClockInput, false);
+  }
+
+  function setInputInvalid(input, invalid) {
+    input.classList.toggle("is-invalid", invalid);
+    if (invalid) input.setAttribute("aria-invalid", "true");
+    else input.removeAttribute("aria-invalid");
   }
 
   function parseTimeInput(value, options = {}) {
@@ -571,22 +563,22 @@
     return `${hours}:${minutes}`;
   }
 
-  function updateComputedTimeText(message = "") {
-    if (message) {
-      computedTimeNode.textContent = message;
-      return;
+  function updateAppliedTimeText() {
+    const parts = [
+      `표시 중: 경과 시간 ${formatTime(currentMinute)}`,
+      freezeMinute == null ? "프리즈 없음" : `프리즈 시점 ${formatTime(freezeMinute)}`,
+    ];
+    if (timeMode === "clock" && appliedClockCurrentMinute != null) {
+      parts.push(`시작 시각 ${formatClockTime(appliedClockStartMinute)}`);
+      parts.push(`현재 시각 ${formatClockTime(appliedClockCurrentMinute)}`);
     }
-    if (timeMode === "clock") {
-      computedTimeNode.textContent = `계산된 경과 시각: ${formatTime(currentMinute)}`;
-      return;
-    }
-    computedTimeNode.textContent = "";
+    computedTimeNode.textContent = parts.join(" · ");
   }
 
   function showFatalError(error) {
     titleNode.textContent = "UCPC 스코어보드를 불러올 수 없습니다";
     metaNode.textContent = "";
-    bodyNode.replaceChildren(renderEmptyRow("Load failed."));
+    bodyNode.replaceChildren(renderEmptyRow("불러오지 못했습니다."));
     errorNode.textContent = error.message || String(error);
     errorNode.hidden = false;
   }
@@ -598,5 +590,6 @@
     parseTimeInput,
     parseClockInput,
     computeElapsedClockMinutes,
+    applyDraftTime,
   };
 })();

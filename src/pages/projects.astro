@@ -9,12 +9,12 @@ import BlogLayout from '../layouts/BlogLayout.astro';
       <p>작게 만든 도구와 장난감을 여기 모아둡니다.</p>
     </header>
 
-    <section class="project-list" aria-label="Project list">
+    <section class="project-list" aria-label="프로젝트 목록">
       <article class="project-entry">
         <div class="project-entry-main">
           <a href="/ucpc-scoreboard/">UCPC 동적 스코어보드</a>
           <p>
-            UCPC archive의 Spotboard 데이터를 이용해 버추얼 컨테스트 중 원하는
+            UCPC Archive의 Spotboard 데이터를 이용해 버추얼 컨테스트에서 원하는
             시점의 스코어보드를 보여줍니다.
           </p>
         </div>
@@ -91,6 +91,7 @@ import BlogLayout from '../layouts/BlogLayout.astro';
     max-width: 620px;
     margin: 8px 0 0;
     color: #4b5563;
+    word-break: keep-all;
   }
 
   .project-entry-meta {

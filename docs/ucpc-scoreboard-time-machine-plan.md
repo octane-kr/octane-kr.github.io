@@ -33,11 +33,11 @@ Keep both modes available, because the new mode is a convenience layer over the 
 
 1. Elapsed mode
    - This is the current behavior.
-   - The user enters `시각` as contest elapsed time, such as `0:00`, `2:17`, or `137`.
+   - The user enters `경과 시간` as contest elapsed time, such as `0:00`, `2:17`, or `137`.
    - The renderer uses that value directly.
 
 2. Clock mode
-   - Add inputs for `시작 시간` and `현재 시간`.
+   - Add inputs for `시작 시각` and `현재 시각`.
    - The page computes `elapsed = current clock time - start clock time`.
    - The computed elapsed time is clamped to the selected contest length and then passed into the same renderer used by elapsed mode.
    - This should not change the scoreboard calculation core.
@@ -60,7 +60,7 @@ The mode control should be low-chrome and consistent with the blog style. A smal
   - The tool keeps elapsed-time mode and adds clock-time mode as a UI layer.
 - Implementation completed:
   - Added `src/pages/projects.astro`.
-  - Reworked `/ucpc-scoreboard/` copy and layout so the intro is normal-width and only the table uses wide overflow.
+  - Reworked `/ucpc-scoreboard/` copy and layout so the intro, controls, and scoreboard share one centered working width.
   - Added elapsed/clock time mode controls.
   - Verified build and browser behavior on desktop and mobile widths.
 
@@ -74,24 +74,24 @@ The mode control should be low-chrome and consistent with the blog style. A smal
    - Added `src/pages/projects.astro`.
    - Kept the page simple and editorial: a heading, a short note that this is where small toys/tools live, and a list of project entries.
    - The first entry is `UCPC 동적 스코어보드`.
-   - Entry metadata mentions that it is a static tool for UCPC virtual contest practice and links to `/ucpc-scoreboard/`.
+   - Entry metadata describes it as a virtual contest project and links to `/ucpc-scoreboard/`.
    - Avoided marketing hero layout, heavy cards, gradients, or nested cards.
 
 3. UCPC page wording
-   - Added: `프리즈 시각을 비우면 프리즈 없는 스코어보드가 보입니다.`
+   - Explained that leaving `프리즈 시점` blank shows a scoreboard without freeze.
    - Renamed user-facing project/page wording to `UCPC 동적 스코어보드`.
-   - Rephrased the intro and moved it into a normal text measure.
+   - Rephrased the intro without changing its requested meaning.
 
 4. Time input modes
    - Added a mode toggle for elapsed mode versus clock mode.
    - Kept elapsed mode as the default.
-   - In clock mode, collect `시작 시간` and `현재 시간`, compute elapsed minutes, and render via the existing `renderAt(elapsed)` path.
+   - In clock mode, collect `시작 시각` and `현재 시각`, compute elapsed minutes, and render via the existing `renderAt(elapsed)` path.
    - Kept freeze independent. Freeze remains an elapsed contest time field, and blank freeze remains unfrozen.
 
 5. Text clipping / awkward wrapping
-   - Let the page container use normal flow.
-   - Made only `.ucpc-table-wrap` break out wider when needed.
-   - Kept intro copy in a `max-width` text measure and used explicit sentence boundaries around the archive link.
+   - Gave the intro, controls, and scoreboard the same centered working width.
+   - Kept the scoreboard's own horizontal overflow inside `.ucpc-table-wrap`.
+   - Applied Korean word-boundary wrapping to the UCPC intro and Projects descriptions.
 
 6. Verification
    - Ran `npm.cmd run build`.
@@ -102,7 +102,7 @@ The mode control should be low-chrome and consistent with the blog style. A smal
      - UCPC page still starts at `0:00`,
      - blank freeze still shows unfrozen standings,
      - elapsed mode still accepts direct contest elapsed time,
-     - clock mode computes elapsed time from `시작 시간` and `현재 시간`,
+     - clock mode computes elapsed time from `시작 시각` and `현재 시각`,
      - clock mode handles current time earlier than start time as next-day time,
      - intro text is not clipped at desktop and mobile widths.
 
@@ -115,3 +115,17 @@ The mode control should be low-chrome and consistent with the blog style. A smal
 
 - Added `UCPC 2026 본선` from the archived `contest.json` and `runs.json` files.
 - Placed it first in the manifest so the latest contest remains the default selection while the initial rendered time stays at `0:00`.
+
+## Spoiler-Safe Input Patch (completed 2026-07-13)
+
+- Keep time fields as drafts. Typing, changing focus, and switching modes must not render a different scoreboard.
+- Apply the elapsed or clock time together with the freeze point only when the visitor presses Enter or selects `보기`.
+- Keep the previous scoreboard when any draft value is invalid.
+- In clock mode, fill the current clock value from the visitor's device without applying it automatically, and provide a manual refresh control.
+- Keep clock values editable and preserve the existing next-day calculation when the current clock value is earlier than the start clock value.
+- Use `경과 시간` for durations, `시작 시각` and `현재 시각` for clock points, and `프리즈 시점` for the freeze point on the contest timeline.
+- Hide final submission counts and first/last submission metadata from the spoiler-safe initial view.
+- Localize loading, error, metadata, tooltip, and accessibility copy while retaining the original scoreboard column vocabulary.
+- Use native clock inputs on mobile and version static scoreboard assets per site build to avoid stale manifest and payload caches.
+- Verified that draft typing leaves the rendered board unchanged, Enter and `보기` apply atomically, invalid drafts preserve the previous board, and overnight clock calculation still works.
+- Verified the default `UCPC 2026 본선` view and responsive layouts at desktop, intermediate, and mobile widths with the Browser plugin.
