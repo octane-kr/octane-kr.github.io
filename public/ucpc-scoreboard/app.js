@@ -3,6 +3,7 @@
 
   const archive = window.UCPC_SCOREBOARD_ARCHIVE_MANIFEST;
   const payloadCache = window.UCPC_SCOREBOARD_ARCHIVE_PAYLOADS || {};
+  const unofficialOverlays = window.UCPC_SCOREBOARD_UNOFFICIAL_OVERLAYS || {};
   window.UCPC_SCOREBOARD_ARCHIVE_PAYLOADS = payloadCache;
 
   const root = document.querySelector("[data-ucpc-tool]");
@@ -73,12 +74,15 @@
     bodyNode.replaceChildren(renderLoadingRow());
 
     const payload = await loadPayload(entry);
+    const overlay = unofficialOverlays[entry.id] || {};
+    const overlayTeams = Array.isArray(overlay.teams) ? overlay.teams : [];
+    const overlayRuns = Array.isArray(overlay.runs) ? overlay.runs : [];
     contest = payload.contest;
     runsPayload = payload.runs;
     contestMinutes = Number(entry.contestMinutes) || Math.floor(Number(runsPayload.time.contestTime) / 60);
     problems = [...contest.problems].sort((a, b) => Number(a.id) - Number(b.id));
-    teams = [...contest.teams];
-    runs = [...runsPayload.runs].sort(compareRuns);
+    teams = [...contest.teams, ...overlayTeams];
+    runs = [...runsPayload.runs, ...overlayRuns].sort(compareRuns);
     problemById = new Map(problems.map((problem) => [String(problem.id), problem]));
 
     currentMinute = 0;
@@ -126,7 +130,7 @@
   }
 
   function makeMetaText(entry) {
-    return `대회 시간 ${formatTime(entry.contestMinutes)} · ${entry.teams}팀 · ${entry.problems}문제`;
+    return `대회 시간 ${formatTime(entry.contestMinutes)} · ${teams.length}팀 · ${problems.length}문제`;
   }
 
   function renderSourceFootnote(entry) {
@@ -173,6 +177,7 @@
         rawName: String(team.name),
         name: parts.name,
         group: parts.group,
+        ranked: team.ranked !== false,
         states: new Map(problems.map((problem) => [String(problem.id), newProblemState(problem)])),
         solved: 0,
         penalty: 0,
@@ -211,7 +216,7 @@
         if (kind === "yes") {
           state.accepted = true;
           state.solvedTime = runMinute;
-          if (!firstSolvedByProblem.has(String(problem.id))) {
+          if (row.ranked && !firstSolvedByProblem.has(String(problem.id))) {
             firstSolvedByProblem.set(String(problem.id), row.id);
           }
         } else if (kind === "pending") {
@@ -225,7 +230,7 @@
     for (const row of rows) {
       for (const [problemId, state] of row.states) {
         if (!state.accepted) continue;
-        state.firstSolved = firstSolvedByProblem.get(problemId) === row.id;
+        state.firstSolved = row.ranked && firstSolvedByProblem.get(problemId) === row.id;
         row.solved += 1;
         row.penalty += Number(state.solvedTime) + 20 * state.failed;
         row.lastSolvedTime = Math.max(row.lastSolvedTime, Number(state.solvedTime));
@@ -241,14 +246,22 @@
       return a.name.localeCompare(b.name, "ko") || a.id.localeCompare(b.id);
     });
 
-    rows.forEach((row, index) => {
-      const previous = rows[index - 1];
+    let rankedIndex = 0;
+    let previousRanked = null;
+    rows.forEach((row) => {
+      if (!row.ranked) {
+        row.rank = "-";
+        return;
+      }
+
+      rankedIndex += 1;
       const tied =
-        previous &&
-        previous.solved === row.solved &&
-        previous.penalty === row.penalty &&
-        previous.lastSolvedTime === row.lastSolvedTime;
-      row.rank = tied ? previous.rank : index + 1;
+        previousRanked &&
+        previousRanked.solved === row.solved &&
+        previousRanked.penalty === row.penalty &&
+        previousRanked.lastSolvedTime === row.lastSolvedTime;
+      row.rank = tied ? previousRanked.rank : rankedIndex;
+      previousRanked = row;
     });
 
     return rows;
@@ -306,6 +319,7 @@
   function renderTeam(row) {
     const tr = document.createElement("tr");
     tr.dataset.teamId = row.id;
+    if (!row.ranked) tr.classList.add("ucpc-team-unofficial");
     tr.appendChild(makeCell(row.rank, "ucpc-rank"));
 
     const teamCell = makeCell("", "ucpc-team");

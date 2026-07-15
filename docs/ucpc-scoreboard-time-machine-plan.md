@@ -129,3 +129,14 @@ The mode control should be low-chrome and consistent with the blog style. A smal
 - Use native clock inputs on mobile and version static scoreboard assets per site build to avoid stale manifest and payload caches.
 - Verified that draft typing leaves the rendered board unchanged, Enter and `보기` apply atomically, invalid drafts preserve the previous board, and overnight clock calculation still works.
 - Verified the default `UCPC 2026 본선` view and responsive layouts at desktop, intermediate, and mobile widths with the Browser plugin.
+
+## UCPC 2026 Final Unofficial Team
+
+- Keep the archived UCPC payload unchanged and merge the added team through `public/ucpc-scoreboard/data/unofficial-overlays.js`.
+- Add `(비공식) 군인 군인 대학원생 (휴가, 외출, 나들이)` from a Codeforces virtual contest that started at 08:00 KST on 2026-07-13.
+- Count every WA, TLE, and runtime error before AC, including failures on test 1. Exclude the compilation error, matching the submissions represented by UCPC Spotboard.
+- Sort the unofficial team by its visible score, but show `-` in the rank column and exclude it from official rank and first-solve calculations.
+- Give only the unofficial row a subtle gray background. Do not add a separate user-facing notice.
+- Verified the 34 included submissions at 5:00 as 9 solved, 1572 penalty, and visible position 9 between official ranks 8 and 9 without changing any official rank.
+- Verified a 4:00 freeze at 5:00 as 8 solved, 1161 penalty, and `?7` on problem H; team/member search and switching to another contest also remain isolated.
+- Verified `#f6f7f8` against adjacent white rows in desktop and mobile browser views. The row remains identifiable without overriding problem-result colors or causing page-level horizontal overflow.

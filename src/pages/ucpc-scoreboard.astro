@@ -149,6 +149,7 @@ const assetVersion = Date.now().toString(36);
   </article>
 
   <script is:inline src={`/ucpc-scoreboard/data/manifest.js?v=${assetVersion}`}></script>
+  <script is:inline src={`/ucpc-scoreboard/data/unofficial-overlays.js?v=${assetVersion}`}></script>
   <script is:inline src={`/ucpc-scoreboard/app.js?v=${assetVersion}`}></script>
 </BlogLayout>
 
@@ -402,6 +403,14 @@ const assetVersion = Date.now().toString(36);
 
   .ucpc-scoreboard tbody tr:hover {
     background: #fafafa;
+  }
+
+  .ucpc-scoreboard tbody tr.ucpc-team-unofficial {
+    background: #f6f7f8;
+  }
+
+  .ucpc-scoreboard tbody tr.ucpc-team-unofficial:hover {
+    background: #f1f3f5;
   }
 
   .ucpc-rank,
