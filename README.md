@@ -1,43 +1,22 @@
-# Astro Starter Kit: Minimal
+# 코끼리 뿌우
+
+[octane-kr.github.io](https://octane-kr.github.io)에 배포되는 Astro 기반 개인 블로그입니다.
+
+## Commands
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
+npm run build
+npm run preview
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Licensing
 
-## 🚀 Project Structure
+이 저장소에는 서로 다른 이용 조건이 적용되는 자료가 함께 있습니다.
 
-Inside of your Astro project, you'll see the following folders and files:
+- 웹사이트를 구축하고 작동시키는 원본 소스 코드: MIT License
+- 글, 사진, 이미지와 글에 포함된 코드 블록: Copyright © 2026 Octane. All rights reserved.
+- 스크린샷, 대회 데이터, 아카이브와 기타 외부 자료: 각 권리자의 조건 적용
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+링크 공유는 환영합니다. 자세한 범위는 [LICENSE.md](LICENSE.md)를 참고하세요.

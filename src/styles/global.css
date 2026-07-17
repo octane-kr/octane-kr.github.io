@@ -18,6 +18,9 @@ html {
 
 body {
   margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--text);
   font-family:
@@ -73,9 +76,32 @@ a {
 }
 
 .site-main {
+  width: 100%;
+  flex: 1;
   max-width: var(--max);
   margin: 0 auto;
   padding: 46px 20px 20px;
+}
+
+.site-footer {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.site-footer-inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 24px 20px 32px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.site-footer a:hover {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .hero {
@@ -1094,6 +1120,10 @@ html.is-reference-lens-resizing * {
 
   .site-main {
     padding: 34px 18px 20px;
+  }
+
+  .site-footer-inner {
+    padding: 22px 18px 28px;
   }
 
   .hero h1 {
