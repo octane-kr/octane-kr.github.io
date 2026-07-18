@@ -69,10 +69,16 @@ a {
   font-size: 14px;
 }
 
-.site-nav a:hover {
+.site-nav a:hover,
+.site-nav a[aria-current="page"] {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--text);
+  font-weight: 700;
 }
 
 .site-main {
@@ -105,8 +111,8 @@ a {
 }
 
 .hero {
-  margin-bottom: 42px;
-  padding-bottom: 30px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -127,13 +133,12 @@ a {
   gap: 0;
 }
 
-.category-section,
 .post-list-section {
   margin-bottom: 36px;
 }
 
 .post-search-section {
-  margin-bottom: 28px;
+  margin-bottom: 20px;
 }
 
 .post-search-controls {
@@ -225,22 +230,26 @@ a {
   color: var(--muted);
 }
 
-.category-tree,
-.category-tree ul {
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.category-section {
+  margin-bottom: 24px;
 }
 
-.category-tree ul {
-  margin-top: 4px;
-  margin-left: 12px;
+.category-primary,
+.category-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 20px;
+  align-items: baseline;
+}
+
+.category-secondary {
+  margin-top: 9px;
   padding-left: 14px;
   border-left: 1px solid var(--line);
 }
 
-.category-tree li {
-  margin: 4px 0;
+.category-secondary[hidden] {
+  display: none;
 }
 
 .category-filter {
@@ -331,6 +340,11 @@ a {
   gap: 9px;
 }
 
+.post-list-stats[hidden],
+.post-list-stat[hidden] {
+  display: none;
+}
+
 .post-list-stat {
   display: inline-flex;
   gap: 4px;
@@ -413,16 +427,8 @@ a {
   color: var(--muted);
 }
 
-.article-meta-row {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-}
-
-.article-meta-row .article-meta {
-  margin-top: 0;
+.article-header > .article-meta {
+  flex-wrap: wrap;
 }
 
 .article-body {
@@ -492,28 +498,25 @@ a {
 
 .reference-lens-open {
   position: fixed;
-  top: 20px;
+  top: 122px;
   right: 20px;
   z-index: 45;
-  border: 1px solid var(--text);
-  border-radius: 2px;
+  border: 0;
+  border-bottom: 1px solid var(--text);
+  border-radius: 0;
   background: #fff;
   color: var(--text);
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   font: inherit;
-  font-size: 20px;
+  font-size: 13px;
   font-weight: 700;
-  height: 34px;
-  line-height: 1;
-  padding: 0;
-  width: 34px;
+  line-height: 1.4;
+  padding: 2px 0;
 }
 
 .reference-lens-open:hover {
-  background: var(--soft);
+  color: var(--link);
+  border-bottom-color: currentColor;
 }
 
 .reference-lens-open:focus-visible {
@@ -531,11 +534,7 @@ a {
   top: 0;
   right: 0;
   z-index: 40;
-  width: clamp(
-    320px,
-    var(--reference-lens-width, 390px),
-    min(720px, calc(100vw - 48px))
-  );
+  width: min(var(--reference-lens-width, 390px), calc(100vw - 560px));
   height: 100vh;
   border-left: 1px solid var(--line);
   background: #fff;
@@ -602,11 +601,11 @@ html.is-reference-lens-resizing * {
   border-bottom: 1px solid transparent;
   border-radius: 0;
   background: transparent;
-  color: var(--muted);
+  color: var(--text);
   cursor: pointer;
   font: inherit;
   font-size: 13px;
-  padding: 0 0 2px;
+  padding: 3px 0;
 }
 
 .reference-lens-close:hover {
@@ -835,6 +834,12 @@ html.is-reference-lens-resizing * {
   font-size: 13px;
 }
 
+.comment-notice a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .comment-form-actions {
   display: flex;
   flex-wrap: wrap;
@@ -898,6 +903,7 @@ html.is-reference-lens-resizing * {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 3px;
+  overflow-wrap: anywhere;
 }
 
 .article-body img {
@@ -1003,15 +1009,6 @@ html.is-reference-lens-resizing * {
   border-bottom: 1px solid var(--line);
 }
 
-.cv-kicker {
-  margin: 0 0 8px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0;
-  text-transform: uppercase;
-}
-
 .cv-header h1 {
   margin: 0 0 8px;
   font-size: 42px;
@@ -1104,6 +1101,18 @@ html.is-reference-lens-resizing * {
   margin-bottom: 0.35em;
 }
 
+@media (min-width: 961px) {
+  html:has(.reference-lens-panel:not([hidden])) body {
+    padding-right: min(var(--reference-lens-width, 390px), calc(100vw - 560px));
+  }
+}
+
+@media (max-width: 960px) {
+  .reference-lens {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   .site-header-inner {
     padding: 22px 18px;
@@ -1153,23 +1162,4 @@ html.is-reference-lens-resizing * {
     gap: 4px;
   }
 
-  .reference-lens-open {
-    top: calc(100vh - min(78vh, 620px) + 20px);
-    right: 20px;
-    bottom: auto;
-    transform: none;
-  }
-
-  .reference-lens-panel {
-    top: auto;
-    bottom: 0;
-    width: 100%;
-    height: min(78vh, 620px);
-    border-top: 1px solid var(--line);
-    border-left: 0;
-  }
-
-  .reference-lens-resize {
-    display: none;
-  }
 }

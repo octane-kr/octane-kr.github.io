@@ -2,11 +2,10 @@
 import BlogLayout from '../layouts/BlogLayout.astro';
 ---
 
-<BlogLayout title="Projects" description="작은 도구와 장난감">
+<BlogLayout title="Projects" description="UCPC 스코어보드와 Codeforces 분석 도구">
   <article class="projects-page">
     <header class="projects-header">
       <h1>Projects</h1>
-      <p>작게 만든 도구와 장난감을 여기 모아둡니다.</p>
     </header>
 
     <section class="project-list" aria-label="프로젝트 목록">
@@ -18,7 +17,6 @@ import BlogLayout from '../layouts/BlogLayout.astro';
             시점의 스코어보드를 보여줍니다.
           </p>
         </div>
-        <span class="project-entry-meta">버추얼 컨테스트</span>
       </article>
 
       <article class="project-entry">
@@ -26,10 +24,9 @@ import BlogLayout from '../layouts/BlogLayout.astro';
           <a href="/codeforces-lab/">Codeforces Lab</a>
           <p>
             여러 핸들의 공개 레이팅 기록을 비교하고, 아무도 치지 않은 셋과
-            추정 퍼포먼스, head-to-head 기록을 확인합니다.
+            추정 퍼포먼스, 맞대결 기록을 확인합니다.
           </p>
         </div>
-        <span class="project-entry-meta">Codeforces</span>
       </article>
     </section>
   </article>
@@ -48,15 +45,10 @@ import BlogLayout from '../layouts/BlogLayout.astro';
   }
 
   .projects-header h1 {
-    margin: 0 0 8px;
+    margin: 0;
     font-size: 38px;
     line-height: 1.2;
     letter-spacing: 0;
-  }
-
-  .projects-header p {
-    margin: 0;
-    color: var(--muted);
   }
 
   .project-list {
@@ -64,10 +56,6 @@ import BlogLayout from '../layouts/BlogLayout.astro';
   }
 
   .project-entry {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 18px;
-    align-items: baseline;
     padding: 20px 0;
     border-bottom: 1px solid var(--line);
   }
@@ -94,20 +82,9 @@ import BlogLayout from '../layouts/BlogLayout.astro';
     word-break: keep-all;
   }
 
-  .project-entry-meta {
-    color: var(--muted);
-    font-size: 13px;
-    white-space: nowrap;
-  }
-
   @media (max-width: 720px) {
     .projects-header h1 {
       font-size: 31px;
-    }
-
-    .project-entry {
-      grid-template-columns: 1fr;
-      gap: 6px;
     }
   }
 </style>

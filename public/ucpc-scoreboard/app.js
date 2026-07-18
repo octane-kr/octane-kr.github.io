@@ -9,6 +9,10 @@
   const root = document.querySelector("[data-ucpc-tool]");
   if (!root || !archive || !Array.isArray(archive.scoreboards)) return;
 
+  const assetBaseUrl = document.currentScript?.src
+    ? new URL("./", document.currentScript.src)
+    : new URL("/ucpc-scoreboard/", window.location.origin);
+
   const scoreboardSelect = root.querySelector("[data-scoreboard-select]");
   const currentInput = root.querySelector("[data-current-time]");
   const freezeInput = root.querySelector("[data-freeze-time]");
@@ -22,6 +26,7 @@
   const titleNode = root.querySelector("[data-contest-title]");
   const metaNode = root.querySelector("[data-scoreboard-meta]");
   const computedTimeNode = root.querySelector("[data-computed-time]");
+  const scoreboardWrap = root.querySelector("[data-scoreboard-wrap]");
   const bodyNode = root.querySelector("[data-scoreboard-body]");
   const footnoteNode = root.querySelector("[data-scoreboard-footnote]");
   const errorNode = root.querySelector("[data-scoreboard-error]");
@@ -40,8 +45,6 @@
   let problemById = new Map();
   let currentMinute = 0;
   let freezeMinute = null;
-  let appliedClockStartMinute = null;
-  let appliedClockCurrentMinute = null;
   let timeMode = "elapsed";
 
   populateScoreboardSelect();
@@ -67,10 +70,11 @@
 
     activeEntry = entry;
     scoreboardSelect.value = id;
-    titleNode.textContent = "불러오는 중...";
+    titleNode.textContent = entry.label;
     metaNode.textContent = "";
     footnoteNode.textContent = "";
     errorNode.hidden = true;
+    scoreboardWrap.hidden = false;
     bodyNode.replaceChildren(renderLoadingRow());
 
     const payload = await loadPayload(entry);
@@ -87,8 +91,6 @@
 
     currentMinute = 0;
     freezeMinute = null;
-    appliedClockStartMinute = null;
-    appliedClockCurrentMinute = null;
     currentInput.value = "0:00";
     freezeInput.value = "";
     startClockInput.value = "";
@@ -109,7 +111,7 @@
 
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      const payloadUrl = new URL(`data/${entry.dataFile}`, window.location.href);
+      const payloadUrl = new URL(`data/${entry.dataFile}`, assetBaseUrl);
       if (assetVersion) payloadUrl.searchParams.set("v", assetVersion);
       script.src = payloadUrl.toString();
       script.async = true;
@@ -137,7 +139,11 @@
     const link = document.createElement("a");
     link.href = entry.sourceUrl;
     link.textContent = "원본 스코어보드";
-    footnoteNode.replaceChildren("UCPC Archive의 ", link, "에서 확인할 수 있습니다.");
+    footnoteNode.replaceChildren(
+      "UCPC Archive 데이터를 시점별로 재구성한 화면입니다. 공식 기록은 ",
+      link,
+      "에서 확인하세요.",
+    );
   }
 
   function splitTeamName(fullName) {
@@ -366,10 +372,12 @@
     } else if (state.failed > 0) {
       cell.classList.add("ucpc-problem-failed");
       label = `-${state.failed}`;
-      cell.title = `${state.problem.name}: ${label}`;
+      cell.title = `${state.problem.name}: 오답 ${state.failed}회`;
     } else {
       cell.classList.add("ucpc-problem-empty");
-      cell.title = `${state.problem.name}: ${state.problem.title || ""}`;
+      cell.title = state.problem.title
+        ? `${state.problem.name}: ${state.problem.title}`
+        : state.problem.name;
     }
 
     cell.textContent = label;
@@ -482,8 +490,6 @@
     }
 
     freezeMinute = nextFreezeMinute;
-    appliedClockStartMinute = timeMode === "clock" ? nextClockStartMinute : null;
-    appliedClockCurrentMinute = timeMode === "clock" ? nextClockCurrentMinute : null;
     freezeInput.value = freezeMinute == null ? "" : formatTime(freezeMinute);
 
     if (timeMode === "elapsed") {
@@ -579,21 +585,16 @@
 
   function updateAppliedTimeText() {
     const parts = [
-      `표시 중: 경과 시간 ${formatTime(currentMinute)}`,
-      freezeMinute == null ? "프리즈 없음" : `프리즈 시점 ${formatTime(freezeMinute)}`,
+      `경과 ${formatTime(currentMinute)} 기준`,
+      freezeMinute == null ? "프리즈 없음" : `프리즈 ${formatTime(freezeMinute)}`,
     ];
-    if (timeMode === "clock" && appliedClockCurrentMinute != null) {
-      parts.push(`시작 시각 ${formatClockTime(appliedClockStartMinute)}`);
-      parts.push(`현재 시각 ${formatClockTime(appliedClockCurrentMinute)}`);
-    }
     computedTimeNode.textContent = parts.join(" · ");
   }
 
   function showFatalError(error) {
-    titleNode.textContent = "UCPC 스코어보드를 불러올 수 없습니다";
     metaNode.textContent = "";
-    bodyNode.replaceChildren(renderEmptyRow("불러오지 못했습니다."));
-    errorNode.textContent = error.message || String(error);
+    scoreboardWrap.hidden = true;
+    errorNode.textContent = `스코어보드를 불러오지 못했습니다. ${error.message || String(error)}`;
     errorNode.hidden = false;
   }
 

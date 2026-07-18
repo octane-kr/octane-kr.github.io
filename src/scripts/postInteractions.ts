@@ -7,8 +7,7 @@ type CommentRow = {
   created_at: string;
 };
 
-const configMessage = '댓글/좋아요 기능 설정이 아직 완료되지 않았습니다.';
-const pageSizeErrorMessage = '잠시 후 다시 시도해주세요.';
+const pageSizeErrorMessage = '잠시 후 다시 시도해 주세요.';
 
 const likeControls = Array.from(
   document.querySelectorAll<HTMLElement>('[data-like-control]'),
@@ -189,7 +188,7 @@ const setupCommentForm = () => {
     const body = bodyInput.value.trim();
 
     if (!body) {
-      setCommentMessage('댓글 내용을 입력해주세요.');
+      setCommentMessage('댓글 내용을 입력해 주세요.');
       return;
     }
 
@@ -212,19 +211,16 @@ const setupCommentForm = () => {
     }
 
     bodyInput.value = '';
-    setCommentMessage('댓글이 작성되었습니다.');
+    setCommentMessage('댓글을 남겼습니다.');
     await loadComments();
   });
 };
 
-const disableCommentForm = () => {
-  document
-    .querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLButtonElement>(
-      '[data-comment-form] input, [data-comment-form] textarea, [data-comment-form] button',
-    )
-    .forEach((element) => {
-      element.disabled = true;
-    });
+const hideInteractions = () => {
+  likeControls.forEach((control) => {
+    control.hidden = true;
+  });
+  if (commentsRoot) commentsRoot.hidden = true;
 };
 
 const initInteractions = async () => {
@@ -234,9 +230,7 @@ const initInteractions = async () => {
   renderLikes();
 
   if (!hasSupabaseConfig || !supabase) {
-    setLikeMessage(configMessage);
-    setCommentMessage(configMessage);
-    disableCommentForm();
+    hideInteractions();
     return;
   }
 

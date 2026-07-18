@@ -29,6 +29,7 @@
   const form = root.querySelector("[data-handle-form]");
   const handlesInput = root.querySelector("[data-handles]");
   const statusNode = root.querySelector("[data-status]");
+  const usersSectionNode = root.querySelector("[data-users-section]");
   const userListNode = root.querySelector("[data-user-list]");
   const ratingChartNode = root.querySelector("[data-rating-chart]");
   const loadPerformanceButton = root.querySelector("[data-load-performance]");
@@ -51,10 +52,10 @@
   const performanceEndInput = root.querySelector("[data-performance-end]");
 
   const SCAN_DEPTHS = {
-    quick: { value: "quick", label: "빠르게", maxPages: 1, complete: false },
-    standard: { value: "standard", label: "보통", maxPages: 20, complete: false },
-    careful: { value: "careful", label: "꼼꼼히", maxPages: 100, complete: false },
-    complete: { value: "complete", label: "전체 제출", maxPages: Infinity, complete: true },
+    quick: { value: "quick", label: "최근 1,000개", maxPages: 1, complete: false },
+    standard: { value: "standard", label: "최근 20,000개", maxPages: 20, complete: false },
+    careful: { value: "careful", label: "최근 100,000개", maxPages: 100, complete: false },
+    complete: { value: "complete", label: "전체", maxPages: Infinity, complete: true },
   };
 
   const state = {
@@ -65,6 +66,7 @@
     touchedByHandle: new Map(),
     performanceRows: [],
     performanceLoadedContestIds: new Set(),
+    performanceRequested: false,
   };
 
   let requestChain = Promise.resolve();
@@ -83,6 +85,17 @@
       await loadCoreData();
     });
   });
+
+  const resizeHandlesInput = () => {
+    handlesInput.style.height = "auto";
+    const nextHeight = Math.min(handlesInput.scrollHeight, 144);
+    handlesInput.style.height = `${nextHeight}px`;
+    handlesInput.style.overflowY = handlesInput.scrollHeight > 144 ? "auto" : "hidden";
+  };
+
+  handlesInput.addEventListener("input", resizeHandlesInput);
+  window.addEventListener("resize", resizeHandlesInput);
+  resizeHandlesInput();
 
   loadPerformanceButton.addEventListener("click", () => {
     runExclusive(async () => {
@@ -123,6 +136,7 @@
 
   function setStatus(message) {
     statusNode.textContent = message;
+    statusNode.hidden = !message;
   }
 
   async function runExclusive(work) {
@@ -169,10 +183,10 @@
   async function loadCoreData() {
     const requestedHandles = parseHandles(handlesInput.value);
     if (requestedHandles.length === 0) {
-      throw new Error("쉼표로 구분한 Codeforces 핸들을 입력하세요.");
+      throw new Error("Codeforces 핸들을 입력하세요.");
     }
     if (requestedHandles.length > 12) {
-      throw new Error("공개 API 제한 때문에 한 번에 최대 12개 핸들만 불러옵니다.");
+      throw new Error("한 번에 최대 12개 핸들까지 입력할 수 있습니다.");
     }
 
     state.requestedHandles = requestedHandles;
@@ -182,12 +196,14 @@
     state.touchedByHandle = new Map();
     state.performanceRows = [];
     state.performanceLoadedContestIds = new Set();
+    state.performanceRequested = false;
 
-    renderEmptyState("핸들을 불러오는 중입니다...", userListNode);
-    renderEmptyState("레이팅 기록을 불러오는 중입니다...", ratingChartNode);
-    renderEmptyState("레이팅 기록을 먼저 불러온 뒤 추정치를 불러오세요.", performanceChartNode);
-    renderEmptyState("기간을 비우면 전체 rated contest를 대상으로 합니다.", performanceSummaryNode);
-    renderEmptyState("핸들 2개를 불러오면 함께 친 rated contest를 비교합니다.", headToHeadNode);
+    if (usersSectionNode) usersSectionNode.hidden = true;
+    userListNode.replaceChildren();
+    ratingChartNode.replaceChildren();
+    performanceChartNode.replaceChildren();
+    performanceSummaryNode.replaceChildren();
+    renderEmptyState("핸들 두 개를 불러오면 함께 친 rated contest를 비교합니다.", headToHeadNode);
 
     setStatus(`공개 프로필 ${requestedHandles.length}개를 불러오는 중입니다...`);
     const users = await fetchCodeforces("user.info", {
@@ -234,9 +250,12 @@
 
   function renderUsers() {
     if (state.users.length === 0) {
-      renderEmptyState("아직 불러온 핸들이 없습니다.", userListNode);
+      if (usersSectionNode) usersSectionNode.hidden = true;
+      userListNode.replaceChildren();
       return;
     }
+
+    if (usersSectionNode) usersSectionNode.hidden = false;
 
     const fragment = document.createDocumentFragment();
     for (const user of state.users) {
@@ -251,6 +270,11 @@
   }
 
   function renderRatingGraphAndTable() {
+    if (state.handles.length === 0) {
+      ratingChartNode.replaceChildren();
+      return;
+    }
+
     const range = readDateRange(ratingStartInput, ratingEndInput);
     const series = state.handles.map((handle, index) => ({
       name: handle,
@@ -279,7 +303,7 @@
 
   function renderHeadToHead() {
     if (state.handles.length !== 2) {
-      renderEmptyState("핸들 2개를 불러오면 함께 친 rated contest를 비교합니다.", headToHeadNode);
+      renderEmptyState("핸들 두 개를 불러오면 함께 친 rated contest를 비교합니다.", headToHeadNode);
       return;
     }
 
@@ -310,6 +334,10 @@
     }
 
     contests.sort((left, right) => right.ratingUpdateTimeSeconds - left.ratingUpdateTimeSeconds);
+    if (contests.length === 0) {
+      renderEmptyState("함께 참가한 rated contest가 없습니다.", headToHeadNode);
+      return;
+    }
     const aWins = contests.filter((contest) => contest.winner === handleA).length;
     const bWins = contests.filter((contest) => contest.winner === handleB).length;
     const ties = contests.filter((contest) => contest.winner === "무승부").length;
@@ -419,7 +447,7 @@
     });
 
     renderFreshContestTable(candidates.slice(0, resultLimit), candidates.length, scanDepth);
-    setStatus(`안 친 후보 대회 ${candidates.length}개를 찾았습니다.`);
+    setStatus("");
   }
 
   function readScanDepth() {
@@ -476,23 +504,26 @@
   }
 
   function renderFreshContestTable(rows, totalCount, scanDepth) {
+    if (totalCount === 0) {
+      renderEmptyState("조건에 맞는 대회가 없습니다.", freshResultsNode);
+      return;
+    }
+
     const fragment = document.createDocumentFragment();
     const scanText = Number.isFinite(scanDepth.maxPages)
-      ? `${scanDepth.label}, 핸들별 최근 제출 최대 ${formatNumber(scanDepth.maxPages * PAGE_SIZE)}개`
-      : `${scanDepth.label}, 핸들별 공개 제출 전체`;
+      ? `핸들별 ${scanDepth.label} 제출 검사`
+      : "핸들별 공개 제출 전체 검사";
     fragment.appendChild(el("p", {
       className: "cf-note",
-      textContent: `후보 ${totalCount}개 중 ${rows.length}개를 표시합니다. 검사 범위: ${scanText}.`,
+      textContent: `${totalCount}개 중 ${rows.length}개 표시 · ${scanText}`,
     }));
     const wrap = el("div", { className: "cf-table-wrap" });
-    renderTable(wrap, ["종류", "구분", "대회", "길이", "시작", "링크"], rows, (row) => [
-      row.kind,
+    renderTable(wrap, ["구분", "대회", "길이", "시작"], rows, (row) => [
       row.divisionLabel,
-      row.name,
+      { text: row.name, href: row.url },
       formatDuration(row.durationSeconds),
       row.startTimeSeconds ? formatDate(row.startTimeSeconds) : "-",
-      { text: "열기", href: row.url },
-    ]);
+    ], "cf-table-compact");
     fragment.appendChild(wrap);
     freshResultsNode.replaceChildren(fragment);
   }
@@ -503,7 +534,7 @@
     const range = readDateRange(performanceStartInput, performanceEndInput);
     const contests = getPerformanceContests(range);
     if (contests.length === 0) {
-      throw new Error("선택한 기간에 불러올 rated contest가 없습니다.");
+      throw new Error("선택한 기간에 rated contest가 없습니다.");
     }
 
     const selectedHandles = new Set(state.handles.map(normalizeHandle));
@@ -511,6 +542,7 @@
     const rowsByKey = new Map();
     state.performanceRows = [];
     state.performanceLoadedContestIds = new Set();
+    state.performanceRequested = true;
     renderEmptyState("퍼포먼스 데이터를 불러오는 중입니다...", performanceChartNode);
     renderPerformanceLoadSummary(contests, 0);
 
@@ -624,12 +656,13 @@
     const readyCount = Math.max(cachedCount, loadedCount);
     const remainingRequests = Math.max(0, contests.length - readyCount);
     const estimatedSeconds = Math.ceil((remainingRequests * REQUEST_GAP_MS) / 1000);
-    renderSummaryList(performanceSummaryNode, [
-      ["선택된 contest", formatNumber(contests.length)],
-      ["캐시됨", formatNumber(cachedCount)],
-      ["최소 대기", formatDurationText(estimatedSeconds)],
-      ["진행", `${formatNumber(loadedCount)} / ${formatNumber(contests.length)}`],
-    ]);
+    const waitText = estimatedSeconds > 0
+      ? ` · 예상 대기 ${formatDurationText(estimatedSeconds)}`
+      : "";
+    performanceSummaryNode.replaceChildren(el("p", {
+      className: "cf-note",
+      textContent: `${formatNumber(readyCount)} / ${formatNumber(contests.length)}개 대회 불러옴${waitText}`,
+    }));
   }
 
   function countCachedRatingChanges(contests) {
@@ -837,6 +870,12 @@
   }
 
   function renderPerformanceGraphAndTable() {
+    if (state.handles.length === 0 || !state.performanceRequested) {
+      performanceChartNode.replaceChildren();
+      performanceSummaryNode.replaceChildren();
+      return;
+    }
+
     const range = readDateRange(performanceStartInput, performanceEndInput);
     const rows = state.performanceRows
       .filter((row) => isInDateRange(row.ratingUpdateTimeSeconds, range))
@@ -870,21 +909,15 @@
       yLabel: "추정 퍼포먼스",
     });
 
-    if (state.handles.length === 0) {
-      renderEmptyState("핸들을 먼저 불러오세요.", performanceSummaryNode);
-      return;
-    }
     if (state.performanceRows.length === 0) {
-      renderPerformanceLoadSummary(contests, 0);
+      performanceSummaryNode.replaceChildren();
       return;
     }
     const loadedContestCount = contests.filter((contest) => state.performanceLoadedContestIds.has(Number(contest.contestId))).length;
-    renderSummaryList(performanceSummaryNode, [
-      ["표시된 점", formatNumber(rows.length)],
-      ["로드된 contest", `${formatNumber(loadedContestCount)} / ${formatNumber(contests.length)}`],
-      ["핸들", formatNumber(state.handles.length)],
-      ["상세", "그래프 점에 마우스를 올리거나 포커스하세요"],
-    ]);
+    performanceSummaryNode.replaceChildren(el("p", {
+      className: "cf-note",
+      textContent: `${formatNumber(loadedContestCount)}개 대회 · ${formatNumber(rows.length)}개 추정치`,
+    }));
   }
 
   function getHistory(handle) {
@@ -990,7 +1023,7 @@
         try {
           return await requestRemoteCodeforces(method, params, options, false);
         } catch {
-          setStatus("캐시 서버 응답이 흔들려 Codeforces에서 직접 불러오는 중입니다...");
+          setStatus("캐시 서버에 연결하지 못해 Codeforces에서 직접 불러옵니다.");
         }
       }
 
@@ -1012,7 +1045,7 @@
         } catch (error) {
           lastError = error;
           if (attempt < 2) {
-            setStatus("요청이 흔들려서 한 번 더 시도합니다...");
+            setStatus("요청에 실패해 한 번 더 시도합니다.");
             await sleep(REQUEST_GAP_MS);
           }
         }
@@ -1061,10 +1094,8 @@
     const run = requestChain.then(async () => {
       const waitMs = Math.max(0, lastNetworkAt + REQUEST_GAP_MS - Date.now());
       if (waitMs > 0) {
-        setStatus("Codeforces 제한 때문에 잠시 기다리는 중입니다...");
         await sleep(waitMs);
       }
-      setStatus("Codeforces에서 데이터를 불러오는 중입니다...");
       lastNetworkAt = Date.now();
       return work();
     });
@@ -1387,13 +1418,15 @@
     return new Intl.DateTimeFormat("ko-KR", { month: "short", day: "numeric" }).format(date);
   }
 
-  function renderTable(container, headings, rows, mapRow) {
+  function renderTable(container, headings, rows, mapRow, tableClassName = "") {
     if (!rows || rows.length === 0) {
-      renderEmptyState("표시할 행이 없습니다.", container);
+      renderEmptyState("표시할 결과가 없습니다.", container);
       return;
     }
 
-    const table = el("table", { className: "cf-table" });
+    const table = el("table", {
+      className: ["cf-table", tableClassName].filter(Boolean).join(" "),
+    });
     const thead = el("thead");
     const headRow = el("tr");
     headings.forEach((heading) => headRow.appendChild(el("th", { textContent: heading })));

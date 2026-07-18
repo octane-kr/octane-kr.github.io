@@ -35,8 +35,9 @@ const LENS_STATE_STORAGE_KEY = 'referenceLensState';
 const LENS_WIDTH_STORAGE_KEY = 'referenceLensWidth';
 const LENS_MIN_WIDTH = 320;
 const LENS_MAX_WIDTH = 720;
-const LENS_VIEWPORT_GUTTER = 48;
-const LENS_MOBILE_QUERY = '(max-width: 720px)';
+const LENS_READING_WIDTH = 560;
+const LENS_DESKTOP_QUERY = '(min-width: 961px)';
+const desktopMedia = window.matchMedia(LENS_DESKTOP_QUERY);
 
 type LensResizeState = {
   pointerId: number;
@@ -52,16 +53,19 @@ type LensStoredState = {
   width?: number;
 };
 
-const canResizeLens = () => !window.matchMedia(LENS_MOBILE_QUERY).matches;
+const canResizeLens = () => desktopMedia.matches;
+
+const normalizeLensWidth = (width: number) =>
+  Math.min(Math.max(width, LENS_MIN_WIDTH), LENS_MAX_WIDTH);
 
 const getMaxLensWidth = () =>
   Math.max(
     LENS_MIN_WIDTH,
-    Math.min(LENS_MAX_WIDTH, window.innerWidth - LENS_VIEWPORT_GUTTER),
+    Math.min(LENS_MAX_WIDTH, window.innerWidth - LENS_READING_WIDTH),
   );
 
 const clampLensWidth = (width: number) =>
-  Math.min(Math.max(width, LENS_MIN_WIDTH), getMaxLensWidth());
+  Math.min(normalizeLensWidth(width), getMaxLensWidth());
 
 const readStoredLensWidth = () => {
   try {
@@ -94,7 +98,7 @@ const normalizeStoredLensState = (state: LensStoredState): LensStoredState => {
   }
 
   if (typeof state.width === 'number' && Number.isFinite(state.width)) {
-    normalized.width = Math.round(clampLensWidth(state.width));
+    normalized.width = Math.round(normalizeLensWidth(state.width));
   }
 
   return normalized;
@@ -389,9 +393,14 @@ const initReferenceLens = (root: HTMLElement) => {
     writeStoredLensState(storedLensState);
   };
 
-  const applyLensWidth = (width: number) => {
-    const clampedWidth = clampLensWidth(width);
-    panel.style.setProperty('--reference-lens-width', `${clampedWidth}px`);
+  const applyLensWidth = (width: number, fitViewport = true) => {
+    const clampedWidth = fitViewport
+      ? clampLensWidth(width)
+      : normalizeLensWidth(width);
+    document.documentElement.style.setProperty(
+      '--reference-lens-width',
+      `${clampedWidth}px`,
+    );
     return clampedWidth;
   };
 
@@ -430,10 +439,14 @@ const initReferenceLens = (root: HTMLElement) => {
 
     if (storedWidth === null) return;
 
-    persistLensState({ width: applyLensWidth(storedWidth) });
+    applyLensWidth(storedWidth, false);
   };
 
-  const setOpen = (nextOpen: boolean, shouldPersist = true) => {
+  const setOpen = (
+    nextOpen: boolean,
+    shouldPersist = true,
+    shouldFocus = false,
+  ) => {
     isOpen = nextOpen;
     panel.hidden = !isOpen;
     openButton.hidden = isOpen;
@@ -442,7 +455,7 @@ const initReferenceLens = (root: HTMLElement) => {
     if (!isOpen) stopResizing();
     if (shouldPersist) persistLensState({ isOpen });
 
-    if (isOpen) {
+    if (isOpen && shouldFocus) {
       window.setTimeout(() => input.focus(), 0);
     }
   };
@@ -469,9 +482,7 @@ const initReferenceLens = (root: HTMLElement) => {
 
     if (!query.trim()) {
       empty.replaceChildren(
-        'Notation, definition, theorem 등을 검색할 수 있습니다.',
-        document.createElement('br'),
-        'e.g. G[X], tree decomposition, Theorem 4.1, Lemma 10.2',
+        '예: G[X] · tree decomposition · Theorem 4.1',
       );
       empty.hidden = false;
       return;
@@ -538,7 +549,7 @@ const initReferenceLens = (root: HTMLElement) => {
   };
 
   openButton.addEventListener('click', () => {
-    setOpen(true);
+    setOpen(true, true, true);
     render();
   });
 
@@ -573,16 +584,25 @@ const initReferenceLens = (root: HTMLElement) => {
     persistLensState({ width: applyLensWidth(nextWidth) });
   });
 
-  closeButton?.addEventListener('click', () => setOpen(false));
+  const closeLens = () => {
+    setOpen(false);
+    openButton.focus();
+  };
+
+  closeButton?.addEventListener('click', closeLens);
   input.addEventListener('input', () => {
     persistLensState({ query: input.value });
     render();
   });
 
   window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !panel.hidden) {
-      setOpen(false);
+    if (event.key === 'Escape' && canResizeLens() && !panel.hidden) {
+      closeLens();
     }
+  });
+
+  desktopMedia.addEventListener('change', (event) => {
+    if (!event.matches) stopResizing();
   });
 
   setOpen(
@@ -594,4 +614,17 @@ const initReferenceLens = (root: HTMLElement) => {
   render();
 };
 
-roots.forEach(initReferenceLens);
+const initializedRoots = new WeakSet<HTMLElement>();
+
+const initializeDesktopRoots = () => {
+  if (!desktopMedia.matches) return;
+
+  roots.forEach((root) => {
+    if (initializedRoots.has(root)) return;
+    initializedRoots.add(root);
+    initReferenceLens(root);
+  });
+};
+
+initializeDesktopRoots();
+desktopMedia.addEventListener('change', initializeDesktopRoots);

@@ -31,9 +31,16 @@ const renderStats = (statsBySlug: Map<string, ListStats>) => {
     const commentCount = root.querySelector<HTMLElement>(
       '[data-post-list-comment-count]',
     );
+    const likeStat = root.querySelector<HTMLElement>('[data-post-list-like]');
+    const commentStat = root.querySelector<HTMLElement>(
+      '[data-post-list-comments]',
+    );
 
     if (likeCount) likeCount.textContent = String(stats.likeCount);
     if (commentCount) commentCount.textContent = String(stats.commentCount);
+    if (likeStat) likeStat.hidden = stats.likeCount === 0;
+    if (commentStat) commentStat.hidden = stats.commentCount === 0;
+    root.hidden = stats.likeCount === 0 && stats.commentCount === 0;
   });
 };
 

@@ -9,6 +9,16 @@ const {
 
 const siteTitle = '코끼리 뿌우';
 const pageTitle = title === siteTitle ? siteTitle : `${title} - ${siteTitle}`;
+const pathname = Astro.url.pathname;
+const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
+  ? 'posts'
+  : ['/projects', '/projects/', '/codeforces-lab', '/codeforces-lab/', '/ucpc-scoreboard', '/ucpc-scoreboard/'].includes(pathname)
+    ? 'projects'
+    : pathname === '/cv' || pathname === '/cv/'
+      ? 'cv'
+      : pathname === '/'
+        ? 'home'
+        : '';
 ---
 
 <!doctype html>
@@ -24,11 +34,11 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} - ${siteTitle}`;
     <header class="site-header">
       <div class="site-header-inner">
         <a class="site-title" href="/">{siteTitle}</a>
-        <nav class="site-nav" aria-label="main navigation">
-          <a href="/">Home</a>
-          <a href="/posts/">Posts</a>
-          <a href="/projects/">Projects</a>
-          <a href="/cv/">CV</a>
+        <nav class="site-nav" aria-label="주요 메뉴">
+          <a href="/" aria-current={activeSection === 'home' ? 'page' : undefined}>Home</a>
+          <a href="/posts/" aria-current={activeSection === 'posts' ? 'page' : undefined}>Posts</a>
+          <a href="/projects/" aria-current={activeSection === 'projects' ? 'page' : undefined}>Projects</a>
+          <a href="/cv/" aria-current={activeSection === 'cv' ? 'page' : undefined}>CV</a>
         </nav>
       </div>
     </header>
@@ -41,7 +51,7 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} - ${siteTitle}`;
       <div class="site-footer-inner">
         <span>© 2026 Octane</span>
         <span aria-hidden="true">·</span>
-        <a href="/licensing/">링크 공유 환영 · 콘텐츠 무단 재사용 금지</a>
+        <a href="/licensing/">Licensing</a>
       </div>
     </footer>
   </body>

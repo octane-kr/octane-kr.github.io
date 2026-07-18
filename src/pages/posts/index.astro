@@ -99,14 +99,11 @@ const parseDate = (value: unknown, isDateOnly = false) => {
   return Number.isNaN(date.valueOf()) ? null : date;
 };
 
-const dateTimeFormatter = new Intl.DateTimeFormat('ko-KR', {
+const dateFormatter = new Intl.DateTimeFormat('ko-KR', {
   timeZone: 'Asia/Seoul',
   year: 'numeric',
   month: 'numeric',
   day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-  hourCycle: 'h23',
 });
 
 const posts = Object.entries(modules)
@@ -152,7 +149,7 @@ const posts = Object.entries(modules)
 const formatDate = (date: Date | null, hasValidDate: boolean) => {
   if (!hasValidDate || date === null) return '날짜 없음';
 
-  return dateTimeFormatter.format(date);
+  return dateFormatter.format(date);
 };
 
 const formatCategory = (category: string, subcategory: string) =>
@@ -196,18 +193,20 @@ const postSearchIndexJson = JSON.stringify(postSearchIndex).replace(/</gu, '\\u0
         <button
           class="post-search-mode-button is-active"
           type="button"
+          aria-label="제목만"
           data-search-mode="title"
           aria-pressed="true"
         >
-          제목
+          제목만
         </button>
         <button
           class="post-search-mode-button"
           type="button"
+          aria-label="본문까지"
           data-search-mode="body"
           aria-pressed="false"
         >
-          제목+본문
+          본문까지
         </button>
       </div>
     </div>
@@ -215,55 +214,60 @@ const postSearchIndexJson = JSON.stringify(postSearchIndex).replace(/</gu, '\\u0
   </section>
 
   <section class="category-section" aria-label="카테고리 필터">
-    <ul class="category-tree">
-      <li>
-        <button
-          class="category-filter is-active"
-          type="button"
-          data-filter-button
-          data-category=""
-          data-subcategory=""
-        >
-          All
-        </button>
+    <nav class="category-primary" aria-label="글 카테고리">
+      <button
+        class="category-filter is-active"
+        type="button"
+        data-filter-button
+        data-filter-level="category"
+        data-category=""
+        data-subcategory=""
+        aria-pressed="true"
+      >
+        All
+      </button>
+      {
+        categoryStructure.map(({ category }) => (
+          <button
+            class="category-filter"
+            type="button"
+            data-filter-button
+            data-filter-level="category"
+            data-category={category}
+            data-subcategory=""
+            aria-pressed="false"
+          >
+            {category}
+          </button>
+        ))
+      }
+    </nav>
 
-        <ul>
-          {
-            categoryStructure.map(({ category, subcategories }) => (
-              <li>
-                <button
-                  class="category-filter"
-                  type="button"
-                  data-filter-button
-                  data-category={category}
-                  data-subcategory=""
-                >
-                  {category}
-                </button>
-
-                {subcategories.length > 0 && (
-                  <ul>
-                    {subcategories.map((subcategory) => (
-                      <li>
-                        <button
-                          class="category-filter"
-                          type="button"
-                          data-filter-button
-                          data-category={category}
-                          data-subcategory={subcategory}
-                        >
-                          {subcategory}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ))
-          }
-        </ul>
-      </li>
-    </ul>
+    {
+      categoryStructure
+        .filter(({ subcategories }) => subcategories.length > 0)
+        .map(({ category, subcategories }) => (
+          <div
+            class="category-secondary"
+            data-subcategory-group={category}
+            hidden
+          >
+            {subcategories.map((subcategory) => (
+              <button
+                class="category-filter"
+                type="button"
+                data-filter-button
+                data-filter-level="subcategory"
+                data-category={category}
+                data-subcategory={subcategory}
+                aria-pressed="false"
+              >
+                {subcategory}
+              </button>
+            ))}
+          </div>
+        ))
+    }
   </section>
 
   <section class="post-list-section" aria-label="글 목록">
@@ -294,12 +298,13 @@ const postSearchIndexJson = JSON.stringify(postSearchIndex).replace(/</gu, '\\u0
                 class="post-list-stats"
                 data-post-list-stats
                 data-post-slug={post.slug}
+                hidden
               >
-                <span class="post-list-stat" aria-label="좋아요">
+                <span class="post-list-stat" aria-label="좋아요" data-post-list-like hidden>
                   <span aria-hidden="true">♡</span>
                   <span data-post-list-like-count>0</span>
                 </span>
-                <span class="post-list-stat" aria-label="댓글">
+                <span class="post-list-stat" aria-label="댓글" data-post-list-comments hidden>
                   <span aria-hidden="true">댓글</span>
                   <span data-post-list-comment-count>0</span>
                 </span>
@@ -330,8 +335,11 @@ const postSearchIndexJson = JSON.stringify(postSearchIndex).replace(/</gu, '\\u0
   <script>
     import '../../scripts/postListStats.ts';
 
-    const pageSize = 5;
+    const pageSize = 10;
     const filters = Array.from(document.querySelectorAll('[data-filter-button]'));
+    const subcategoryGroups = Array.from(
+      document.querySelectorAll('[data-subcategory-group]'),
+    );
     const cards = Array.from(document.querySelectorAll('[data-post-card]'));
     const searchIndexElement = document.querySelector('[data-post-search-index]');
     const searchInput = document.querySelector('[data-post-search-input]');
@@ -392,25 +400,50 @@ const postSearchIndexJson = JSON.stringify(postSearchIndex).replace(/</gu, '\\u0
       });
 
     const syncActiveFilter = () => {
-      const activeFilter = filters.find((filter) => {
-        if (!(filter instanceof HTMLElement)) return false;
-
-        return (
-          (filter.dataset.category ?? '') === activeCategory &&
-          (filter.dataset.subcategory ?? '') === activeSubcategory
-        );
+      filters.forEach((filter) => {
+        filter.classList.remove('is-active');
+        filter.setAttribute('aria-pressed', 'false');
       });
 
-      filters.forEach((filter) => filter.classList.remove('is-active'));
+      const categoryButtons = filters.filter(
+        (filter) =>
+          filter instanceof HTMLElement &&
+          filter.dataset.filterLevel === 'category',
+      );
+      let activeCategoryButton = categoryButtons.find(
+        (filter) =>
+          filter instanceof HTMLElement &&
+          (filter.dataset.category ?? '') === activeCategory,
+      );
 
-      if (activeFilter) {
-        activeFilter.classList.add('is-active');
-        return;
+      if (!activeCategoryButton) {
+        activeCategory = '';
+        activeSubcategory = '';
+        activeCategoryButton = categoryButtons[0];
       }
 
-      activeCategory = '';
-      activeSubcategory = '';
-      filters[0]?.classList.add('is-active');
+      let activeSubcategoryButton = filters.find(
+        (filter) =>
+          filter instanceof HTMLElement &&
+          filter.dataset.filterLevel === 'subcategory' &&
+          (filter.dataset.category ?? '') === activeCategory &&
+          (filter.dataset.subcategory ?? '') === activeSubcategory,
+      );
+
+      if (activeSubcategory && !activeSubcategoryButton) {
+        activeSubcategory = '';
+        activeSubcategoryButton = undefined;
+      }
+
+      activeCategoryButton?.classList.add('is-active');
+      activeSubcategoryButton?.classList.add('is-active');
+      activeCategoryButton?.setAttribute('aria-pressed', 'true');
+      activeSubcategoryButton?.setAttribute('aria-pressed', 'true');
+
+      subcategoryGroups.forEach((group) => {
+        if (!(group instanceof HTMLElement)) return;
+        group.hidden = group.dataset.subcategoryGroup !== activeCategory;
+      });
     };
 
     const syncActiveSearchMode = () => {

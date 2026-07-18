@@ -20,12 +20,8 @@ const codeforcesCacheConfig =
     <header class="cf-heading">
       <h1>Codeforces Lab</h1>
       <p>
-        Codeforces 공개 데이터로 여러 핸들의 기록을 비교하고, 아직 아무도 치지 않은 셋을
-        찾고, 레이팅과 추정 퍼포먼스를 한 화면에서 봅니다.
-      </p>
-      <p>
-        퍼포먼스는 공식 값이 아니라 공개 레이팅 변동 데이터와 Codeforces식 예측기를
-        이용해 재구성한 추정치입니다.
+        여러 핸들의 공개 기록을 비교하고, 아무도 치지 않은 셋과 추정 퍼포먼스를
+        확인합니다.
       </p>
     </header>
 
@@ -35,45 +31,41 @@ const codeforcesCacheConfig =
           <span>핸들</span>
           <textarea
             data-handles
-            rows="3"
+            rows="1"
             spellcheck="false"
             autocomplete="off"
             placeholder="tourist, Petr"
           ></textarea>
         </label>
         <div class="cf-form-actions">
-          <button type="submit">기록 불러오기</button>
+          <button type="submit">불러오기</button>
         </div>
       </form>
 
-      <p class="cf-status" data-status>쉼표로 구분한 핸들을 입력하세요.</p>
+      <p class="cf-status" data-status aria-live="polite" hidden></p>
 
-      <section class="cf-section" aria-labelledby="cf-users-title">
+      <section class="cf-section" aria-labelledby="cf-users-title" data-users-section hidden>
         <div class="cf-section-head">
           <h2 id="cf-users-title">불러온 핸들</h2>
         </div>
         <div class="cf-user-list" data-user-list>
-          <p class="cf-empty">아직 불러온 핸들이 없습니다.</p>
+          <p class="cf-empty"></p>
         </div>
       </section>
 
       <nav class="cf-tabs" aria-label="기능 선택" role="tablist">
-        <button class="cf-tab is-active" type="button" role="tab" aria-selected="true" data-cf-tab="fresh">안 친 셋</button>
-        <button class="cf-tab" type="button" role="tab" aria-selected="false" data-cf-tab="rating">레이팅 그래프</button>
-        <button class="cf-tab" type="button" role="tab" aria-selected="false" data-cf-tab="performance">퍼포먼스</button>
-        <button class="cf-tab" type="button" role="tab" aria-selected="false" data-cf-tab="head">맞대결</button>
+        <button id="cf-tab-fresh" class="cf-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="cf-panel-fresh" data-cf-tab="fresh">안 친 셋</button>
+        <button id="cf-tab-rating" class="cf-tab" type="button" role="tab" aria-selected="false" aria-controls="cf-panel-rating" data-cf-tab="rating">레이팅 그래프</button>
+        <button id="cf-tab-performance" class="cf-tab" type="button" role="tab" aria-selected="false" aria-controls="cf-panel-performance" data-cf-tab="performance">퍼포먼스</button>
+        <button id="cf-tab-head" class="cf-tab" type="button" role="tab" aria-selected="false" aria-controls="cf-panel-head" data-cf-tab="head">맞대결</button>
       </nav>
 
-      <section class="cf-section cf-tab-panel is-active" aria-labelledby="cf-fresh-title" data-cf-panel="fresh">
+      <section id="cf-panel-fresh" class="cf-section cf-tab-panel is-active" aria-labelledby="cf-tab-fresh" data-cf-panel="fresh">
         <div class="cf-section-head">
-          <div>
-            <h2 id="cf-fresh-title">아무도 치지 않은 셋</h2>
-            <p>
-              불러온 핸들의 레이팅 기록과 최근 제출 기록에 등장하지 않는 finished contest를
-              찾습니다.
-            </p>
-          </div>
-          <button type="button" data-find-fresh>찾기</button>
+          <p class="cf-panel-intro">
+            선택한 범위의 제출 기록에서 참가 흔적이 없는 종료 대회를 찾습니다.
+          </p>
+          <button type="button" data-find-fresh>대회 찾기</button>
         </div>
 
         <div class="cf-filter-grid">
@@ -84,11 +76,11 @@ const codeforcesCacheConfig =
             <label><input type="checkbox" data-official-division value="div2" checked /> Div. 2</label>
             <label><input type="checkbox" data-official-division value="div1" checked /> Div. 1</label>
             <label><input type="checkbox" data-official-division value="div1+2" checked /> Div. 1 + Div. 2</label>
-            <label><input type="checkbox" data-include-gym checked /> 공개 Gym contest 포함</label>
+            <label><input type="checkbox" data-include-gym checked /> 공개 Gym 포함</label>
           </fieldset>
 
           <fieldset class="cf-fieldset">
-            <legend>Gym 시간</legend>
+            <legend>Gym 길이</legend>
             <div class="cf-duration-fields">
               <label class="cf-field cf-small-field">
                 <span>최소 시간</span>
@@ -102,14 +94,14 @@ const codeforcesCacheConfig =
           </fieldset>
 
           <fieldset class="cf-fieldset">
-            <legend>스캔</legend>
+            <legend>제출 기록</legend>
             <label class="cf-field cf-small-field">
-              <span>검사 범위</span>
+              <span>범위</span>
               <select data-scan-depth>
-                <option value="standard" selected>보통</option>
-                <option value="quick">빠르게</option>
-                <option value="careful">꼼꼼히</option>
-                <option value="complete">전체 제출</option>
+                <option value="standard" selected>최근 20,000개</option>
+                <option value="quick">최근 1,000개</option>
+                <option value="careful">최근 100,000개</option>
+                <option value="complete">전체</option>
               </select>
             </label>
             <label class="cf-field cf-small-field">
@@ -119,64 +111,49 @@ const codeforcesCacheConfig =
           </fieldset>
         </div>
 
-        <div class="cf-table-wrap" data-fresh-results>
-          <p class="cf-empty">핸들을 불러온 뒤 찾기를 누르세요.</p>
-        </div>
+        <div class="cf-table-wrap" data-fresh-results></div>
       </section>
 
-      <section class="cf-section cf-tab-panel" aria-labelledby="cf-rating-title" data-cf-panel="rating" hidden>
-        <div class="cf-section-head">
-          <h2 id="cf-rating-title">레이팅 그래프</h2>
+      <section id="cf-panel-rating" class="cf-section cf-tab-panel" aria-labelledby="cf-tab-rating" data-cf-panel="rating" hidden>
+        <div class="cf-section-head cf-section-head-controls-only">
           <div class="cf-inline-controls">
             <label class="cf-field cf-small-field">
-              <span>시작일 선택</span>
+              <span>시작일</span>
               <input data-rating-start type="date" />
             </label>
             <label class="cf-field cf-small-field">
-              <span>끝일 선택</span>
+              <span>종료일</span>
               <input data-rating-end type="date" />
             </label>
           </div>
         </div>
-        <div class="cf-chart" data-rating-chart>
-          <p class="cf-empty">핸들을 불러오면 레이팅 그래프가 표시됩니다.</p>
-        </div>
+        <div class="cf-chart" data-rating-chart></div>
       </section>
 
-      <section class="cf-section cf-tab-panel" aria-labelledby="cf-performance-title" data-cf-panel="performance" hidden>
+      <section id="cf-panel-performance" class="cf-section cf-tab-panel" aria-labelledby="cf-tab-performance" data-cf-panel="performance" hidden>
         <div class="cf-section-head">
-          <div>
-            <h2 id="cf-performance-title">퍼포먼스 그래프</h2>
-            <p>
-              퍼포먼스 추정은 부정확할 수 있습니다.
-            </p>
-          </div>
+          <p class="cf-panel-intro">
+            공개 레이팅 변동으로 역산한 추정치입니다. 기간을 비우면 전체 rated contest를 봅니다.
+          </p>
           <div class="cf-inline-controls">
             <label class="cf-field cf-small-field">
-              <span>시작일 선택</span>
+              <span>시작일</span>
               <input data-performance-start type="date" />
             </label>
             <label class="cf-field cf-small-field">
-              <span>끝일 선택</span>
+              <span>종료일</span>
               <input data-performance-end type="date" />
             </label>
             <button type="button" data-load-performance>추정치 불러오기</button>
           </div>
         </div>
-        <div class="cf-chart" data-performance-chart>
-          <p class="cf-empty">핸들을 불러온 뒤 추정치를 불러오세요.</p>
-        </div>
-        <div class="cf-performance-summary" data-performance-summary>
-          <p class="cf-empty">기간을 비우면 전체 rated contest를 대상으로 합니다.</p>
-        </div>
+        <div class="cf-chart" data-performance-chart></div>
+        <div class="cf-performance-summary" data-performance-summary></div>
       </section>
 
-      <section class="cf-section cf-tab-panel" aria-labelledby="cf-head-title" data-cf-panel="head" hidden>
-        <div class="cf-section-head">
-          <h2 id="cf-head-title">맞대결</h2>
-        </div>
+      <section id="cf-panel-head" class="cf-section cf-tab-panel" aria-labelledby="cf-tab-head" data-cf-panel="head" hidden>
         <div data-head-to-head>
-          <p class="cf-empty">정확히 두 핸들을 불러오면 함께 친 rated contest를 비교합니다.</p>
+          <p class="cf-empty">핸들 두 개를 불러오면 함께 친 rated contest를 비교합니다.</p>
         </div>
       </section>
     </section>
@@ -231,11 +208,13 @@ const codeforcesCacheConfig =
 
   .cf-handle-form {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(280px, 620px) auto;
     gap: 18px;
     align-items: end;
+    justify-content: start;
     min-width: 0;
-    padding-top: 18px;
+    border-top: 0;
+    padding-top: 0;
   }
 
   .cf-field {
@@ -248,6 +227,7 @@ const codeforcesCacheConfig =
   .cf-fieldset legend {
     color: var(--muted);
     font-size: 13px;
+    white-space: nowrap;
   }
 
   .cf-field input,
@@ -265,7 +245,8 @@ const codeforcesCacheConfig =
   }
 
   .cf-field textarea {
-    resize: vertical;
+    overflow: hidden;
+    resize: none;
     line-height: 1.55;
   }
 
@@ -320,6 +301,11 @@ const codeforcesCacheConfig =
     font-size: 13px;
   }
 
+  .cf-status[hidden],
+  .cf-section[hidden] {
+    display: none;
+  }
+
   .cf-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -344,6 +330,10 @@ const codeforcesCacheConfig =
     display: none;
   }
 
+  .cf-tab-panel {
+    border-top: 0;
+  }
+
   .cf-section {
     display: grid;
     gap: 14px;
@@ -359,6 +349,10 @@ const codeforcesCacheConfig =
     justify-content: space-between;
   }
 
+  .cf-section-head-controls-only {
+    justify-content: flex-start;
+  }
+
   .cf-section-head h2 {
     margin: 0;
     font-size: 22px;
@@ -369,6 +363,13 @@ const codeforcesCacheConfig =
   .cf-section-head p {
     max-width: 720px;
     margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .cf-panel-intro {
+    max-width: 720px;
+    margin: 0;
     color: var(--muted);
     font-size: 13px;
   }
@@ -410,6 +411,17 @@ const codeforcesCacheConfig =
     border-bottom: 1px solid var(--line);
     overflow-x: auto;
     padding: 10px 0 8px;
+  }
+
+  .cf-chart:empty {
+    display: none;
+  }
+
+  .cf-chart:has(> .cf-empty) {
+    min-height: 0;
+    border-top: 0;
+    border-bottom: 0;
+    padding: 0;
   }
 
   .cf-chart-tooltip {
@@ -485,6 +497,10 @@ const codeforcesCacheConfig =
     padding-top: 10px;
   }
 
+  .cf-performance-summary:empty {
+    display: none;
+  }
+
   .cf-summary-list {
     display: flex;
     flex-wrap: wrap;
@@ -511,6 +527,10 @@ const codeforcesCacheConfig =
     border-collapse: collapse;
     font-size: 13px;
     line-height: 1.4;
+  }
+
+  .cf-table-compact {
+    min-width: 560px;
   }
 
   .cf-table th,
@@ -553,7 +573,7 @@ const codeforcesCacheConfig =
     border: 0;
   }
 
-  .cf-fieldset label {
+  .cf-fieldset label:not(.cf-field) {
     display: flex;
     gap: 8px;
     align-items: baseline;
@@ -603,6 +623,32 @@ const codeforcesCacheConfig =
     .cf-form-actions,
     .cf-inline-controls {
       align-items: baseline;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .cf-table-compact {
+      min-width: 100%;
+      table-layout: fixed;
+    }
+
+    .cf-table-compact th,
+    .cf-table-compact td {
+      overflow-wrap: anywhere;
+      padding-right: 6px;
+      padding-left: 6px;
+    }
+
+    .cf-table-compact th:first-child {
+      width: 54px;
+    }
+
+    .cf-table-compact th:nth-child(3) {
+      width: 58px;
+    }
+
+    .cf-table-compact th:last-child {
+      width: 88px;
     }
   }
 </style>

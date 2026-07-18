@@ -11,22 +11,7 @@ const assetVersion = Date.now().toString(36);
     <header class="ucpc-heading">
       <h1>UCPC 동적 스코어보드</h1>
       <p>
-        UCPC 버추얼 컨테스트를 위한 스코어보드입니다.
-        <a href="https://static.ucpc.me/">UCPC archive</a>에서 원본 스코어보드를
-        확인할 수 있습니다.
-      </p>
-      <p>
-        <strong>경과</strong> 모드에서는 대회 시작 후 원하는 경과 시간의
-        스코어보드를 확인할 수 있습니다. <strong>시계</strong> 모드에서는 버추얼
-        컨테스트의 시작 시각과 현재 시각으로 경과 시간을 계산합니다.
-      </p>
-      <p>
-        프리즈가 시작되는 시점을 대회 시작 후 경과 시간으로 입력하면 됩니다.
-        공란으로 두면 프리즈가 적용되지 않은 스코어보드를 확인할 수 있습니다.
-      </p>
-      <p>
-        이 도구는 Codex를 이용해 개발했기 때문에 예상치 못한 오류나 잘못된 데이터가
-        있을 수 있습니다. 참고용으로만 사용해 주세요.
+        UCPC 버추얼 컨테스트에서 원하는 시점의 순위를 확인합니다.
       </p>
     </header>
 
@@ -42,32 +27,24 @@ const assetVersion = Date.now().toString(36);
           <select data-scoreboard-select></select>
         </label>
 
-        <label class="ucpc-control">
-          <span>프리즈 시점</span>
-          <input
-            data-freeze-time
-            type="text"
-            placeholder="-"
-            autocomplete="off"
-          />
-        </label>
-
         <div class="ucpc-mode-control" role="group" aria-label="시간 입력 방식">
           <button
             class="ucpc-mode-button is-active"
             type="button"
+            aria-label="직접 입력"
             data-time-mode="elapsed"
             aria-pressed="true"
           >
-            경과
+            직접 입력
           </button>
           <button
             class="ucpc-mode-button"
             type="button"
+            aria-label="시각으로 계산"
             data-time-mode="clock"
             aria-pressed="false"
           >
-            시계
+            시각으로 계산
           </button>
         </div>
 
@@ -115,6 +92,16 @@ const assetVersion = Date.now().toString(36);
           </div>
         </div>
 
+        <label class="ucpc-control ucpc-control-freeze">
+          <span>프리즈 시점</span>
+          <input
+            data-freeze-time
+            type="text"
+            placeholder="경과 시간, 예: 4:00"
+            autocomplete="off"
+          />
+        </label>
+
         <button class="ucpc-apply-button" type="button" data-apply-time>보기</button>
 
         <label class="ucpc-control ucpc-control-search">
@@ -122,13 +109,14 @@ const assetVersion = Date.now().toString(36);
           <input
             data-team-search
             type="search"
+            placeholder="팀명·멤버"
             autocomplete="off"
           />
         </label>
       </div>
 
       <div class="ucpc-status" aria-live="polite">
-        <strong data-contest-title>불러오는 중...</strong>
+        <strong data-contest-title></strong>
         <span data-scoreboard-meta></span>
       </div>
       <p class="ucpc-computed-time" data-computed-time></p>
@@ -176,7 +164,7 @@ const assetVersion = Date.now().toString(36);
   }
 
   .ucpc-heading p {
-    max-width: 100%;
+    max-width: 760px;
     margin: 8px 0 0;
     color: #4b5563;
     word-break: keep-all;
@@ -194,7 +182,7 @@ const assetVersion = Date.now().toString(36);
 
   .ucpc-controls {
     display: grid;
-    grid-template-columns: minmax(190px, 1.05fr) minmax(108px, 0.55fr) auto minmax(320px, 1.25fr) auto minmax(140px, 0.8fr);
+    grid-template-columns: minmax(190px, 1.05fr) auto minmax(260px, 1.2fr) minmax(120px, 0.6fr) auto minmax(140px, 0.8fr);
     gap: 14px 18px;
     align-items: end;
     margin-bottom: 20px;
@@ -496,7 +484,7 @@ const assetVersion = Date.now().toString(36);
     text-underline-offset: 3px;
   }
 
-  @media (max-width: 1040px) {
+  @media (max-width: 1120px) {
     .ucpc-controls {
       grid-template-columns: 1fr 1fr;
     }
@@ -504,12 +492,16 @@ const assetVersion = Date.now().toString(36);
     .ucpc-control-contest,
     .ucpc-mode-control,
     .ucpc-time-fields,
-    .ucpc-apply-button,
     .ucpc-control-search {
       grid-column: 1 / -1;
     }
 
+    .ucpc-control-freeze {
+      grid-column: 1;
+    }
+
     .ucpc-apply-button {
+      grid-column: 2;
       width: 100%;
     }
   }
@@ -524,6 +516,18 @@ const assetVersion = Date.now().toString(36);
 
     .ucpc-heading h1 {
       font-size: 30px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .ucpc-controls,
+    .ucpc-clock-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .ucpc-control-freeze,
+    .ucpc-apply-button {
+      grid-column: 1 / -1;
     }
   }
 </style>

@@ -29,14 +29,13 @@ const panelId = `reference-lens-${postSlug}`;
   <button
     class="reference-lens-open"
     type="button"
-    aria-label="Open Reference Lens"
-    title="Open Reference Lens"
-    aria-expanded="true"
+    aria-label="Reference Lens 열기"
+    aria-expanded="false"
     aria-controls={panelId}
     data-reference-lens-open
     hidden
   >
-    ⌕
+    Lens 열기
   </button>
 
   <aside
@@ -45,11 +44,12 @@ const panelId = `reference-lens-${postSlug}`;
     role="complementary"
     aria-label="Reference Lens"
     data-reference-lens-panel
+    hidden
   >
     <button
       class="reference-lens-resize"
       type="button"
-      aria-label="Resize Reference Lens"
+      aria-label="Reference Lens 너비 조절"
       data-reference-lens-resize
     ></button>
 
@@ -61,27 +61,53 @@ const panelId = `reference-lens-${postSlug}`;
         aria-label="Reference Lens 닫기"
         data-reference-lens-close
       >
-        닫기
+        닫기 ×
       </button>
     </div>
 
     <input
       class="reference-lens-input"
       type="search"
-      placeholder="키워드 검색"
+      aria-label="Reference Lens 검색"
+      placeholder="표기·정의·정리 검색"
       autocomplete="off"
       data-reference-lens-input
     />
 
     <p class="reference-lens-empty" data-reference-lens-empty>
-      Notation, definition, theorem 등을 검색할 수 있습니다.<br />
-      e.g. G[X], tree decomposition, Theorem 4.1, Lemma 10.2
+      예: G[X] · tree decomposition · Theorem 4.1
     </p>
 
     <div class="reference-lens-results" data-reference-lens-results></div>
   </aside>
 
   <script type="application/json" data-reference-lens-data set:html={lensData}></script>
+  <script is:inline>
+    (() => {
+      const root = document.currentScript?.closest('[data-reference-lens]');
+      const panel = root?.querySelector('[data-reference-lens-panel]');
+      const openButton = root?.querySelector('[data-reference-lens-open]');
+      if (!panel || !openButton) return;
+
+      let shouldOpen = true;
+      try {
+        const stored = JSON.parse(localStorage.getItem('referenceLensState') || '{}');
+        if (typeof stored?.isOpen === 'boolean') shouldOpen = stored.isOpen;
+
+        const storedWidth = Number.parseFloat(
+          String(stored?.width ?? localStorage.getItem('referenceLensWidth') ?? ''),
+        );
+        if (Number.isFinite(storedWidth)) {
+          const width = Math.min(720, Math.max(320, storedWidth));
+          document.documentElement.style.setProperty('--reference-lens-width', `${width}px`);
+        }
+      } catch {}
+
+      panel.hidden = !shouldOpen;
+      openButton.hidden = shouldOpen;
+      openButton.setAttribute('aria-expanded', String(shouldOpen));
+    })();
+  </script>
   <script>
     import '../scripts/referenceLens.ts';
   </script>
