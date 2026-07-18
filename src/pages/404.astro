@@ -1,0 +1,61 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+---
+
+<BlogLayout title="페이지를 찾을 수 없습니다" description="요청한 페이지를 찾을 수 없습니다.">
+  <article class="not-found-page">
+    <p class="not-found-code">404</p>
+    <h1>페이지를 찾을 수 없습니다.</h1>
+    <p>주소를 다시 확인해 주세요.</p>
+    <nav aria-label="404 페이지 이동">
+      <a href="/">홈으로 돌아가기</a>
+      <a href="/posts/">글 목록 보기</a>
+    </nav>
+  </article>
+</BlogLayout>
+
+<style>
+  .not-found-page {
+    max-width: 680px;
+    padding: 18px 0 56px;
+  }
+
+  .not-found-code {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  h1 {
+    margin: 0 0 14px;
+    font-size: 36px;
+    line-height: 1.25;
+    letter-spacing: -0.04em;
+  }
+
+  .not-found-page > p:not(.not-found-code) {
+    margin: 0;
+    color: #4b5563;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+
+  a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 720px) {
+    h1 {
+      font-size: 29px;
+    }
+  }
+</style>

@@ -27,6 +27,7 @@
   const metaNode = root.querySelector("[data-scoreboard-meta]");
   const computedTimeNode = root.querySelector("[data-computed-time]");
   const scoreboardWrap = root.querySelector("[data-scoreboard-wrap]");
+  const headNode = root.querySelector("[data-scoreboard-head]");
   const bodyNode = root.querySelector("[data-scoreboard-body]");
   const footnoteNode = root.querySelector("[data-scoreboard-footnote]");
   const errorNode = root.querySelector("[data-scoreboard-error]");
@@ -75,6 +76,7 @@
     footnoteNode.textContent = "";
     errorNode.hidden = true;
     scoreboardWrap.hidden = false;
+    headNode.replaceChildren();
     bodyNode.replaceChildren(renderLoadingRow());
 
     const payload = await loadPayload(entry);
@@ -104,6 +106,7 @@
     metaNode.textContent = makeMetaText(entry);
     renderSourceFootnote(entry);
     renderAt(0);
+    scoreboardWrap.scrollTo({ top: 0, left: 0 });
   }
 
   function loadPayload(entry) {
@@ -281,7 +284,6 @@
     const visibleRows = query ? rows.filter((row) => row.searchText.includes(query)) : rows;
 
     const fragment = document.createDocumentFragment();
-    fragment.appendChild(renderHeader());
 
     for (const row of visibleRows) {
       fragment.appendChild(renderTeam(row));
@@ -291,6 +293,7 @@
       fragment.appendChild(renderEmptyRow("검색 결과가 없습니다."));
     }
 
+    headNode.replaceChildren(renderHeader());
     bodyNode.replaceChildren(fragment);
     if (shouldSyncCurrentInput) {
       currentInput.value = formatTime(currentMinute);

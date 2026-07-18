@@ -269,6 +269,11 @@ a {
   text-underline-offset: 3px;
 }
 
+.category-filter:focus-visible {
+  outline: 1px solid var(--text);
+  outline-offset: 3px;
+}
+
 .category-filter.is-active {
   color: var(--text);
   font-weight: 700;
@@ -376,6 +381,10 @@ a {
   margin-top: 22px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.pagination[hidden] {
+  display: none;
 }
 
 .pagination button {
@@ -563,7 +572,7 @@ a {
   bottom: 20px;
   left: 5px;
   width: 2px;
-  background: transparent;
+  background: var(--line);
 }
 
 .reference-lens-resize:hover::after,
@@ -634,6 +643,13 @@ html.is-reference-lens-resizing * {
   outline: 0;
 }
 
+.reference-lens-description {
+  margin: -4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
 .reference-lens-empty {
   margin: 0;
   color: var(--muted);
@@ -654,6 +670,11 @@ html.is-reference-lens-resizing * {
 }
 
 .reference-lens-keyword {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
   border: 0;
   background: transparent;
   color: var(--text);
@@ -662,6 +683,17 @@ html.is-reference-lens-resizing * {
   font-weight: 700;
   padding: 0;
   text-align: left;
+}
+
+.reference-lens-keyword::after {
+  content: "+";
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.reference-lens-keyword[aria-expanded="true"]::after {
+  content: "−";
 }
 
 .reference-lens-keyword:hover {
@@ -1053,6 +1085,12 @@ html.is-reference-lens-resizing * {
 .cv-item-main p {
   margin: 3px 0 0;
   color: #4b5563;
+}
+
+.cv-item-main a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .cv-meta {

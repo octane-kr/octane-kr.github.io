@@ -38,6 +38,7 @@
   const findFreshButton = root.querySelector("[data-find-fresh]");
   const officialDivisionInputs = Array.from(root.querySelectorAll("[data-official-division]"));
   const includeGymInput = root.querySelector("[data-include-gym]");
+  const gymDurationFieldset = root.querySelector("[data-gym-duration]");
   const gymMinInput = root.querySelector("[data-gym-min]");
   const gymMaxInput = root.querySelector("[data-gym-max]");
   const scanDepthSelect = root.querySelector("[data-scan-depth]");
@@ -109,6 +110,9 @@
     });
   });
 
+  includeGymInput.addEventListener("change", syncGymDurationControls);
+  syncGymDurationControls();
+
   tabButtons.forEach((button) => {
     button.addEventListener("click", () => activateTab(button.dataset.cfTab));
   });
@@ -137,6 +141,11 @@
   function setStatus(message) {
     statusNode.textContent = message;
     statusNode.hidden = !message;
+  }
+
+  function syncGymDurationControls() {
+    if (!gymDurationFieldset) return;
+    gymDurationFieldset.disabled = !includeGymInput.checked;
   }
 
   async function runExclusive(work) {
@@ -271,7 +280,7 @@
 
   function renderRatingGraphAndTable() {
     if (state.handles.length === 0) {
-      ratingChartNode.replaceChildren();
+      renderEmptyState("핸들을 불러오면 레이팅 변화를 표시합니다.", ratingChartNode);
       return;
     }
 
@@ -543,7 +552,7 @@
     state.performanceRows = [];
     state.performanceLoadedContestIds = new Set();
     state.performanceRequested = true;
-    renderEmptyState("퍼포먼스 데이터를 불러오는 중입니다...", performanceChartNode);
+    performanceChartNode.replaceChildren();
     renderPerformanceLoadSummary(contests, 0);
 
     const addRows = (nextRows) => {
@@ -870,8 +879,14 @@
   }
 
   function renderPerformanceGraphAndTable() {
-    if (state.handles.length === 0 || !state.performanceRequested) {
-      performanceChartNode.replaceChildren();
+    if (state.handles.length === 0) {
+      renderEmptyState("핸들을 불러오면 추정 퍼포먼스를 계산할 수 있습니다.", performanceChartNode);
+      performanceSummaryNode.replaceChildren();
+      return;
+    }
+
+    if (!state.performanceRequested) {
+      renderEmptyState("기간을 정한 뒤 추정치 불러오기를 누르세요.", performanceChartNode);
       performanceSummaryNode.replaceChildren();
       return;
     }
