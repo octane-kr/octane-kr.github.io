@@ -203,19 +203,27 @@ body.profile-shell {
   letter-spacing: -0.04em;
 }
 
-.profile-activity-section h2 {
+.profile-activity-section h2,
+.profile-teaching-section h2 {
   margin: 0 0 18px;
   font-size: 16px;
   font-weight: 400;
 }
 
-.profile-activity-list {
+.profile-activity-list,
+.profile-teaching-list {
   margin: 0;
   padding: 0 0 0 1.25em;
 }
 
-.profile-activity-list li {
+.profile-activity-list li,
+.profile-teaching-list li {
   padding-left: 4px;
+}
+
+.profile-teaching-list ul {
+  margin: 8px 0 0;
+  padding-left: 1.4em;
 }
 
 .profile-record-section + .profile-record-section {
