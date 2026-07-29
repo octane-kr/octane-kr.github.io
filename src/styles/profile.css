@@ -32,7 +32,9 @@ body.profile-shell {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+  font-kerning: normal;
   line-height: 1.65;
+  text-rendering: optimizeLegibility;
 }
 
 .profile-shell a {
@@ -61,17 +63,17 @@ body.profile-shell {
 
 .profile-site-header-inner {
   width: min(calc(100% - 40px), var(--profile-max));
-  min-height: 82px;
+  min-height: 78px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 40px;
+  gap: 32px;
 }
 
 .profile-site-name {
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -85,7 +87,7 @@ body.profile-shell {
 }
 
 .profile-site-nav a {
-  padding: 29px 0 25px;
+  padding: 27px 0 23px;
   border-bottom: 2px solid transparent;
 }
 
@@ -108,37 +110,37 @@ body.profile-shell {
   width: min(calc(100% - 40px), var(--profile-max));
   flex: 1;
   margin: 0 auto;
-  padding: 68px 0 72px;
+  padding: 60px 0 72px;
 }
 
 .profile-intro {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 222px;
+  grid-template-columns: minmax(0, 1fr) 210px;
   align-items: end;
-  gap: 72px;
-  padding-bottom: 56px;
+  gap: 64px;
+  padding-bottom: 48px;
   border-bottom: 1px solid var(--profile-line);
 }
 
 .profile-intro h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(47px, 7vw, 72px);
+  font-size: clamp(46px, 6vw, 68px);
   font-weight: 400;
-  line-height: 0.98;
-  letter-spacing: -0.05em;
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
 
 .profile-name-korean {
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   color: var(--profile-muted);
-  font-size: 18px;
-  letter-spacing: 0.08em;
+  font-size: 17px;
+  letter-spacing: 0.04em;
 }
 
 .profile-bio {
   max-width: 560px;
-  margin-top: 36px;
+  margin-top: 30px;
   font-size: 16px;
 }
 
@@ -147,7 +149,7 @@ body.profile-shell {
 }
 
 .profile-bio p + p {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .profile-bio a {
@@ -189,41 +191,43 @@ body.profile-shell {
 }
 
 .profile-page-header {
-  margin-bottom: 58px;
-  padding-bottom: 28px;
+  margin-bottom: 44px;
+  padding-bottom: 22px;
   border-bottom: 1px solid var(--profile-line);
 }
 
 .profile-page-header h1 {
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(42px, 6vw, 60px);
+  font-size: clamp(40px, 5vw, 54px);
   font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
 }
 
 .profile-activity-section h2,
 .profile-teaching-section h2 {
-  margin: 0 0 18px;
-  font-size: 16px;
-  font-weight: 400;
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .profile-activity-list,
 .profile-teaching-list {
   margin: 0;
   padding: 0 0 0 1.25em;
+  line-height: 1.7;
 }
 
 .profile-activity-list li,
 .profile-teaching-list li {
-  padding-left: 4px;
+  padding-left: 2px;
 }
 
 .profile-teaching-list ul {
-  margin: 8px 0 0;
-  padding-left: 1.4em;
+  margin: 6px 0 0;
+  padding-left: 1.2em;
+  font-size: 15px;
 }
 
 .profile-record-section + .profile-record-section {
@@ -262,9 +266,40 @@ body.profile-shell {
 }
 
 @media (max-width: 700px) {
+  .profile-main {
+    padding: 42px 0 56px;
+  }
+
+  .profile-intro {
+    grid-template-columns: minmax(0, 1fr) 128px;
+    gap: 24px;
+    align-items: start;
+    padding-bottom: 36px;
+  }
+
+  .profile-intro h1 {
+    font-size: clamp(40px, 12vw, 52px);
+  }
+
+  .profile-name-korean {
+    margin-top: 9px;
+    font-size: 15px;
+  }
+
+  .profile-page-header {
+    margin-bottom: 36px;
+  }
+
+  .profile-record {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+}
+
+@media (max-width: 540px) {
   .profile-site-header-inner {
     min-height: 0;
-    padding: 21px 0 0;
+    padding: 19px 0 0;
     display: block;
   }
 
@@ -274,40 +309,20 @@ body.profile-shell {
 
   .profile-site-nav {
     gap: 22px;
-    margin-top: 10px;
+    margin-top: 8px;
   }
 
   .profile-site-nav a {
-    padding: 10px 0 13px;
-  }
-
-  .profile-main {
-    padding: 44px 0 56px;
+    padding: 10px 0 12px;
   }
 
   .profile-intro {
-    grid-template-columns: minmax(0, 1fr) 128px;
-    gap: 24px;
-    align-items: start;
-    padding-bottom: 40px;
-  }
-
-  .profile-intro h1 {
-    font-size: clamp(40px, 12vw, 54px);
-  }
-
-  .profile-name-korean {
-    margin-top: 10px;
-    font-size: 15px;
-  }
-
-  .profile-page-header {
-    margin-bottom: 44px;
-  }
-
-  .profile-record {
     grid-template-columns: 1fr;
-    gap: 7px;
+    gap: 22px;
+  }
+
+  .profile-portrait {
+    width: 148px;
   }
 }
 
@@ -320,13 +335,5 @@ body.profile-shell {
   .profile-site-nav {
     justify-content: space-between;
     gap: 16px;
-  }
-
-  .profile-intro {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-portrait {
-    width: 150px;
   }
 }
