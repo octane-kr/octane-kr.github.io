@@ -1,20 +1,27 @@
 ---
-const blogUrl = '/blog/';
+import { Image } from 'astro:assets';
+import portrait from '../assets/taein-oh.png';
+import ProfileLayout from '../layouts/ProfileLayout.astro';
 ---
 
-<!doctype html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="refresh" content={`0; url=${blogUrl}`} />
-    <link rel="canonical" href={new URL(blogUrl, Astro.site)} />
-    <title>코끼리 뿌우</title>
-    <script is:inline define:vars={{ blogUrl }}>
-      window.location.replace(blogUrl);
-    </script>
-  </head>
-  <body>
-    <p><a href={blogUrl}>블로그로 이동</a></p>
-  </body>
-</html>
+<ProfileLayout title="Taein Oh">
+  <article class="profile-home">
+    <section class="profile-intro" aria-labelledby="profile-name">
+      <div class="profile-intro-copy">
+        <h1 id="profile-name">Taein Oh</h1>
+        <p class="profile-name-korean" lang="ko">오태인</p>
+      </div>
+
+      <figure class="profile-portrait">
+        <Image
+          src={portrait}
+          alt="Portrait of Taein Oh"
+          width={354}
+          height={472}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </figure>
+    </section>
+  </article>
+</ProfileLayout>

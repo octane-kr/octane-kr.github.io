@@ -1,0 +1,59 @@
+---
+import '../styles/profile.css';
+
+const {
+  title = 'Taein Oh',
+  description = '',
+} = Astro.props;
+
+const siteTitle = 'Taein Oh';
+const pageTitle = title === siteTitle ? siteTitle : `${title} — ${siteTitle}`;
+const pathname = Astro.url.pathname;
+const activeSection = pathname === '/'
+  ? 'home'
+  : pathname === '/activities' || pathname === '/activities/'
+    ? 'activities'
+    : pathname === '/teaching' || pathname === '/teaching/'
+      ? 'teaching'
+      : '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    {description && <meta name="description" content={description} />}
+  </head>
+
+  <body class="profile-shell">
+    <a class="profile-skip-link" href="#main-content">Skip to content</a>
+
+    <header class="profile-site-header">
+      <div class="profile-site-header-inner">
+        <a class="profile-site-name" href="/">{siteTitle}</a>
+
+        <nav class="profile-site-nav" aria-label="Primary navigation">
+          <a href="/" aria-current={activeSection === 'home' ? 'page' : undefined}>Home</a>
+          <a
+            href="/activities/"
+            aria-current={activeSection === 'activities' ? 'page' : undefined}
+          >
+            Activities
+          </a>
+          <a
+            href="/teaching/"
+            aria-current={activeSection === 'teaching' ? 'page' : undefined}
+          >
+            Teaching
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content" class="profile-main">
+      <slot />
+    </main>
+  </body>
+</html>
