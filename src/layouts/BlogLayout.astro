@@ -16,7 +16,7 @@ const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
     ? 'projects'
     : pathname === '/cv' || pathname === '/cv/'
       ? 'cv'
-      : pathname === '/'
+      : pathname === '/blog' || pathname === '/blog/'
         ? 'home'
         : '';
 ---
@@ -33,9 +33,9 @@ const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
   <body>
     <header class="site-header">
       <div class="site-header-inner">
-        <a class="site-title" href="/">{siteTitle}</a>
+        <a class="site-title" href="/blog/">{siteTitle}</a>
         <nav class="site-nav" aria-label="주요 메뉴">
-          <a href="/" aria-current={activeSection === 'home' ? 'page' : undefined}>Home</a>
+          <a href="/blog/" aria-current={activeSection === 'home' ? 'page' : undefined}>Home</a>
           <a href="/posts/" aria-current={activeSection === 'posts' ? 'page' : undefined}>Posts</a>
           <a href="/projects/" aria-current={activeSection === 'projects' ? 'page' : undefined}>Projects</a>
           <a href="/cv/" aria-current={activeSection === 'cv' ? 'page' : undefined}>CV</a>

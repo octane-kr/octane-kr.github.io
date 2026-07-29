@@ -1,5 +1,5 @@
 ---
-layout: ../layouts/PageLayout.astro
+layout: ../../layouts/PageLayout.astro
 title: "코끼리 뿌우"
 description: "Octane"
 showTitle: false

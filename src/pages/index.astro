@@ -1,0 +1,20 @@
+---
+const blogUrl = '/blog/';
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content={`0; url=${blogUrl}`} />
+    <link rel="canonical" href={new URL(blogUrl, Astro.site)} />
+    <title>코끼리 뿌우</title>
+    <script is:inline define:vars={{ blogUrl }}>
+      window.location.replace(blogUrl);
+    </script>
+  </head>
+  <body>
+    <p><a href={blogUrl}>블로그로 이동</a></p>
+  </body>
+</html>
