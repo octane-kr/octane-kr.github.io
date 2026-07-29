@@ -178,6 +178,15 @@ body.profile-shell {
   height: auto;
 }
 
+.profile-home-records {
+  max-width: 820px;
+  padding-top: 40px;
+}
+
+.profile-home-record-section + .profile-home-record-section {
+  margin-top: 30px;
+}
+
 .profile-record-section h2 {
   margin: 0 0 22px;
   font-size: 13px;
@@ -205,6 +214,7 @@ body.profile-shell {
   letter-spacing: -0.03em;
 }
 
+.profile-home-record-section h2,
 .profile-activity-section h2,
 .profile-teaching-section h2 {
   margin: 0 0 14px;
@@ -212,6 +222,7 @@ body.profile-shell {
   font-weight: 500;
 }
 
+.profile-home-record-list,
 .profile-activity-list,
 .profile-teaching-list {
   margin: 0;
@@ -219,9 +230,15 @@ body.profile-shell {
   line-height: 1.7;
 }
 
+.profile-home-record-list li,
 .profile-activity-list li,
 .profile-teaching-list li {
   padding-left: 2px;
+}
+
+.profile-home-record-affiliation {
+  display: block;
+  margin-top: 2px;
 }
 
 .profile-teaching-list ul {
