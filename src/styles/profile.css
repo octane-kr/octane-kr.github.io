@@ -146,6 +146,7 @@ body.profile-shell {
 
 .profile-bio p {
   margin: 0;
+  text-wrap: pretty;
 }
 
 .profile-bio p + p {
@@ -156,6 +157,7 @@ body.profile-shell {
   color: var(--profile-accent);
   text-decoration: underline;
   text-underline-offset: 3px;
+  white-space: nowrap;
 }
 
 .profile-bio a:hover {
@@ -220,6 +222,7 @@ body.profile-shell {
   margin: 0 0 14px;
   font-size: 15px;
   font-weight: 500;
+  text-wrap: pretty;
 }
 
 .profile-home-record-list,
@@ -234,17 +237,17 @@ body.profile-shell {
 .profile-activity-list li,
 .profile-teaching-list li {
   padding-left: 2px;
-}
-
-.profile-home-record-affiliation {
-  display: block;
-  margin-top: 2px;
+  text-wrap: pretty;
 }
 
 .profile-teaching-list ul {
   margin: 6px 0 0;
   padding-left: 1.2em;
   font-size: 15px;
+}
+
+.profile-keep-together {
+  white-space: nowrap;
 }
 
 .profile-record-section + .profile-record-section {
