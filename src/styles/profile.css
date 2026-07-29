@@ -136,6 +136,35 @@ body.profile-shell {
   letter-spacing: 0.08em;
 }
 
+.profile-bio {
+  max-width: 560px;
+  margin-top: 36px;
+  font-size: 16px;
+}
+
+.profile-bio p {
+  margin: 0;
+}
+
+.profile-bio p + p {
+  margin-top: 20px;
+}
+
+.profile-bio a {
+  color: var(--profile-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.profile-bio a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.profile-bio a:focus-visible {
+  outline: 1px solid var(--profile-text);
+  outline-offset: 3px;
+}
+
 .profile-portrait {
   margin: 0;
   border: 1px solid var(--profile-line);
