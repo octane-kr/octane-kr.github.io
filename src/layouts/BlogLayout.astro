@@ -14,7 +14,7 @@ const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
   ? 'posts'
   : ['/projects', '/projects/', '/codeforces-lab', '/codeforces-lab/', '/ucpc-scoreboard', '/ucpc-scoreboard/'].includes(pathname)
     ? 'projects'
-    : pathname === '/cv' || pathname === '/cv/'
+    : pathname === '/about' || pathname === '/about/'
       ? 'about'
       : pathname === '/blog' || pathname === '/blog/'
         ? 'home'
@@ -38,7 +38,7 @@ const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
           <a href="/blog/" aria-current={activeSection === 'home' ? 'page' : undefined}>Home</a>
           <a href="/posts/" aria-current={activeSection === 'posts' ? 'page' : undefined}>Posts</a>
           <a href="/projects/" aria-current={activeSection === 'projects' ? 'page' : undefined}>Projects</a>
-          <a href="/cv/" aria-current={activeSection === 'about' ? 'page' : undefined}>About</a>
+          <a href="/about/" aria-current={activeSection === 'about' ? 'page' : undefined}>About</a>
         </nav>
       </div>
     </header>
