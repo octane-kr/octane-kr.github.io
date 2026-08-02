@@ -43,10 +43,14 @@ const payloadUrl = `/projects/icpc-vietnam/data/${scoreboard.slug}.json?v=${asse
         </div>
 
         <div class="vietnam-scoreboard-time-apply">
-          <div class="vietnam-scoreboard-time-panel" data-time-panel="elapsed">
+          <div class="vietnam-scoreboard-time-panel vietnam-scoreboard-elapsed" data-time-panel="elapsed">
             <label class="vietnam-scoreboard-control">
               <span>경과 시간</span>
               <input data-current-time type="text" value="0:00" inputmode="numeric" autocomplete="off" />
+            </label>
+            <label class="vietnam-scoreboard-control">
+              <span>프리즈 시점</span>
+              <input data-freeze-time type="text" inputmode="numeric" placeholder="없음" autocomplete="off" />
             </label>
           </div>
 
@@ -62,6 +66,10 @@ const payloadUrl = `/projects/icpc-vietnam/data/${scoreboard.slug}.json?v=${asse
               </label>
               <button type="button" data-refresh-current-time aria-label="현재 시각으로 갱신" title="현재 시각으로 갱신">↻</button>
             </div>
+            <label class="vietnam-scoreboard-control">
+              <span>프리즈 시각</span>
+              <input data-freeze-clock-time type="time" step="60" autocomplete="off" />
+            </label>
           </div>
 
           <button class="vietnam-scoreboard-apply" type="button" data-apply-time>보기</button>
@@ -73,7 +81,7 @@ const payloadUrl = `/projects/icpc-vietnam/data/${scoreboard.slug}.json?v=${asse
         </label>
       </div>
 
-      <p class="vietnam-scoreboard-guidance">시간은 보기 또는 Enter로 적용됩니다. 검색은 바로 반영됩니다.</p>
+      <p class="vietnam-scoreboard-guidance">시간과 프리즈는 보기 또는 Enter로 적용됩니다. 검색은 바로 반영됩니다.</p>
 
       <div class="vietnam-scoreboard-status" aria-live="polite">
         <span data-scoreboard-meta>불러오는 중...</span>
@@ -251,8 +259,13 @@ const payloadUrl = `/projects/icpc-vietnam/data/${scoreboard.slug}.json?v=${asse
     display: none;
   }
 
-  .vietnam-scoreboard-clock {
+  .vietnam-scoreboard-elapsed {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .vietnam-scoreboard-clock {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 12px;
   }
 
@@ -504,7 +517,7 @@ const payloadUrl = `/projects/icpc-vietnam/data/${scoreboard.slug}.json?v=${asse
     }
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 700px) {
     .vietnam-scoreboard-controls,
     .vietnam-scoreboard-clock {
       grid-template-columns: 1fr;

@@ -8,8 +8,10 @@
   const modeButtons = Array.from(root.querySelectorAll("[data-time-mode]"));
   const timePanels = Array.from(root.querySelectorAll("[data-time-panel]"));
   const currentInput = root.querySelector("[data-current-time]");
+  const freezeInput = root.querySelector("[data-freeze-time]");
   const startClockInput = root.querySelector("[data-start-clock-time]");
   const currentClockInput = root.querySelector("[data-current-clock-time]");
+  const freezeClockInput = root.querySelector("[data-freeze-clock-time]");
   const refreshCurrentTimeButton = root.querySelector("[data-refresh-current-time]");
   const applyTimeButton = root.querySelector("[data-apply-time]");
   const searchInput = root.querySelector("[data-team-search]");
@@ -27,6 +29,7 @@
   let teams = [];
   let contestSeconds = 0;
   let currentSeconds = 0;
+  let freezeSeconds = null;
   let timeMode = "elapsed";
 
   bindControls();
@@ -47,7 +50,6 @@
     }
 
     metaNode.textContent = `${teams.length}팀 · ${problems.length}문제 · ${formatDuration(contestSeconds)}`;
-    noteNode.textContent = "AC 시각과 최종 시도 횟수 기준입니다. 풀지 못한 문제의 시도 수는 종료 시점에 표시됩니다.";
     tableNode.style.minWidth = `${Math.max(920, 460 + problems.length * 46)}px`;
     renderAt(0);
   }
@@ -57,7 +59,7 @@
       button.addEventListener("click", () => setTimeMode(button.dataset.timeMode));
     }
 
-    for (const input of [currentInput, startClockInput, currentClockInput]) {
+    for (const input of [currentInput, freezeInput, startClockInput, currentClockInput, freezeClockInput]) {
       input.addEventListener("keydown", (event) => {
         if (event.key !== "Enter") return;
         event.preventDefault();
@@ -76,8 +78,14 @@
   function setTimeMode(nextMode) {
     if (nextMode !== "elapsed" && nextMode !== "clock") return;
     timeMode = nextMode;
-    if (timeMode === "elapsed") currentInput.value = formatDuration(currentSeconds);
-    if (timeMode === "clock" && !currentClockInput.value) setCurrentClockToNow();
+    if (timeMode === "elapsed") {
+      currentInput.value = formatDuration(currentSeconds);
+      freezeInput.value = freezeSeconds == null ? "" : formatDuration(freezeSeconds);
+    }
+    if (timeMode === "clock") {
+      syncClockInputs();
+      if (!currentClockInput.value) setCurrentClockToNow();
+    }
 
     for (const button of modeButtons) {
       const active = button.dataset.timeMode === timeMode;
@@ -92,28 +100,49 @@
     if (!payload) return;
 
     let nextSeconds;
+    let nextFreezeSeconds = null;
+    let freezeInvalid = false;
     if (timeMode === "elapsed") {
       nextSeconds = parseDuration(currentInput.value);
       setInputInvalid(currentInput, nextSeconds == null);
+
+      const freezeText = freezeInput.value.trim();
+      nextFreezeSeconds = freezeText ? parseDuration(freezeText) : null;
+      freezeInvalid = Boolean(freezeText)
+        && (nextFreezeSeconds == null || nextFreezeSeconds > contestSeconds);
+      setInputInvalid(freezeInput, freezeInvalid);
     } else {
       const startMinute = parseClock(startClockInput.value);
       const nowMinute = parseClock(currentClockInput.value);
+      const freezeText = freezeClockInput.value.trim();
+      const freezeMinute = freezeText ? parseClock(freezeText) : null;
       setInputInvalid(startClockInput, startMinute == null);
       setInputInvalid(currentClockInput, nowMinute == null);
+      freezeInvalid = Boolean(freezeText) && freezeMinute == null;
+      setInputInvalid(freezeClockInput, freezeInvalid);
       if (startMinute != null && nowMinute != null) {
         nextSeconds = ((nowMinute - startMinute + 24 * 60) % (24 * 60)) * 60;
+        if (freezeMinute != null) {
+          nextFreezeSeconds = ((freezeMinute - startMinute + 24 * 60) % (24 * 60)) * 60;
+          freezeInvalid = nextFreezeSeconds > contestSeconds;
+          setInputInvalid(freezeClockInput, freezeInvalid);
+        }
       }
     }
 
-    if (nextSeconds == null) return;
+    if (nextSeconds == null || freezeInvalid) return;
+    freezeSeconds = nextFreezeSeconds == null ? null : clampSeconds(nextFreezeSeconds);
     renderAt(nextSeconds, { syncInput: false });
-    if (timeMode === "elapsed") currentInput.value = formatDuration(currentSeconds);
+    if (timeMode === "elapsed") {
+      currentInput.value = formatDuration(currentSeconds);
+      freezeInput.value = freezeSeconds == null ? "" : formatDuration(freezeSeconds);
+    }
   }
 
   function renderAt(seconds, options = {}) {
     currentSeconds = clampSeconds(seconds);
     const query = normalizeSearch(searchInput.value);
-    const rows = computeStandings(currentSeconds);
+    const rows = computeStandings(currentSeconds, freezeSeconds);
     const visibleRows = query ? rows.filter((row) => row.searchText.includes(query)) : rows;
     const fragment = document.createDocumentFragment();
 
@@ -122,14 +151,22 @@
 
     headNode.replaceChildren(renderHeader());
     bodyNode.replaceChildren(fragment);
-    appliedTimeNode.textContent = `경과 ${formatDuration(currentSeconds)}`;
+    appliedTimeNode.textContent = freezeSeconds == null
+      ? `경과 ${formatDuration(currentSeconds)}`
+      : `경과 ${formatDuration(currentSeconds)} · 프리즈 ${formatDuration(freezeSeconds)}`;
+    const freezeActive = freezeSeconds != null && freezeSeconds < currentSeconds;
+    noteNode.textContent = freezeActive
+      ? "프리즈 이후 결과는 숨깁니다. 오답 제출 시각은 원본에 없습니다."
+      : "AC 시각과 최종 시도 횟수 기준입니다. 풀지 못한 문제의 시도 수는 종료 시점에 표시됩니다.";
     if (options.syncInput !== false && timeMode === "elapsed") {
       currentInput.value = formatDuration(currentSeconds);
     }
   }
 
-  function computeStandings(seconds) {
+  function computeStandings(seconds, freezeAtSeconds) {
     const atFinal = seconds >= contestSeconds;
+    const freezeActive = freezeAtSeconds != null && freezeAtSeconds < seconds;
+    const visibleSeconds = freezeActive ? freezeAtSeconds : seconds;
     const firstSolvedByProblem = new Map();
     const rows = teams.map((team) => {
       const states = new Map();
@@ -139,12 +176,13 @@
 
       for (const [resultIndex, result] of team.results.entries()) {
         const problemId = String(problems[resultIndex]?.id ?? resultIndex);
-        const accepted = result.status === "solved" && Number(result.acceptedAtSeconds) <= seconds;
+        const acceptedAtSeconds = Number(result.acceptedAtSeconds);
+        const accepted = result.status === "solved" && acceptedAtSeconds <= visibleSeconds;
         const state = {
           result,
           accepted,
           firstSolved: false,
-          showFailed: atFinal && result.status === "failed" && result.attempts > 0,
+          showFailed: !freezeActive && atFinal && result.status === "failed" && result.attempts > 0,
         };
         states.set(problemId, state);
 
@@ -186,7 +224,7 @@
       }
     }
 
-    if (atFinal) {
+    if (atFinal && !freezeActive) {
       rows.sort((a, b) => Number(a.team.sourceOrder) - Number(b.team.sourceOrder));
       for (const row of rows) row.rank = row.team.finalRank ?? "-";
       return rows;
@@ -329,6 +367,20 @@
     setInputInvalid(currentClockInput, false);
   }
 
+  function syncClockInputs() {
+    const startMinute = parseClock(startClockInput.value);
+    if (startMinute == null) return;
+    currentClockInput.value = formatClockMinute(startMinute + Math.floor(currentSeconds / 60));
+    freezeClockInput.value = freezeSeconds == null
+      ? ""
+      : formatClockMinute(startMinute + Math.floor(freezeSeconds / 60));
+  }
+
+  function formatClockMinute(minutes) {
+    const value = ((Math.floor(Number(minutes) || 0) % (24 * 60)) + 24 * 60) % (24 * 60);
+    return `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(value % 60).padStart(2, "0")}`;
+  }
+
   function formatDuration(seconds) {
     const value = Math.max(0, Math.floor(Number(seconds) || 0));
     const hour = Math.floor(value / 3600);
@@ -353,8 +405,10 @@
 
   function clearInputErrors() {
     setInputInvalid(currentInput, false);
+    setInputInvalid(freezeInput, false);
     setInputInvalid(startClockInput, false);
     setInputInvalid(currentClockInput, false);
+    setInputInvalid(freezeClockInput, false);
   }
 
   function showFatalError(error) {

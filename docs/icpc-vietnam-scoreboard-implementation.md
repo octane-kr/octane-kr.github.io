@@ -25,11 +25,13 @@
 - Complete ties use a stable team label and id so the initial `0:00` view does not reveal final order.
 - Failed-only cells are hidden before contest end because their individual attempt times are unavailable.
 - At `5:00`, failed totals and the source final row order/ranks are shown.
-- Freeze replay is intentionally omitted because individual submission times are unavailable.
+- Freeze is optional; a blank freeze input returns the unfrozen scoreboard.
+- With freeze enabled, standings and problem states use accepted submissions at or before the cutoff.
+- Post-cutoff activity and pending counts stay hidden because individual submission times are unavailable.
 
 ## Verification
 
 - Build with `npm.cmd run build`.
 - Check the archive and at least one page from every source format in a browser.
-- Verify `0:00`, an exact VNOJ accepted-time boundary, `5:00`, search, direct/clock modes, and mobile table overflow.
+- Verify `0:00`, an exact VNOJ accepted-time boundary, `5:00`, freeze/apply/clear behavior, search, direct/clock modes, and mobile table overflow.
 - After deployment, verify the Projects entry, archive, one VNOJ page, and one non-VNOJ page on the public site.
