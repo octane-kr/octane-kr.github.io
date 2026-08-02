@@ -2,13 +2,22 @@
 import BlogLayout from '../layouts/BlogLayout.astro';
 ---
 
-<BlogLayout title="Projects" description="UCPC 스코어보드와 Codeforces 분석 도구">
+<BlogLayout title="Projects" description="직접 만든 작은 도구와 아카이브">
   <article class="projects-page">
     <header class="projects-header">
       <h1>Projects</h1>
     </header>
 
     <section class="project-list" aria-label="프로젝트 목록">
+      <article class="project-entry">
+        <div class="project-entry-main">
+          <a href="/projects/icpc-vietnam/">베트남 ICPC 아카이브</a>
+          <p>
+            베트남 ICPC 대회의 VNOJ 업솔빙과 시점별 스코어보드를 모았습니다.
+          </p>
+        </div>
+      </article>
+
       <article class="project-entry">
         <div class="project-entry-main">
           <a href="/ucpc-scoreboard/">UCPC 동적 스코어보드</a>

@@ -1,0 +1,524 @@
+---
+import BlogLayout from '../../../layouts/BlogLayout.astro';
+import { icpcVietnamScoreboards } from '../../../data/icpcVietnamContests.js';
+
+export function getStaticPaths() {
+  return icpcVietnamScoreboards.map((scoreboard) => ({
+    params: { contest: scoreboard.slug },
+    props: { scoreboard },
+  }));
+}
+
+const { scoreboard } = Astro.props;
+const assetVersion = Date.now().toString(36);
+const description = `${scoreboard.label} 순위를 원하는 경과 시간 기준으로 확인하는 동적 스코어보드`;
+const payloadUrl = `/projects/icpc-vietnam/data/${scoreboard.slug}.json?v=${assetVersion}`;
+---
+
+<BlogLayout title={`${scoreboard.label} 스코어보드`} description={description}>
+  <article class="vietnam-scoreboard-page">
+    <a class="vietnam-scoreboard-back" href="/projects/icpc-vietnam/">베트남 ICPC 아카이브</a>
+
+    <header class="vietnam-scoreboard-heading">
+      <div>
+        <h1>{scoreboard.label}</h1>
+        <p>원하는 경과 시간의 순위를 확인합니다.</p>
+      </div>
+      <nav aria-label="대회 자료">
+        <a href={scoreboard.upsolveUrl} target="_blank" rel="noreferrer">업솔빙<span aria-hidden="true">↗</span></a>
+        <a href={scoreboard.sourceUrl} target="_blank" rel="noreferrer">원본 순위표<span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <section
+      class="vietnam-scoreboard-tool"
+      aria-label={`${scoreboard.label} 동적 스코어보드`}
+      data-vietnam-scoreboard
+      data-payload-url={payloadUrl}
+    >
+      <div class="vietnam-scoreboard-controls">
+        <div class="vietnam-scoreboard-mode" role="group" aria-label="시간 입력 방식">
+          <button class="is-active" type="button" data-time-mode="elapsed" aria-pressed="true">직접 입력</button>
+          <button type="button" data-time-mode="clock" aria-pressed="false">시각으로 계산</button>
+        </div>
+
+        <div class="vietnam-scoreboard-time-apply">
+          <div class="vietnam-scoreboard-time-panel" data-time-panel="elapsed">
+            <label class="vietnam-scoreboard-control">
+              <span>경과 시간</span>
+              <input data-current-time type="text" value="0:00" inputmode="numeric" autocomplete="off" />
+            </label>
+          </div>
+
+          <div class="vietnam-scoreboard-time-panel vietnam-scoreboard-clock" data-time-panel="clock" hidden>
+            <label class="vietnam-scoreboard-control">
+              <span>시작 시각</span>
+              <input data-start-clock-time type="time" step="60" autocomplete="off" />
+            </label>
+            <div class="vietnam-scoreboard-current-clock">
+              <label class="vietnam-scoreboard-control">
+                <span>현재 시각</span>
+                <input data-current-clock-time type="time" step="60" autocomplete="off" />
+              </label>
+              <button type="button" data-refresh-current-time aria-label="현재 시각으로 갱신" title="현재 시각으로 갱신">↻</button>
+            </div>
+          </div>
+
+          <button class="vietnam-scoreboard-apply" type="button" data-apply-time>보기</button>
+        </div>
+
+        <label class="vietnam-scoreboard-control vietnam-scoreboard-search">
+          <span>검색</span>
+          <input data-team-search type="search" placeholder="팀명·소속" autocomplete="off" />
+        </label>
+      </div>
+
+      <p class="vietnam-scoreboard-guidance">시간은 보기 또는 Enter로 적용됩니다. 검색은 바로 반영됩니다.</p>
+
+      <div class="vietnam-scoreboard-status" aria-live="polite">
+        <span data-scoreboard-meta>불러오는 중...</span>
+        <strong data-applied-time></strong>
+      </div>
+
+      <div class="vietnam-scoreboard-table-wrap" data-scoreboard-wrap>
+        <table class="vietnam-scoreboard-table" data-scoreboard-table>
+          <thead data-scoreboard-head></thead>
+          <tbody data-scoreboard-body>
+            <tr><td>불러오는 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="vietnam-scoreboard-note" data-scoreboard-note></p>
+      <p class="vietnam-scoreboard-error" data-scoreboard-error hidden></p>
+    </section>
+  </article>
+
+  <script is:inline src={`/projects/icpc-vietnam/app.js?v=${assetVersion}`}></script>
+</BlogLayout>
+
+<style is:global>
+  .vietnam-scoreboard-page {
+    --vietnam-work-width: min(1160px, calc(100vw - 40px));
+    width: var(--vietnam-work-width);
+    max-width: none;
+    margin-right: calc(50% - var(--vietnam-work-width) / 2);
+    margin-left: calc(50% - var(--vietnam-work-width) / 2);
+  }
+
+  .vietnam-scoreboard-back {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+  }
+
+  .vietnam-scoreboard-back::before {
+    content: "←";
+    margin-right: 6px;
+    text-decoration: none;
+  }
+
+  .vietnam-scoreboard-back:hover {
+    color: var(--link);
+    text-decoration-color: currentColor;
+  }
+
+  .vietnam-scoreboard-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: end;
+    margin-bottom: 26px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .vietnam-scoreboard-heading h1 {
+    margin: 0;
+    font-size: 38px;
+    line-height: 1.2;
+    letter-spacing: 0;
+  }
+
+  .vietnam-scoreboard-heading p {
+    margin: 9px 0 0;
+    color: #4b5563;
+  }
+
+  .vietnam-scoreboard-heading nav {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 18px;
+    padding-bottom: 2px;
+    font-size: 14px;
+  }
+
+  .vietnam-scoreboard-heading nav a {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+  }
+
+  .vietnam-scoreboard-heading nav a:hover {
+    color: var(--link);
+    text-decoration-color: currentColor;
+  }
+
+  .vietnam-scoreboard-heading nav span {
+    margin-left: 3px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .vietnam-scoreboard-tool {
+    margin-bottom: 48px;
+  }
+
+  .vietnam-scoreboard-controls {
+    display: grid;
+    grid-template-columns: auto minmax(360px, 1fr) minmax(180px, 0.65fr);
+    gap: 14px 22px;
+    align-items: end;
+    margin-bottom: 10px;
+  }
+
+  .vietnam-scoreboard-mode {
+    display: inline-flex;
+    align-items: baseline;
+    padding-bottom: 7px;
+    white-space: nowrap;
+  }
+
+  .vietnam-scoreboard-mode button {
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font: inherit;
+    padding: 0 0 2px;
+  }
+
+  .vietnam-scoreboard-mode button + button {
+    position: relative;
+    margin-left: 20px;
+  }
+
+  .vietnam-scoreboard-mode button + button::before {
+    content: "/";
+    position: absolute;
+    left: -13px;
+    color: var(--muted);
+    font-weight: 400;
+    pointer-events: none;
+  }
+
+  .vietnam-scoreboard-mode button:hover,
+  .vietnam-scoreboard-mode button.is-active {
+    color: var(--text);
+  }
+
+  .vietnam-scoreboard-mode button.is-active {
+    border-bottom-color: var(--text);
+    font-weight: 700;
+  }
+
+  .vietnam-scoreboard-mode button:focus-visible {
+    outline: 1px solid var(--text);
+    outline-offset: 3px;
+  }
+
+  .vietnam-scoreboard-time-apply {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: end;
+    min-width: 0;
+  }
+
+  .vietnam-scoreboard-time-panel {
+    display: grid;
+    min-width: 0;
+  }
+
+  .vietnam-scoreboard-time-panel[hidden] {
+    display: none;
+  }
+
+  .vietnam-scoreboard-clock {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .vietnam-scoreboard-current-clock {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 30px;
+    gap: 6px;
+    align-items: end;
+    min-width: 0;
+  }
+
+  .vietnam-scoreboard-control {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .vietnam-scoreboard-control > span {
+    color: var(--muted);
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .vietnam-scoreboard-control input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    padding: 4px 0 7px;
+  }
+
+  .vietnam-scoreboard-control input:focus {
+    border-bottom-color: var(--text);
+    outline: 0;
+  }
+
+  .vietnam-scoreboard-control input.is-invalid {
+    border-bottom-color: #b91c1c;
+    color: #b91c1c;
+  }
+
+  .vietnam-scoreboard-current-clock button,
+  .vietnam-scoreboard-apply {
+    height: 33px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    font: inherit;
+  }
+
+  .vietnam-scoreboard-current-clock button {
+    width: 30px;
+    padding: 0;
+    font-size: 19px;
+    line-height: 1;
+  }
+
+  .vietnam-scoreboard-apply {
+    min-width: 56px;
+    padding: 0 10px;
+    font-weight: 700;
+  }
+
+  .vietnam-scoreboard-current-clock button:hover,
+  .vietnam-scoreboard-current-clock button:focus-visible,
+  .vietnam-scoreboard-apply:hover,
+  .vietnam-scoreboard-apply:focus-visible {
+    border-bottom-color: var(--text);
+    outline: 0;
+  }
+
+  .vietnam-scoreboard-guidance,
+  .vietnam-scoreboard-note,
+  .vietnam-scoreboard-error {
+    color: var(--muted);
+    font-size: 13px;
+    word-break: keep-all;
+  }
+
+  .vietnam-scoreboard-guidance {
+    margin: 0 0 20px;
+  }
+
+  .vietnam-scoreboard-status {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px 18px;
+    align-items: baseline;
+    margin-bottom: 10px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .vietnam-scoreboard-status strong {
+    color: var(--text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vietnam-scoreboard-table-wrap {
+    width: 100%;
+    max-height: min(68vh, 760px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    border-top: 1px solid var(--text);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .vietnam-scoreboard-table {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .vietnam-scoreboard-table th,
+  .vietnam-scoreboard-table td {
+    border-bottom: 1px solid var(--line);
+    padding: 7px 8px;
+    vertical-align: middle;
+  }
+
+  .vietnam-scoreboard-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #fff;
+    color: var(--muted);
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .vietnam-scoreboard-table tbody tr:hover {
+    background: #fafafa;
+  }
+
+  .vietnam-scoreboard-table tbody tr.is-unranked {
+    background: #f6f7f8;
+  }
+
+  .vietnam-scoreboard-rank,
+  .vietnam-scoreboard-solved,
+  .vietnam-scoreboard-penalty,
+  .vietnam-scoreboard-problem {
+    text-align: center;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vietnam-scoreboard-rank {
+    width: 48px;
+    color: var(--muted);
+  }
+
+  .vietnam-scoreboard-team {
+    min-width: 280px;
+  }
+
+  .vietnam-scoreboard-team-name {
+    display: block;
+    font-weight: 700;
+  }
+
+  .vietnam-scoreboard-team-meta {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .vietnam-scoreboard-solved {
+    width: 58px;
+    font-weight: 800;
+  }
+
+  .vietnam-scoreboard-penalty {
+    width: 74px;
+    color: #4b5563;
+  }
+
+  .vietnam-scoreboard-problem {
+    width: 44px;
+    min-width: 44px;
+    font-weight: 800;
+  }
+
+  .vietnam-scoreboard-problem.is-empty {
+    color: #cbd5e1;
+  }
+
+  .vietnam-scoreboard-problem.is-solved {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .vietnam-scoreboard-problem.is-first {
+    box-shadow: inset 0 -2px 0 #15803d;
+  }
+
+  .vietnam-scoreboard-problem.is-failed {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .vietnam-scoreboard-note {
+    margin: 12px 0 0;
+  }
+
+  .vietnam-scoreboard-error {
+    margin: 14px 0 0;
+    color: #b91c1c;
+  }
+
+  @media (max-width: 940px) {
+    .vietnam-scoreboard-controls {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .vietnam-scoreboard-search {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 840px) {
+    .vietnam-scoreboard-page {
+      width: 100%;
+      max-width: 100%;
+      margin-right: 0;
+      margin-left: 0;
+    }
+
+    .vietnam-scoreboard-heading {
+      display: grid;
+      align-items: start;
+    }
+
+    .vietnam-scoreboard-heading h1 {
+      font-size: 30px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .vietnam-scoreboard-controls,
+    .vietnam-scoreboard-clock {
+      grid-template-columns: 1fr;
+    }
+
+    .vietnam-scoreboard-mode,
+    .vietnam-scoreboard-time-apply,
+    .vietnam-scoreboard-search {
+      grid-column: 1 / -1;
+    }
+
+    .vietnam-scoreboard-status {
+      display: grid;
+      justify-content: start;
+    }
+  }
+</style>

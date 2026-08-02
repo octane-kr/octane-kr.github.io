@@ -12,7 +12,9 @@ const pageTitle = title === siteTitle ? siteTitle : `${title} - ${siteTitle}`;
 const pathname = Astro.url.pathname;
 const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
   ? 'posts'
-  : ['/projects', '/projects/', '/codeforces-lab', '/codeforces-lab/', '/ucpc-scoreboard', '/ucpc-scoreboard/'].includes(pathname)
+  : pathname === '/projects'
+      || pathname.startsWith('/projects/')
+      || ['/codeforces-lab', '/codeforces-lab/', '/ucpc-scoreboard', '/ucpc-scoreboard/'].includes(pathname)
     ? 'projects'
     : pathname === '/about' || pathname === '/about/'
       ? 'about'
