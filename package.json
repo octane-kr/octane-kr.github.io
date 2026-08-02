@@ -6,6 +6,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "generate:icpc-vietnam": "node scripts/buildIcpcVietnamScoreboards.mjs --write",
     "generate:lens": "node scripts/generateLensIndex.mjs",
     "predev": "node scripts/generateLensIndex.mjs",
     "dev": "astro dev",
@@ -20,5 +21,8 @@
     "katex": "^0.16.45",
     "rehype-katex": "^7.0.1",
     "remark-math": "^6.0.0"
+  },
+  "devDependencies": {
+    "parse5": "^7.3.0"
   }
 }
