@@ -36,5 +36,30 @@ import ProfileLayout from '../layouts/ProfileLayout.astro';
         </li>
       </ul>
     </section>
+
+    <section class="profile-teaching-section lecture-materials" aria-labelledby="lecture-materials-heading">
+      <h2 id="lecture-materials-heading">&lt;Lecture materials&gt;</h2>
+      <p>Slides for CS.20002 Problem Solving at KAIST, Fall 2026. Materials are in Korean.</p>
+      <ul class="profile-teaching-list">
+        <li>
+          <a href="/teaching/2026-fall-cs20002/week-1-lecture-slides.pdf" lang="ko">0주차 — 오리엔테이션, 문제 해결의 기초 도구</a>
+          <span class="profile-keep-together">(2026-09-04 · PDF)</span>
+        </li>
+        <li>
+          <a href="/teaching/2026-fall-cs20002/week-2-lecture-slides.pdf" lang="ko">1주차 — 동적 계획법, HW0 풀이</a>
+          <span class="profile-keep-together">(2026-09-11 · PDF)</span>
+        </li>
+      </ul>
+      <p class="materials-note">The public orientation slides omit contact details and group enrollment instructions. Original slide numbering is preserved. Course announcements reflect the lecture date.</p>
+    </section>
   </article>
 </ProfileLayout>
+
+<style>
+  .lecture-materials { margin-top: 40px; }
+  .lecture-materials p { margin: 0 0 14px; font-size: 15px; }
+  .lecture-materials a { color: var(--profile-accent); text-decoration: underline; text-underline-offset: 3px; }
+  .lecture-materials a:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
+  .lecture-materials li + li { margin-top: 8px; }
+  .lecture-materials .materials-note { margin-top: 14px; color: var(--profile-muted); font-size: 13px; }
+</style>
