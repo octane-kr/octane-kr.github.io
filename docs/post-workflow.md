@@ -31,8 +31,9 @@ mutable metadata back into post Markdown.
 
 ## Film reviews
 
-Match the blog's existing review titles: the film name followed by `후기`,
-such as `오디세이 후기` or `토이 스토리 5 후기`, without decorative brackets.
+Match the blog's existing review titles: the film name followed by `후기`.
+Enclose the film name in single angle brackets, such as `〈오디세이〉 후기`
+or `〈토이 스토리 5〉 후기`.
 Omit descriptions to match the existing post lists. Do not add an interpretive
 subtitle or a generated summary unless the author explicitly asks for one
 (author correction, 2026-09-15).
