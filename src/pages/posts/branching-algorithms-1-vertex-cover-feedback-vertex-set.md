@@ -1,9 +1,4 @@
 ---
-title: "Branching Algorithms 1 (Vertex Cover, Feedback Vertex Set)"
-publishedAt: 2026-05-20T18:30:00+09:00
-updatedAt: 2026-05-21T15:54:00+09:00
-category: "Graph Theory"
-subcategory: "Algorithms for NP-hard Problems"
 layout: ../../layouts/PostLayout.astro
 ---
 

@@ -1,9 +1,4 @@
 ---
-title: "2025 ICPC Korea National First Round 후기"
-publishedAt: 2025-10-17T16:59:00+09:00
-updatedAt: 2026-05-07T02:40:00+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

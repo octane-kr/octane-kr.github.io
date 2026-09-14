@@ -5,12 +5,14 @@ import { fileURLToPath } from 'node:url';
 import { createMarkdownProcessor } from '@astrojs/markdown-remark';
 import rehypeKatex from 'rehype-katex';
 import remarkMath from 'remark-math';
-import { lensScopeLabels, postLensScopes } from '../src/data/lensScopeMap.js';
-import { extractLensBlocks } from './lensParser.mjs';
+
+import { postLensScopes } from '../src/data/lensScopeMap.js';
+import { parseLensDocument } from './lensDocumentParser.mjs';
 
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const referencesDir = path.join(rootDir, 'src', 'references');
+const lensDir = path.join(rootDir, 'src', 'lens');
 const postsDir = path.join(rootDir, 'src', 'pages', 'posts');
+const postMetadataDir = path.join(rootDir, 'src', 'post-metadata');
 const outputPath = path.join(rootDir, 'src', 'data', 'lens.generated.json');
 const markdownProcessor = await createMarkdownProcessor({
   syntaxHighlight: false,
@@ -22,97 +24,177 @@ const toSourcePath = (filePath) =>
   path.relative(rootDir, filePath).split(path.sep).join('/');
 
 const listMarkdownFiles = async (dir) => {
-  try {
-    const dirStat = await stat(dir);
-    if (!dirStat.isDirectory()) return [];
-  } catch {
-    return [];
+  const dirStat = await stat(dir);
+  if (!dirStat.isDirectory()) {
+    throw new Error(`Required Markdown directory is not a directory: ${toSourcePath(dir)}`);
   }
 
   const entries = await readdir(dir, { withFileTypes: true });
-  return entries
-    .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
-    .map((entry) => path.join(dir, entry.name))
-    .sort((a, b) => a.localeCompare(b));
+  const nestedFiles = await Promise.all(entries.map(async (entry) => {
+    const entryPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) return listMarkdownFiles(entryPath);
+    if (entry.isFile() && entry.name.endsWith('.md')) return [entryPath];
+    return [];
+  }));
+
+  return nestedFiles.flat().sort((a, b) => a.localeCompare(b));
 };
 
-const getFrontmatterTitle = (markdown, fallbackTitle) => {
-  const frontmatterMatch = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/u);
-  if (!frontmatterMatch) return fallbackTitle;
-
-  const titleMatch = frontmatterMatch[1].match(/^title:\s*(.+?)\s*$/mu);
-  if (!titleMatch) return fallbackTitle;
-
-  return titleMatch[1].replace(/^['"]|['"]$/gu, '').trim() || fallbackTitle;
-};
-
-const referenceSourceOverrides = {
-  'global-notation': {
-    source: 'global',
-    scope: 'global',
-    scopes: ['global'],
-    sourceTitle: 'Global Notation',
-  },
-};
-
-const getReferenceSource = (filePath) => {
-  const scope = path.basename(filePath, '.md');
-  const scopeLabel = lensScopeLabels[scope] ?? scope;
-  const override = referenceSourceOverrides[scope];
-
-  if (override) {
-    return {
-      idPrefix: `reference-${scope}`,
-      sourceKind: 'reference',
-      sourceSlug: scope,
-      sourceHref: null,
-      ...override,
-    };
+const assertMetadataKeys = (metadata, allowedKeys, sourcePath) => {
+  for (const key of Object.keys(metadata)) {
+    if (!allowedKeys.has(key)) {
+      throw new Error(`${sourcePath}:2 unsupported lens frontmatter key "${key}"`);
+    }
   }
+};
 
-  if (scope === 'global') {
+const requireMetadata = (metadata, key, sourcePath) => {
+  const value = metadata[key]?.trim();
+  if (!value) throw new Error(`${sourcePath}:2 lens frontmatter requires "${key}"`);
+  return value;
+};
+
+const assertSafeName = (value, label, sourcePath) => {
+  if (!/^[a-z0-9][a-z0-9-]*$/u.test(value)) {
+    throw new Error(`${sourcePath}:2 invalid ${label} "${value}"`);
+  }
+};
+
+const normalizeExcerpt = (value) => value.replace(/\r\n?/gu, '\n');
+
+const assertVerbatimPostExcerpt = (entry, postMarkdown, lensPath, postPath) => {
+  const normalizedPost = normalizeExcerpt(postMarkdown);
+  const normalizedBody = normalizeExcerpt(entry.body);
+  if (normalizedPost.includes(normalizedBody)) return;
+
+  throw new Error(
+    `${lensPath}:${entry.line} lens body must be a verbatim contiguous excerpt of ${postPath}`,
+  );
+};
+
+const assertPostsHaveNoInlineLensMarkup = async (postFiles) => {
+  const inlineLensPattern = /<!--\s*(?:lens:|\/lens\s*-->)/u;
+
+  for (const postFile of postFiles) {
+    const sourcePath = toSourcePath(postFile);
+    const lines = (await readFile(postFile, 'utf8')).split(/\r?\n/u);
+    const markerIndex = lines.findIndex((line) => inlineLensPattern.test(line));
+    if (markerIndex !== -1) {
+      throw new Error(
+        `${sourcePath}:${markerIndex + 1} inline Lens markup is not allowed; maintain Lens entries under src/lens/`,
+      );
+    }
+  }
+};
+
+const assertLensPath = (lensPath, expectedPath) => {
+  if (lensPath === expectedPath) return;
+  throw new Error(`${lensPath}:1 lens document must be stored at ${expectedPath}`);
+};
+
+const readPublishedPost = async (postSlug, lensPath) => {
+  assertSafeName(postSlug, 'post slug', lensPath);
+  const postFile = path.join(postsDir, `${postSlug}.md`);
+  const metadataFile = path.join(postMetadataDir, `${postSlug}.json`);
+  try {
+    const [postMarkdown, metadataSource] = await Promise.all([
+      readFile(postFile, 'utf8'),
+      readFile(metadataFile, 'utf8'),
+    ]);
+    const metadata = JSON.parse(metadataSource);
+    if (typeof metadata.title !== 'string' || metadata.title.trim() === '') {
+      throw new Error(`missing title in ${toSourcePath(metadataFile)}`);
+    }
     return {
-      idPrefix: 'global',
+      postFile,
+      postMarkdown,
+      postTitle: metadata.title.trim(),
+    };
+  } catch (error) {
+    throw new Error(
+      `${lensPath}:2 cannot load referenced post and metadata: ${toSourcePath(postFile)}, ${toSourcePath(metadataFile)} (${error.message})`,
+    );
+  }
+};
+
+const getLensSource = async (filePath, metadata) => {
+  const lensPath = toSourcePath(filePath);
+  const kind = requireMetadata(metadata, 'kind', lensPath);
+
+  if (kind === 'global') {
+    assertMetadataKeys(metadata, new Set(['kind', 'title']), lensPath);
+    assertLensPath(lensPath, 'src/lens/global.md');
+    return {
+      sourceKey: 'global',
+      idPrefix: 'lens-global',
       source: 'global',
       scope: 'global',
       scopes: ['global'],
       sourceKind: 'reference',
       sourceSlug: 'global',
-      sourceTitle: lensScopeLabels.global ?? 'Global references',
+      sourceTitle: metadata.title?.trim() || 'Global Notation',
       sourceHref: null,
+      sourcePath: lensPath,
+      lensPath,
+      postMarkdown: null,
     };
   }
 
-  return {
-    idPrefix: `scope-${scope}`,
-    source: 'scope',
-    scope,
-    scopes: [scope],
-    sourceKind: 'reference',
-    sourceSlug: scope,
-    sourceTitle: `${scopeLabel} references`,
-    sourceHref: null,
-  };
-};
+  if (kind === 'scope') {
+    assertMetadataKeys(metadata, new Set(['kind', 'scope', 'post', 'title']), lensPath);
+    const scope = requireMetadata(metadata, 'scope', lensPath);
+    const postSlug = requireMetadata(metadata, 'post', lensPath);
+    assertSafeName(scope, 'scope', lensPath);
+    assertSafeName(postSlug, 'post slug', lensPath);
+    assertLensPath(lensPath, `src/lens/scopes/${scope}.md`);
+    if (!(postLensScopes[postSlug] ?? []).includes(scope)) {
+      throw new Error(
+        `${lensPath}:2 scope "${scope}" is not registered for source post "${postSlug}" in src/data/lensScopeMap.js`,
+      );
+    }
+    const { postFile, postMarkdown, postTitle } = await readPublishedPost(postSlug, lensPath);
+    return {
+      sourceKey: `scope:${scope}`,
+      idPrefix: `lens-scope-${scope}`,
+      source: 'scope',
+      scope,
+      scopes: [scope],
+      sourceKind: 'post',
+      sourceSlug: postSlug,
+      sourceTitle: metadata.title?.trim() || postTitle,
+      sourceHref: `/posts/${postSlug}/`,
+      sourcePath: toSourcePath(postFile),
+      lensPath,
+      postMarkdown,
+    };
+  }
 
-const getPostSource = (filePath) => {
-  const slug = path.basename(filePath, '.md');
+  if (kind === 'post') {
+    assertMetadataKeys(metadata, new Set(['kind', 'post']), lensPath);
+    const postSlug = requireMetadata(metadata, 'post', lensPath);
+    assertLensPath(lensPath, `src/lens/posts/${postSlug}.md`);
+    const { postFile, postMarkdown, postTitle } = await readPublishedPost(postSlug, lensPath);
 
-  return {
-    idPrefix: `post-${slug}`,
-    source: 'post',
-    scope: slug,
-    scopes: [slug, ...(postLensScopes[slug] ?? [])],
-    sourceKind: 'post',
-    sourceSlug: slug,
-    sourceTitle: slug,
-    sourceHref: `/posts/${slug}/`,
-  };
+    return {
+      sourceKey: `post:${postSlug}`,
+      idPrefix: `lens-post-${postSlug}`,
+      source: 'post',
+      scope: postSlug,
+      scopes: [postSlug, ...(postLensScopes[postSlug] ?? [])],
+      sourceKind: 'post',
+      sourceSlug: postSlug,
+      sourceTitle: postTitle,
+      sourceHref: `/posts/${postSlug}/`,
+      sourcePath: toSourcePath(postFile),
+      lensPath,
+      postMarkdown,
+    };
+  }
+
+  throw new Error(`${lensPath}:2 unsupported lens document kind "${kind}"`);
 };
 
 const renderLensBodyHtml = async (body, sourcePath, line) => {
-  if (!body.trim()) return '';
-
   const result = await markdownProcessor.render(body, {
     fileURL: `${sourcePath}:${line}`,
   });
@@ -120,69 +202,73 @@ const renderLensBodyHtml = async (body, sourcePath, line) => {
   return result.code.trim();
 };
 
-const readLensEntries = async (filePath, sourceInfo) => {
-  const sourcePath = toSourcePath(filePath);
+const readLensDocument = async (filePath) => {
+  const lensPath = toSourcePath(filePath);
   const markdown = await readFile(filePath, 'utf8');
-  const { entries, warnings } = extractLensBlocks(markdown, sourcePath);
-  const resolvedSourceInfo =
-    sourceInfo.sourceKind === 'post'
-      ? {
-          ...sourceInfo,
-          sourceTitle: getFrontmatterTitle(markdown, sourceInfo.sourceSlug),
-        }
-      : sourceInfo;
+  const { metadata, entries } = parseLensDocument(markdown, lensPath);
+  const sourceInfo = await getLensSource(filePath, metadata);
+
+  if (sourceInfo.postMarkdown) {
+    entries.forEach((entry) => {
+      assertVerbatimPostExcerpt(
+        entry,
+        sourceInfo.postMarkdown,
+        lensPath,
+        sourceInfo.sourcePath,
+      );
+    });
+  }
 
   return {
+    sourceKey: sourceInfo.sourceKey,
     entries: await Promise.all(entries.map(async (entry, index) => ({
-      id: `${resolvedSourceInfo.idPrefix}__${index}`,
-      source: resolvedSourceInfo.source,
-      scope: resolvedSourceInfo.scope,
-      scopes: resolvedSourceInfo.scopes,
-      sourceKind: resolvedSourceInfo.sourceKind,
-      sourceSlug: resolvedSourceInfo.sourceSlug,
-      sourceTitle: resolvedSourceInfo.sourceTitle,
-        sourceHref: resolvedSourceInfo.sourceHref,
-        sourcePath,
+      id: `${sourceInfo.idPrefix}__${String(index).padStart(4, '0')}`,
+      source: sourceInfo.source,
+      scope: sourceInfo.scope,
+      scopes: sourceInfo.scopes,
+      sourceKind: sourceInfo.sourceKind,
+      sourceSlug: sourceInfo.sourceSlug,
+      sourceTitle: sourceInfo.sourceTitle,
+      sourceHref: sourceInfo.sourceHref,
+      sourcePath: sourceInfo.sourcePath,
+      lensPath: sourceInfo.lensPath,
       keywords: entry.keywords,
       body: entry.body,
-      bodyHtml: await renderLensBodyHtml(entry.body, sourcePath, entry.line),
+      bodyHtml: await renderLensBodyHtml(entry.body, lensPath, entry.line),
     }))),
-    warnings,
   };
 };
 
 const generateLensIndex = async () => {
-  const referenceFiles = await listMarkdownFiles(referencesDir);
+  const lensFiles = await listMarkdownFiles(lensDir);
   const postFiles = await listMarkdownFiles(postsDir);
-  const files = [
-    ...referenceFiles.map((filePath) => ({
-      filePath,
-      sourceInfo: getReferenceSource(filePath),
-    })),
-    ...postFiles.map((filePath) => ({
-      filePath,
-      sourceInfo: getPostSource(filePath),
-    })),
-  ];
+  await assertPostsHaveNoInlineLensMarkup(postFiles);
 
-  const allEntries = [];
-  const warnings = [];
-
-  for (const file of files) {
-    const result = await readLensEntries(file.filePath, file.sourceInfo);
-    allEntries.push(...result.entries);
-    warnings.push(...result.warnings);
+  if (lensFiles.length === 0) {
+    throw new Error('src/lens must contain at least one Lens document');
   }
 
+  const nestedEntries = [];
+  const sourceDocuments = new Map();
+  for (const lensFile of lensFiles) {
+    const document = await readLensDocument(lensFile);
+    const lensPath = toSourcePath(lensFile);
+    const existingPath = sourceDocuments.get(document.sourceKey);
+    if (existingPath) {
+      throw new Error(
+        `${lensPath}:1 duplicates Lens source "${document.sourceKey}" from ${existingPath}`,
+      );
+    }
+    sourceDocuments.set(document.sourceKey, lensPath);
+    nestedEntries.push(document.entries);
+  }
+
+  const allEntries = nestedEntries.flat();
   await writeFile(outputPath, `${JSON.stringify(allEntries, null, 2)}\n`);
 
   console.log(
-    `Lens index: scanned ${files.length} file(s), generated ${allEntries.length} entr${allEntries.length === 1 ? 'y' : 'ies'}.`,
+    `Lens index: scanned ${lensFiles.length} document(s), generated ${allEntries.length} entr${allEntries.length === 1 ? 'y' : 'ies'}.`,
   );
-
-  warnings.forEach((warning) => {
-    console.warn(`Lens warning: ${warning}`);
-  });
 };
 
 await generateLensIndex();

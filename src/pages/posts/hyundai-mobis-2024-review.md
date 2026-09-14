@@ -1,9 +1,4 @@
 ---
-title: "2024 현대모비스 알고리즘 경진대회 후기"
-publishedAt: 2024-07-15T03:31:00+09:00
-updatedAt: 2026-05-07T02:40:00+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

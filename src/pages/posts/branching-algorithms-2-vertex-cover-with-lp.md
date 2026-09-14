@@ -1,9 +1,4 @@
 ---
-title: "Branching Algorithms 2 (Vertex Cover with LP)"
-publishedAt: 2026-05-20T19:25:00+09:00
-updatedAt: 2026-05-21T15:50:00+09:00
-category: "Graph Theory"
-subcategory: "Algorithms for NP-hard Problems"
 layout: ../../layouts/PostLayout.astro
 ---
 

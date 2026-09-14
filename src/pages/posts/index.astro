@@ -1,6 +1,7 @@
 ---
 import BlogLayout from '../../layouts/BlogLayout.astro';
 import categoriesText from '../../data/categories.txt?raw';
+import { getPostMetadata } from '../../lib/postMetadata';
 
 type CategoryGroup = {
   category: string;
@@ -84,15 +85,8 @@ const stringifyDateValue = (value: unknown) => {
   return String(value);
 };
 
-const parseDate = (value: unknown, isDateOnly = false) => {
+const parseDate = (value: unknown) => {
   if (!value) return null;
-
-  if (isDateOnly) {
-    const dateText =
-      value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
-    const date = new Date(`${dateText}T00:00:00+09:00`);
-    return Number.isNaN(date.valueOf()) ? null : date;
-  }
 
   const date =
     value instanceof Date ? value : new Date(value as string | number);
@@ -109,35 +103,30 @@ const dateFormatter = new Intl.DateTimeFormat('ko-KR', {
 const posts = Object.entries(modules)
   .map(([path, rawModule]) => {
     const module = rawModule as any;
-    const frontmatter = module.frontmatter ?? {};
 
     const filename = path.split('/').pop() ?? 'untitled.md';
     const slug = filename.replace(/\.md$/, '');
+    const metadata = getPostMetadata(slug);
 
-    const date = parseDate(
-      frontmatter.publishedAt ?? frontmatter.date,
-      !frontmatter.publishedAt,
-    );
+    const date = parseDate(metadata?.publishedAt);
     const hasValidDate = date !== null;
-    const title = String(frontmatter.title ?? slug);
-    const category = String(frontmatter.category ?? 'PS');
-    const subcategory = String(frontmatter.subcategory ?? '');
+    const title = String(metadata?.title ?? slug);
+    const category = String(metadata?.category ?? 'PS');
+    const subcategory = String(metadata?.subcategory ?? '');
 
     return {
       url: module.url ?? `/posts/${slug}/`,
       slug,
       title,
-      description: String(frontmatter.description ?? ''),
+      description: String(metadata?.description ?? ''),
       category,
       subcategory,
-      publishedAt: frontmatter.publishedAt ?? frontmatter.date,
-      updatedAt: frontmatter.updatedAt,
+      publishedAt: metadata?.publishedAt,
+      updatedAt: metadata?.updatedAt,
       date,
       hasValidDate,
-      draft: frontmatter.draft === true,
     };
   })
-  .filter((post) => !post.draft)
   .sort((a, b) => {
     const av = a.hasValidDate ? a.date!.valueOf() : 0;
     const bv = b.hasValidDate ? b.date!.valueOf() : 0;

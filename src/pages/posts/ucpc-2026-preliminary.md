@@ -1,9 +1,4 @@
 ---
-title: "UCPC 2026 예선 후기"
-publishedAt: 2026-06-29T03:47:37+09:00
-updatedAt: 2026-06-29T03:51:55+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

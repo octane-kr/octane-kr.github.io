@@ -1,9 +1,4 @@
 ---
-title: "2026 PPC Open Contest 후기"
-publishedAt: 2026-05-23T20:11:00+09:00
-updatedAt: 2026-05-23T20:11:00+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

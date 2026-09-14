@@ -8,9 +8,15 @@
   "scripts": {
     "generate:icpc-vietnam": "node scripts/buildIcpcVietnamScoreboards.mjs --write",
     "generate:lens": "node scripts/generateLensIndex.mjs",
-    "predev": "node scripts/generateLensIndex.mjs",
+    "check:lens": "node --test scripts/lensDocumentParser.test.mjs",
+    "check:posts": "node --test scripts/postMetadata.test.mjs && node scripts/checkPublishedPosts.mjs",
+    "post:new": "node scripts/createPostDraft.mjs",
+    "post:publish": "node scripts/publishPost.mjs",
+    "post:finish-publication": "node scripts/finishPostPublication.mjs",
+    "post:mark-updated": "node scripts/markPostUpdated.mjs",
+    "predev": "npm run check:posts && npm run check:lens && npm run generate:lens",
     "dev": "astro dev",
-    "prebuild": "node scripts/generateLensIndex.mjs",
+    "prebuild": "npm run check:posts && npm run check:lens && npm run generate:lens",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

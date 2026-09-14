@@ -21,6 +21,12 @@ const activeEntries = lensIndex
     return a.id.localeCompare(b.id);
   });
 
+const exampleText = activeEntries
+  .map((entry) => entry.keywords[0])
+  .filter(Boolean)
+  .slice(0, 3)
+  .join(' · ');
+
 const lensData = JSON.stringify(activeEntries).replace(/</g, '\\u003c');
 const panelId = `reference-lens-${postSlug}`;
 ---
@@ -81,7 +87,7 @@ const panelId = `reference-lens-${postSlug}`;
     />
 
     <p class="reference-lens-empty" data-reference-lens-empty>
-      예: G[X] · tree decomposition · Theorem 4.1
+      {exampleText ? `예: ${exampleText}` : '검색할 표기·정의·정리를 입력하세요.'}
     </p>
 
     <div class="reference-lens-results" data-reference-lens-results></div>

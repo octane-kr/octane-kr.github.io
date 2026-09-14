@@ -1,5 +1,6 @@
 ---
 import BlogLayout from './BlogLayout.astro';
+import { getPostMetadata } from '../lib/postMetadata';
 
 const { frontmatter } = Astro.props;
 
@@ -10,15 +11,8 @@ const recentPostsLimit = Number(frontmatter.recentPosts ?? 0);
 
 const modules = import.meta.glob('../pages/posts/*.md', { eager: true });
 
-const parseDate = (value: unknown, isDateOnly = false) => {
+const parseDate = (value: unknown) => {
   if (!value) return null;
-
-  if (isDateOnly) {
-    const dateText =
-      value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
-    const date = new Date(`${dateText}T00:00:00+09:00`);
-    return Number.isNaN(date.valueOf()) ? null : date;
-  }
 
   const date =
     value instanceof Date ? value : new Date(value as string | number);
@@ -35,30 +29,25 @@ const dateFormatter = new Intl.DateTimeFormat('ko-KR', {
 const recentPosts = Object.entries(modules)
   .map(([path, rawModule]) => {
     const module = rawModule as any;
-    const postFrontmatter = module.frontmatter ?? {};
 
     const filename = path.split('/').pop() ?? 'untitled.md';
     const slug = filename.replace(/\.md$/, '');
+    const metadata = getPostMetadata(slug);
 
-    const date = parseDate(
-      postFrontmatter.publishedAt ?? postFrontmatter.date,
-      !postFrontmatter.publishedAt,
-    );
+    const date = parseDate(metadata?.publishedAt);
     const hasValidDate = date !== null;
 
     return {
       url: module.url ?? `/posts/${slug}/`,
       slug,
-      title: postFrontmatter.title ?? slug,
-      description: postFrontmatter.description ?? '',
-      category: postFrontmatter.category ?? 'PS',
-      subcategory: postFrontmatter.subcategory ?? '',
+      title: metadata?.title ?? slug,
+      description: metadata?.description ?? '',
+      category: metadata?.category ?? 'PS',
+      subcategory: metadata?.subcategory ?? '',
       date,
       hasValidDate,
-      draft: postFrontmatter.draft === true,
     };
   })
-  .filter((post) => !post.draft)
   .sort((a, b) => {
     const av = a.hasValidDate ? a.date!.valueOf() : 0;
     const bv = b.hasValidDate ? b.date!.valueOf() : 0;

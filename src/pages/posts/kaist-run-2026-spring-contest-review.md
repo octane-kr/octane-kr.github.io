@@ -1,9 +1,4 @@
 ---
-title: "2026 KAIST RUN Spring Contest 후기"
-publishedAt: 2026-05-06T14:30:00+09:00
-updatedAt: 2026-05-07T02:40:00+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

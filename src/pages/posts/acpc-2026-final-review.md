@@ -1,9 +1,4 @@
 ---
-title: "ACPC 2026 본선 후기"
-publishedAt: 2026-08-03T01:12:07+09:00
-updatedAt: 2026-08-03T01:12:07+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

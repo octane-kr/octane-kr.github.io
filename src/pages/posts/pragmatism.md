@@ -1,9 +1,4 @@
 ---
-title: "Pragmatism"
-publishedAt: 2026-05-20T14:34:00+09:00
-updatedAt: 2026-05-20T15:07:00+09:00
-category: "PS"
-subcategory: "Problems"
 layout: ../../layouts/PostLayout.astro
 ---
 

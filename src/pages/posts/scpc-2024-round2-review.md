@@ -1,9 +1,4 @@
 ---
-title: "2024 SCPC 2차 예선 후기 및 풀이"
-publishedAt: 2024-07-27T22:05:00+09:00
-updatedAt: 2026-05-07T02:40:00+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

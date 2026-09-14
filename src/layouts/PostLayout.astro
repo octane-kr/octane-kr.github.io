@@ -2,30 +2,27 @@
 import BlogLayout from './BlogLayout.astro';
 import PostInteractions from '../components/PostInteractions.astro';
 import ReferenceLens from '../components/ReferenceLens.astro';
+import { getPostMetadata } from '../lib/postMetadata';
 
-const { frontmatter } = Astro.props;
+const pathnameParts = Astro.url.pathname.split('/').filter(Boolean);
+const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
+const metadata = getPostMetadata(postSlug);
 
-const title = frontmatter.title ?? 'Untitled';
-const description = frontmatter.description ?? '';
-const category = frontmatter.category ?? 'PS';
-const subcategory = frontmatter.subcategory ?? '';
+const title = metadata?.title ?? 'Untitled';
+const description = metadata?.description ?? '';
+const category = metadata?.category ?? 'PS';
+const subcategory = metadata?.subcategory ?? '';
+const isFilmReview = category === 'Culture' && subcategory === 'Films';
 
-const parseDate = (value, isDateOnly = false) => {
+const parseDate = (value) => {
   if (!value) return null;
-
-  if (isDateOnly) {
-    const dateText =
-      value instanceof Date ? value.toISOString().slice(0, 10) : String(value).slice(0, 10);
-    const date = new Date(`${dateText}T00:00:00+09:00`);
-    return Number.isNaN(date.valueOf()) ? null : date;
-  }
 
   const date = value instanceof Date ? value : new Date(value);
   return Number.isNaN(date.valueOf()) ? null : date;
 };
 
-const publishedAt = parseDate(frontmatter.publishedAt ?? frontmatter.date, !frontmatter.publishedAt);
-const updatedAt = parseDate(frontmatter.updatedAt);
+const publishedAt = parseDate(metadata?.publishedAt);
+const updatedAt = parseDate(metadata?.updatedAt);
 const dateFormatter = new Intl.DateTimeFormat('ko-KR', {
   timeZone: 'Asia/Seoul',
   year: 'numeric',
@@ -52,8 +49,6 @@ const subcategoryHref = subcategory
   ? `${categoryHref}&subcategory=${encodeURIComponent(subcategory)}`
   : '';
 
-const pathnameParts = Astro.url.pathname.split('/').filter(Boolean);
-const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
 ---
 
 <BlogLayout title={title} description={description}>
@@ -85,5 +80,5 @@ const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
     <PostInteractions postSlug={postSlug} placement="bottom" showComments={true} />
   </article>
 
-  <ReferenceLens postSlug={postSlug} />
+  {!isFilmReview && <ReferenceLens postSlug={postSlug} />}
 </BlogLayout>

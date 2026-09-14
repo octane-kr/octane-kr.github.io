@@ -1,8 +1,4 @@
 ---
-title: "Tree decomposition"
-publishedAt: 2026-05-25T06:20:00+09:00
-updatedAt: 2026-05-25T07:41:00+09:00
-category: "Graph Theory"
 layout: ../../layouts/PostLayout.astro
 ---
 

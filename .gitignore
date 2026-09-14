@@ -22,3 +22,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local writing drafts and Codex-owned draft metadata
+src/drafts/posts/**
+*.codex-write.tmp
+*.codex-write.lock

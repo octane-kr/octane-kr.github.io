@@ -1,9 +1,4 @@
 ---
-title: "SCPC 2026 Round 1 후기"
-publishedAt: 2026-07-11T15:22:19+09:00
-updatedAt: 2026-07-11T15:22:19+09:00
-category: "PS"
-subcategory: "Contests"
 layout: ../../layouts/PostLayout.astro
 ---
 

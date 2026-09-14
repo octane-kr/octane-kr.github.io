@@ -1,9 +1,4 @@
 ---
-title: "Kernelization (Vertex Cover)"
-publishedAt: 2026-05-21T18:16:00+09:00
-updatedAt: 2026-05-21T18:16:00+09:00
-category: "Graph Theory"
-subcategory: "Algorithms for NP-hard Problems"
 layout: ../../layouts/PostLayout.astro
 ---
 
