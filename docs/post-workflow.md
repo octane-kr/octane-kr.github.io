@@ -31,6 +31,10 @@ mutable metadata back into post Markdown.
 
 ## Film review opening notice
 
+Use simple film-review titles such as `[[오디세이]] 후기`. Do not add an
+interpretive subtitle or a generated description/summary unless the author
+explicitly asks for one (author correction, 2026-09-15).
+
 For film reviews formed by Codex from the author's conversational impressions,
 start the prose with the following reader-facing notice (author request, 2026-09-15):
 
