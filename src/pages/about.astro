@@ -123,15 +123,35 @@ const pageTitle = 'About';
       <h2 id="cp-heading">Competitive Programming</h2>
 
       <div class="cv-subsection">
-        <h3>Major Team Results</h3>
+        <h3>ICPC Results</h3>
         <ul class="cv-dated-list">
           <li>
-            <span>ICPC Asia Ho Chi Minh City Regional Contest — Silver Medal, 7th place; Rock kokiri paper, KAIST</span>
+            <span><a href="https://icpc.global/regionals/finder/APSEPC-2026">ICPC Asia Pacific Championship</a> — Honorable Mention, <a href="https://storage.googleapis.com/files.icpc.jp/championship2026/standings.html">47th place</a>; Rock kokiri paper, KAIST</span>
+            <span class="cv-meta">2026</span>
+          </li>
+          <li>
+            <span><a href="https://icpc.global/regionals/finder/HCMC-2026">ICPC Asia Ho Chi Minh City Regional Contest</a> — Silver Medal, 7th place; Rock kokiri paper, KAIST</span>
             <span class="cv-meta">2025</span>
           </li>
           <li>
-            <span>ICPC Asia Pacific Championship — 47th place; Rock kokiri paper, KAIST</span>
-            <span class="cv-meta">2026</span>
+            <span><a href="https://icpc.global/regionals/finder/Seoul-2026">ICPC Asia Seoul Regional Onsite Contest</a> — 36th place; Rock kokiri Paper, KAIST</span>
+            <span class="cv-meta">2025</span>
+          </li>
+          <li>
+            <span><a href="https://icpc.global/regionals/finder/Seoul-First-Round-2026">ICPC Asia Korea National First Round Programming Contest</a> — 22nd place; Rock kokiri Paper, KAIST</span>
+            <span class="cv-meta">2025</span>
+          </li>
+          <li>
+            <span><a href="https://icpc.global/regionals/finder/Seoul-2025">ICPC Asia Seoul Regional Onsite Contest</a> — Honorable Mention, 56th place; HeyJinhwi, KAIST</span>
+            <span class="cv-meta">2024</span>
+          </li>
+          <li>
+            <span><a href="https://icpc.global/regionals/finder/Seoul-First-Round-2025">ICPC Asia Korea National First Round Programming Contest</a> — 35th place; HeyJinhwi, KAIST</span>
+            <span class="cv-meta">2024</span>
+          </li>
+          <li>
+            <span><a href="https://icpc.global/regionals/finder/Seoul-First-Round-2024">ICPC Asia Korea National First Round Programming Contest</a> — 54th place; TwoSolve, KAIST</span>
+            <span class="cv-meta">2023</span>
           </li>
         </ul>
       </div>
@@ -154,10 +174,6 @@ const pageTitle = 'About';
           <li>
             <span>UCPC Final qualification — did not attend</span>
             <span class="cv-meta">2026</span>
-          </li>
-          <li>
-            <span>ICPC Asia Seoul Regional Contest</span>
-            <span class="cv-meta">2024–2025</span>
           </li>
           <li>
             <span>Hyundai Mobis Algorithm Competition</span>
@@ -225,7 +241,11 @@ const pageTitle = 'About';
     <section class="cv-section" aria-labelledby="profiles-heading">
       <h2 id="profiles-heading">Online Profiles</h2>
 
-      <ul class="cv-profile-list" aria-label="online judge profiles">
+      <ul class="cv-profile-list" aria-label="competitive programming profiles">
+        <li>
+          <a href="https://icpc.global/ICPCID/DSTKB8C1U659">ICPC</a>
+          <span>Official contest participation and results</span>
+        </li>
         <li>
           <a href="https://codeforces.com/profile/octane">Codeforces</a>
           <span>Peak: International Master (2368)</span>
@@ -266,6 +286,12 @@ const pageTitle = 'About';
   .cv-dated-list .cv-meta {
     margin-top: 0.15em;
     text-align: right;
+  }
+
+  .cv-dated-list a {
+    color: var(--link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   @media (max-width: 420px) {
