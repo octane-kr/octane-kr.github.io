@@ -29,11 +29,13 @@ layout: ../../layouts/PostLayout.astro
 Do not put `title`, category fields, timestamps, `draft`, Lens fields, or other
 mutable metadata back into post Markdown.
 
-## Film review opening notice
+## Film reviews
 
-Use simple film-review titles such as `[[오디세이]] 후기`. Do not add an
-interpretive subtitle or a generated description/summary unless the author
-explicitly asks for one (author correction, 2026-09-15).
+Match the blog's existing review titles: the film name followed by `후기`,
+such as `오디세이 후기` or `토이 스토리 5 후기`, without decorative brackets.
+Omit descriptions to match the existing post lists. Do not add an interpretive
+subtitle or a generated summary unless the author explicitly asks for one
+(author correction, 2026-09-15).
 
 For film reviews formed by Codex from the author's conversational impressions,
 start the prose with the following reader-facing notice (author request, 2026-09-15):
