@@ -1,283 +1,55 @@
 ---
 import BlogLayout from '../layouts/BlogLayout.astro';
-
-const pageTitle = 'About';
+import ProfileRecords from '../components/ProfileRecords.astro';
+import profile from '../data/profile.json';
 ---
 
-<BlogLayout title={pageTitle}>
+<BlogLayout title="About">
   <article class="cv-page">
     <header class="cv-header">
-      <h1>Taein Oh</h1>
-      <p>
-        M.S. student in the School of Computing at KAIST.
-      </p>
+      <h1>{profile.name}</h1>
+      <p>{profile.summary}</p>
     </header>
 
-    <section class="cv-section" aria-labelledby="education-heading">
-      <h2 id="education-heading">Education</h2>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>Korea Advanced Institute of Science and Technology (KAIST)</h3>
-          <p>M.S. student, School of Computing</p>
+    {profile.about.map((section) => <section class="cv-section" aria-labelledby={`${section.id}-heading`}>
+      <h2 id={`${section.id}-heading`}>{section.title}</h2>
+      {section.groups.map((group) => 'title' in group ? (
+        <div class="cv-subsection">
+          <h3>{group.title}</h3>
+          <ProfileRecords records={profile.records} ids={group.ids} style={group.style} />
         </div>
-        <p class="cv-meta">2026–present</p>
-      </div>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>Korea Advanced Institute of Science and Technology (KAIST)</h3>
-          <p>B.S. in Mathematical Sciences and Computing (Double Major)</p>
-        </div>
-        <p class="cv-meta">2023–2026</p>
-      </div>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>Seoul Science High School</h3>
-          <p>32nd graduating class</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="cv-section" aria-labelledby="teaching-heading">
-      <h2 id="teaching-heading">Teaching &amp; Mentoring</h2>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>
-            Head Teaching Assistant (lecturer), CS.20002 Problem Solving
-            (문제해결기법)
-          </h3>
-          <p>Korea Advanced Institute of Science and Technology (KAIST)</p>
-        </div>
-        <p class="cv-meta">Fall 2026</p>
-      </div>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>
-            Teaching Assistant, CS.30202 Formal Languages and Automata
-            (형식언어 및 오토마타)
-          </h3>
-          <p>Korea Advanced Institute of Science and Technology (KAIST)</p>
-        </div>
-        <p class="cv-meta">Fall 2026</p>
-      </div>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>
-            Teaching Assistant, CS.20002 Problem Solving
-            (문제해결기법)
-          </h3>
-          <p>Korea Advanced Institute of Science and Technology (KAIST)</p>
-        </div>
-        <p class="cv-meta">Fall 2025</p>
-      </div>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>Study Leader, RUN Intermediate Study</h3>
-          <p>KAIST Algorithmic Problem Solving Club RUN</p>
-        </div>
-        <p class="cv-meta">Spring 2024, Fall 2024</p>
-      </div>
-    </section>
-
-    <section class="cv-section" aria-labelledby="service-heading">
-      <h2 id="service-heading">Leadership &amp; Service</h2>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>President, KAIST Fashion Club Favely</h3>
-        </div>
-        <p class="cv-meta">2025</p>
-      </div>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>Proctor, KAIST Freshman Advisor Group 16</h3>
-          <p>
-            Led class sessions for Happy College Life and Exciting College Life,
-            KAIST's required freshman courses, and mentored first-year students.
-          </p>
-        </div>
-        <p class="cv-meta">2024–2025</p>
-      </div>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>Vice President, KAIST Algorithmic Problem Solving Club RUN</h3>
-          <p>
-            Reviewed problems and helped operate 2024 KAIST RUN Spring Contest and
-            2024 KAIST 14th ICPC Mock Competition.
-          </p>
-          <p>
-            Set one problem for the 2024 KAIST 14th ICPC Mock Competition:
-            <a href="https://qoj.ac/contest/3633/problem/17880">G. Make RUN Great Again</a>.
-          </p>
-        </div>
-        <p class="cv-meta">2024</p>
-      </div>
-    </section>
-
-    <section class="cv-section" aria-labelledby="cp-heading">
-      <h2 id="cp-heading">Competitive Programming</h2>
-
-      <div class="cv-subsection">
-        <h3>Selected Team Results</h3>
-        <ul class="cv-dated-list">
-          <li>
-            <span>ICPC Asia Pacific Championship — Honorable Mention, 47th place; Rock kokiri paper, KAIST</span>
-            <span class="cv-meta">2026</span>
-          </li>
-          <li>
-            <span>ICPC Asia Ho Chi Minh City Regional Contest — Silver Medal, 7th place; Rock kokiri paper, KAIST</span>
-            <span class="cv-meta">2025</span>
-          </li>
-        </ul>
-      </div>
-
-      <div class="cv-subsection">
-        <h3>Finals &amp; Qualifications</h3>
-        <ul class="cv-dated-list">
-          <li>
-            <span>Samsung Collegiate Programming Challenge (SCPC) Finals</span>
-            <span class="cv-meta">2023–2026</span>
-          </li>
-          <li>
-            <span>AWS × Codetree Programming Contest (ACPC) Finals</span>
-            <span class="cv-meta">2025–2026</span>
-          </li>
-          <li>
-            <span>UCPC Finals</span>
-            <span class="cv-meta">2023–2025</span>
-          </li>
-          <li>
-            <span>UCPC Final qualification — did not attend</span>
-            <span class="cv-meta">2026</span>
-          </li>
-          <li>
-            <span>ICPC Asia Seoul Regional Onsite Contest</span>
-            <span class="cv-meta">2024–2025</span>
-          </li>
-          <li>
-            <span>Hyundai Mobis Algorithm Competition</span>
-            <span class="cv-meta">2024</span>
-          </li>
-          <li>
-            <span>Nexon Youth Programming Challenge (NYPC) Finals, 1519 Division</span>
-            <span class="cv-meta">2022</span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="cv-section" aria-labelledby="awards-heading">
-      <h2 id="awards-heading">Honors & Awards</h2>
-
-      <div class="cv-item">
-        <div class="cv-item-main">
-          <h3>Mathematics Competition for University Students in Korea</h3>
-          <p>Silver Medal, First Group (mathematics majors)</p>
-        </div>
-        <p class="cv-meta">2024</p>
-      </div>
-
-      <div class="cv-subsection">
-        <h3>Pre-University Awards</h3>
-        <ul class="cv-dated-list">
-          <li>
-            <span>Korea Olympiad in Informatics (KOI) — Silver Award, Second Round</span>
-            <span class="cv-meta">2022</span>
-          </li>
-          <li>
-            <span>R&amp;E Research in Mathematics, Seoul Science High School — Top Award</span>
-            <span class="cv-meta">2022</span>
-          </li>
-          <li>
-            <span>Graduation Research in Mathematics, Seoul Science High School — Excellence Award</span>
-            <span class="cv-meta">2022</span>
-          </li>
-          <li>
-            <span>Final Korean Mathematical Olympiad (FKMO) — Encouragement Award</span>
-            <span class="cv-meta">2021</span>
-          </li>
-          <li>
-            <span>Korean Mathematical Olympiad (KMO), High School Division — Gold Award, First Round; Silver Award, Second Round</span>
-            <span class="cv-meta">2019</span>
-          </li>
-          <li>
-            <span>Korean Mathematical Olympiad (KMO), Middle School Division — Silver Award, First Round; Gold Award, Second Round</span>
-            <span class="cv-meta">2018</span>
-          </li>
-        </ul>
-      </div>
-    </section>
+      ) : <ProfileRecords records={profile.records} ids={group.ids} style={group.style} />)}
+    </section>)}
 
     <section class="cv-section" aria-labelledby="interests-heading">
       <h2 id="interests-heading">Interests</h2>
-
-      <p>
-        Competitive programming; structural graph theory; algorithmic graph
-        theory
-      </p>
+      <p>{profile.interests.join('; ')}</p>
     </section>
 
     <section class="cv-section" aria-labelledby="profiles-heading">
       <h2 id="profiles-heading">Online Profiles</h2>
-
       <ul class="cv-profile-list" aria-label="competitive programming profiles">
-        <li>
-          <a href="https://icpc.global/ICPCID/DSTKB8C1U659">ICPC</a>
-          <span>Official contest participation and results</span>
-        </li>
-        <li>
-          <a href="https://codeforces.com/profile/octane">Codeforces</a>
-          <span>Peak: International Master (2368)</span>
-        </li>
-        <li>
-          <a href="https://atcoder.jp/users/octanec8h18">AtCoder</a>
-          <span>Peak: 1 Kyu (1948)</span>
-        </li>
-        <li>
-          <a href="https://doj.kr/ko/user/octane">DOJ</a>
-          <span>Peak: Expert (1674)</span>
-        </li>
-        <li>
-          <a href="https://solved.ac/profile/octane">solved.ac</a>
-          <span>Ruby V (2745); 1,336 problems solved</span>
-        </li>
+        {profile.profiles.map((entry) => <li>
+          <a href={entry.url}>{entry.label}</a>
+          <span>{entry.description}</span>
+        </li>)}
       </ul>
     </section>
+
+    <footer class="cv-downloads" aria-label="Download CVs">
+      <p>
+        <a href={`/cv/${profile.documents.academic.filename}`}>Academic CV (PDF)</a>
+        <span aria-hidden="true"> · </span>
+        <a href={`/cv/${profile.documents.general.filename}`}>General CV (PDF)</a>
+      </p>
+      <p class="cv-updated">Updated <time datetime={profile.updated}>{profile.updated}</time></p>
+    </footer>
   </article>
 </BlogLayout>
 
 <style>
-  .cv-dated-list {
-    margin: 8px 0 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .cv-dated-list li {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 18px;
-    align-items: start;
-    margin: 0;
-    padding: 0.3em 0;
-  }
-
-  .cv-dated-list .cv-meta {
-    margin-top: 0.15em;
-    text-align: right;
-  }
-
-  @media (max-width: 420px) {
-    .cv-dated-list li {
-      gap: 12px;
-    }
-  }
+  .cv-downloads { border-top: 1px solid var(--line); padding-top: 20px; }
+  .cv-downloads p { margin: 0; }
+  .cv-downloads a { display: inline-block; color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+  .cv-downloads .cv-updated { margin-top: 6px; color: var(--muted); font-size: 13px; }
 </style>

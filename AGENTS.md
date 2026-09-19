@@ -1,5 +1,7 @@
 # Repo Notes
 
+- For About or CV updates, read `docs/profile-workflow.md` first. Use `src/data/profile.json` as the shared source, regenerate and visually review both LaTeX PDFs, and preserve the author's selection rules.
+
 - For every post creation, editing, completion, or publication request, read `docs/post-workflow.md` before changing files. This is the durable workflow router for fresh contexts.
 - For Projects/UCPC dynamic scoreboard work, read `docs/ucpc-scoreboard-time-machine-plan.md` first.
 - Keep changes small and local. This blog prefers quiet editorial UI: low-chrome controls, underlines, simple borders, no SaaS-style cards or shadows.

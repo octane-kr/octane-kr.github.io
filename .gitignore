@@ -27,3 +27,7 @@ pnpm-debug.log*
 src/drafts/posts/**
 *.codex-write.tmp
 *.codex-write.lock
+
+# Generated CV source, compiler logs, and local PDF review images
+output/pdf/
+tmp/pdfs/

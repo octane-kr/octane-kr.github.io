@@ -1,0 +1,53 @@
+---
+interface RecordEntry {
+  title: string;
+  date: string;
+  koreanTitle?: string;
+  details?: string[];
+  result?: string;
+  team?: string;
+  reference?: { label: string; url: string };
+}
+interface Props {
+  records: Record<string, RecordEntry>;
+  ids: string[];
+  style: string;
+}
+const { records, ids, style } = Astro.props;
+---
+
+{style === 'list' ? (
+  <ul class="cv-dated-list">
+    {ids.map((id) => {
+      const entry = records[id];
+      return <li>
+        <span>{entry.title}{entry.result && ` — ${entry.result}`}{entry.team && `; ${entry.team}`}</span>
+        <span class="cv-meta">{entry.date}</span>
+      </li>;
+    })}
+  </ul>
+) : ids.map((id) => {
+  const entry = records[id];
+  return <div class="cv-item">
+    <div class="cv-item-main">
+      <h3>{entry.title}{entry.koreanTitle && <> (<span lang="ko">{entry.koreanTitle}</span>)</>}</h3>
+      {entry.result && <p>{entry.result}</p>}
+      {entry.details?.map((detail) => {
+        const reference = entry.reference;
+        if (reference && detail.includes(reference.label)) {
+          const [before, after] = detail.split(reference.label);
+          return <p>{before}<a href={reference.url}>{reference.label}</a>{after}</p>;
+        }
+        return <p>{detail}</p>;
+      })}
+    </div>
+    {entry.date && <p class="cv-meta">{entry.date}</p>}
+  </div>;
+})}
+
+<style>
+  .cv-dated-list { margin: 8px 0 0; padding: 0; list-style: none; }
+  .cv-dated-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: start; margin: 0; padding: 0.3em 0; }
+  .cv-dated-list .cv-meta { margin-top: 0.15em; text-align: right; }
+  @media (max-width: 420px) { .cv-dated-list li { gap: 12px; } }
+</style>

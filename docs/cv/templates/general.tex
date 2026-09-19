@@ -1,0 +1,52 @@
+% Resume template adapted from Sourabh Bajaj's sb2nov/resume.
+% Upstream commit: 7b70fe14876f97180034787f2a7f661597416a17
+% Copyright (c) 2026 Sourabh Bajaj. MIT License (see LICENSE-sb2nov.txt).
+% Changes: A4 paper, wrapping headings, two pages, date/version footer.
+\documentclass[a4paper,11pt]{article}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\input{glyphtounicode}
+\pdfgentounicode=1
+\hypersetup{pdftitle={@@NAME@@ - General CV},pdfauthor={@@NAME@@},pdfsubject={General curriculum vitae}}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[L]{\footnotesize Taein Oh | General CV | Updated @@UPDATED@@}
+\fancyfoot[R]{\footnotesize\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\addtolength{\oddsidemargin}{-0.35in}
+\addtolength{\evensidemargin}{-0.35in}
+\addtolength{\textwidth}{0.7in}
+\addtolength{\topmargin}{-0.4in}
+\addtolength{\textheight}{0.65in}
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+\setlength{\parindent}{0pt}
+\titleformat{\section}{\vspace{-4pt}\scshape\raggedright\large}{}{0em}{}[\color{black}\titlerule\vspace{-5pt}]
+% Upstream's two-column heading, with tabularx so long titles wrap.
+\newcommand{\resumeHeading}[2]{
+  \begin{tabularx}{\linewidth}{@{}X@{\hspace{12pt}}>{\raggedleft\arraybackslash}p{3.7cm}@{}}
+    \textbf{#1} & {\small #2} \\
+  \end{tabularx}
+}
+\newcommand{\resumeEntry}[3]{\resumeHeading{#1}{#2}\nopagebreak{\small #3\par}\vspace{5pt}}
+\newcommand{\resumeCompact}[3]{\resumeHeading{#1}{#2}\nopagebreak\if\relax\detokenize{#3}\relax\else{\small #3\par}\fi\vspace{2pt}}
+\begin{document}
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\Large @@NAME@@} & \href{mailto:@@EMAIL@@}{@@EMAIL@@} \\
+  General CV & \href{@@SITEURL@@}{@@WEBSITE@@}
+\end{tabular*}
+\vspace{5pt}
+{\small M.S. student, School of Computing, KAIST\par}
+@@CONTENT@@
+\end{document}

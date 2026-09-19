@@ -6,6 +6,8 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "generate:cv": "node scripts/generateCvs.mjs",
+    "check:profile": "node scripts/checkProfileArtifacts.mjs",
     "generate:icpc-vietnam": "node scripts/buildIcpcVietnamScoreboards.mjs --write",
     "generate:lens": "node scripts/generateLensIndex.mjs",
     "check:lens": "node --test scripts/lensDocumentParser.test.mjs",
@@ -16,7 +18,7 @@
     "post:mark-updated": "node scripts/markPostUpdated.mjs",
     "predev": "npm run check:posts && npm run check:lens && npm run generate:lens",
     "dev": "astro dev",
-    "prebuild": "npm run check:posts && npm run check:lens && npm run generate:lens",
+    "prebuild": "npm run check:profile && npm run check:posts && npm run check:lens && npm run generate:lens",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"

@@ -1,0 +1,132 @@
+{
+  "updated": "2026-09-20",
+  "name": "Taein Oh",
+  "summary": "M.S. student in the School of Computing at KAIST.",
+  "email": "octanec8h18@kaist.ac.kr",
+  "website": "https://octane-kr.github.io/",
+  "interests": ["Competitive programming", "Structural graph theory", "Algorithmic graph theory"],
+  "records": {
+    "masters": {
+      "title": "Korea Advanced Institute of Science and Technology (KAIST)",
+      "date": "2026–present", "pdfDate": "Sep. 2026 - present",
+      "details": ["M.S. student, School of Computing", "GRASP Lab; advisor: Sebastian Wiederrecht."]
+    },
+    "bachelors": {
+      "title": "Korea Advanced Institute of Science and Technology (KAIST)",
+      "date": "2023–2026", "pdfDate": "Mar. 2023 - Aug. 2026",
+      "details": ["B.S. in Mathematical Sciences and Computing (Double Major)"]
+    },
+    "high-school": {"title": "Seoul Science High School", "date": "", "details": ["32nd graduating class"]},
+    "ps-head-ta": {
+      "title": "Head Teaching Assistant (lecturer), CS.20002 Problem Solving", "koreanTitle": "문제해결기법", "date": "Fall 2026",
+      "details": ["Korea Advanced Institute of Science and Technology (KAIST)"]
+    },
+    "automata-ta": {
+      "title": "Teaching Assistant, CS.30202 Formal Languages and Automata", "koreanTitle": "형식언어 및 오토마타", "date": "Fall 2026",
+      "details": ["Korea Advanced Institute of Science and Technology (KAIST)"]
+    },
+    "ps-ta": {
+      "title": "Teaching Assistant, CS.20002 Problem Solving", "koreanTitle": "문제해결기법", "date": "Fall 2025",
+      "details": ["Korea Advanced Institute of Science and Technology (KAIST)"]
+    },
+    "run-study": {
+      "title": "Study Leader, RUN Intermediate Study", "date": "Spring 2024, Fall 2024", "pdfDate": "Spring & Fall 2024",
+      "details": ["KAIST Algorithmic Problem Solving Club RUN"]
+    },
+    "favely": {"title": "President, KAIST Fashion Club Favely", "date": "2025–2026", "pdfDate": "2025 - Spring 2026", "details": []},
+    "proctor": {
+      "title": "Proctor, KAIST Freshman Advisor Group 16", "date": "2024–2025",
+      "details": ["Led class sessions for Happy College Life and Exciting College Life, KAIST's required freshman courses, and mentored first-year students."]
+    },
+    "gink": {
+      "title": "Member, Green in KAIST (G-inK)", "date": "Fall 2024–Spring 2025",
+      "details": ["Communications and outreach, KAIST's environmental student organization. Coordinated contact with KAIST offices and student clubs, and supported exchanges with student organizations at other universities."]
+    },
+    "run-vp": {
+      "title": "Vice President, KAIST Algorithmic Problem Solving Club RUN", "date": "2024",
+      "details": ["Reviewed problems and helped operate the 2024 KAIST RUN Spring Contest and the 2024 KAIST 14th ICPC Mock Competition.", "Set one problem for the mock competition: G. Make RUN Great Again.", "Active member of RUN since 2023."],
+      "reference": {"label": "G. Make RUN Great Again", "url": "https://qoj.ac/contest/3633/problem/17880"}
+    },
+    "soong-ko-han": {
+      "title": "숭고한 알고리즘 경진대회 Div. 1", "pdfTitle": "Soong-Ko-Han Algorithm Contest, Div. 1", "date": "2026",
+      "result": "1st place (external team)", "team": "kokiri is cute"
+    },
+    "apac": {"title": "ICPC Asia Pacific Championship", "date": "2026", "result": "Honorable Mention, 47th place", "team": "Rock kokiri paper, KAIST"},
+    "hcmc": {"title": "ICPC Asia Ho Chi Minh City Regional Contest", "date": "2025", "result": "Silver Medal, 7th place", "team": "Rock kokiri paper, KAIST"},
+    "scpc": {"title": "Samsung Collegiate Programming Challenge (SCPC) Finals", "date": "2023–2026"},
+    "acpc": {"title": "AWS × Codetree Programming Contest (ACPC) Finals", "date": "2025–2026"},
+    "ucpc": {"title": "UCPC Finals", "date": "2023–2025"},
+    "ucpc-qualification": {"title": "UCPC Final qualification", "result": "did not attend", "date": "2026"},
+    "seoul": {"title": "ICPC Asia Seoul Regional Onsite Contest", "date": "2024–2025"},
+    "mobis": {"title": "Hyundai Mobis Algorithm Competition", "date": "2024"},
+    "nypc": {"title": "Nexon Youth Programming Challenge (NYPC) Finals, 1519 Division", "date": "2022"},
+    "university-math": {"title": "Mathematics Competition for University Students in Korea", "date": "2024", "result": "Silver Medal, First Group (mathematics majors)"},
+    "koi": {"title": "Korea Olympiad in Informatics (KOI), Second Round", "result": "Silver Medal, 21st place", "date": "2022"},
+    "re-math": {"title": "R&E Research in Mathematics, Seoul Science High School", "result": "Top Award", "date": "2022"},
+    "graduation-math": {"title": "Graduation Research in Mathematics, Seoul Science High School", "result": "Excellence Award", "date": "2022"},
+    "fkmo": {"title": "Final Korean Mathematical Olympiad (FKMO)", "result": "Encouragement Award", "date": "2021"},
+    "kmo-high": {"title": "Korean Mathematical Olympiad (KMO), High School Division", "result": "Gold Award, First Round; Silver Award, Second Round", "date": "2019"},
+    "kmo-middle": {"title": "Korean Mathematical Olympiad (KMO), Middle School Division", "result": "Silver Award, First Round; Gold Award, Second Round", "date": "2018"},
+    "summer-school": {"title": "Summer School on Combinatorics and Algorithms", "date": "Aug. 10–14, 2026", "details": ["Participant; KAIST, Daejeon, Korea."]},
+    "kscw": {"title": "Korean Student Combinatorics Workshop (KSCW2026)", "date": "Jul. 27–31, 2026", "details": ["Participant; Gongju Hanok Village, Gongju, Korea."]},
+    "lunatic": {"title": "Member, KAIST Street Dance Club Lunatic", "date": "2023–2025", "details": ["Led locking practice sessions as a practice team leader in Fall 2024."]},
+    "ghuttos": {"title": "Member, KAIST Hip-Hop and R&B Club Ghutto's", "date": "2023–2025", "details": ["Uploaded tracks to SoundCloud and performed at STadium, KAIST's freshman orientation (Saeteo), and the KAIST Student Cultural Festival."]}
+  },
+  "about": [
+    {"id": "education", "title": "Education", "groups": [{"style": "items", "ids": ["masters", "bachelors", "high-school"]}]},
+    {"id": "teaching", "title": "Teaching & Mentoring", "groups": [{"style": "items", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]}]},
+    {"id": "service", "title": "Leadership & Service", "groups": [{"style": "items", "ids": ["favely", "proctor", "gink", "run-vp"]}]},
+    {"id": "cp", "title": "Competitive Programming", "groups": [
+      {"title": "Selected Team Results", "style": "list", "ids": ["soong-ko-han", "apac", "hcmc"]},
+      {"title": "Finals & Qualifications", "style": "list", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"]}
+    ]},
+    {"id": "awards", "title": "Honors & Awards", "groups": [
+      {"style": "items", "ids": ["university-math"]},
+      {"title": "Pre-University Awards", "style": "list", "ids": ["koi", "re-math", "graduation-math", "fkmo", "kmo-high", "kmo-middle"]}
+    ]},
+    {"id": "academic-activities", "title": "Academic Activities", "groups": [{"style": "items", "ids": ["summer-school", "kscw"]}]},
+    {"id": "arts", "title": "Arts & Activities", "groups": [{"style": "items", "ids": ["lunatic", "ghuttos"]}]}
+  ],
+  "profiles": [
+    {"id": "icpc", "label": "ICPC", "url": "https://icpc.global/ICPCID/DSTKB8C1U659", "description": "Official contest participation and results"},
+    {"id": "codeforces", "label": "Codeforces", "url": "https://codeforces.com/profile/octane", "description": "Peak: International Master (2368)"},
+    {"id": "atcoder", "label": "AtCoder", "url": "https://atcoder.jp/users/octanec8h18", "description": "Peak: 1 Kyu (1948)"},
+    {"id": "doj", "label": "DOJ", "url": "https://doj.kr/ko/user/octane", "description": "Peak: Expert (1674)"},
+    {"id": "solved", "label": "solved.ac", "url": "https://solved.ac/profile/octane", "description": "Ruby V (2745); 1,336 problems solved"}
+  ],
+  "documents": {
+    "academic": {
+      "label": "Academic CV", "filename": "taein-oh-academic-cv.pdf",
+      "pages": [
+        [
+          {"title": "Education", "ids": ["masters", "bachelors"]},
+          {"title": "Research Interests", "text": "Structural graph theory; algorithmic graph theory."},
+          {"title": "Teaching & Mentoring", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]},
+          {"title": "Academic Activities", "ids": ["summer-school", "kscw"]}
+        ],
+        [
+          {"title": "Selected Honors & Awards", "ids": ["university-math", "koi", "re-math", "graduation-math"]},
+          {"title": "Selected Programming Contest Results", "ids": ["soong-ko-han", "apac", "hcmc"]},
+          {"title": "Service & Mentoring", "ids": ["run-vp", "proctor", "gink"]}
+        ]
+      ]
+    },
+    "general": {
+      "label": "General CV", "filename": "taein-oh-general-cv.pdf",
+      "pages": [
+        [
+          {"title": "Education", "ids": ["masters", "bachelors"]},
+          {"title": "Selected Programming Contest Results", "ids": ["soong-ko-han", "apac", "hcmc"]},
+          {"title": "Finals & Qualifications", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"], "compact": true},
+          {"title": "Selected Honors & Awards", "ids": ["university-math", "koi"], "compact": true},
+          {"title": "Online Profiles", "profiles": ["codeforces", "atcoder", "doj", "solved", "icpc"]}
+        ],
+        [
+          {"title": "Teaching & Mentoring", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]},
+          {"title": "Leadership & Service", "ids": ["favely", "proctor", "gink", "run-vp"]},
+          {"title": "Arts & Activities", "ids": ["lunatic", "ghuttos"]}
+        ]
+      ]
+    }
+  }
+}
