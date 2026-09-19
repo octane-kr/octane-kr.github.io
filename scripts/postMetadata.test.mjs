@@ -112,6 +112,97 @@ test('KST timestamps are strict and second-precision', () => {
   assert.equal(isValidKstTimestamp('2026-02-30T09:00:00+09:00'), false);
 });
 
+test('Scraps publish without a category, retain revision checks, and require classification when promoted', async () => {
+  const fixture = await mkdtemp(path.join(os.tmpdir(), 'unclassified-scrap-workflow-'));
+  const run = (script, args = []) => execFileSync(process.execPath, [path.join(fixture, 'scripts', script), ...args], {
+    cwd: fixture,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  });
+  try {
+    for (const directory of ['scripts', 'src/data', 'src/pages/posts', 'src/post-metadata']) {
+      await mkdir(path.join(fixture, directory), { recursive: true });
+    }
+    for (const script of [
+      'postMetadata.mjs', 'createPostDraft.mjs', 'publishPost.mjs',
+      'finishPostPublication.mjs', 'checkPublishedPosts.mjs', 'markPostUpdated.mjs',
+    ]) {
+      await copyFile(new URL(script, import.meta.url), path.join(fixture, 'scripts', script));
+    }
+    await writeFile(path.join(fixture, 'src/data/categories.txt'), 'Culture\n- Films\n');
+
+    assert.throws(() => run('createPostDraft.mjs', ['regular', '--title', 'Regular']), /category is required for Posts/);
+    assert.throws(() => run('createPostDraft.mjs', ['regular', '--title', 'Regular', '--section', 'posts']), /category is required for Posts/);
+    assert.throws(() => run('createPostDraft.mjs', ['orphan', '--title', 'Orphan', '--section', 'scraps', '--subcategory', 'Films']), /Subcategory requires a category/);
+
+    run('createPostDraft.mjs', ['example', '--title', 'Example', '--section', 'scraps']);
+    const draftPath = path.join(fixture, 'src/drafts/posts/example.md');
+    const draftMetadataPath = path.join(fixture, 'src/drafts/posts/example.json');
+    const publicPath = path.join(fixture, 'src/pages/posts/example.md');
+    const publicMetadataPath = path.join(fixture, 'src/post-metadata/example.json');
+    const draftMetadata = JSON.parse(await readFile(draftMetadataPath, 'utf8'));
+    assert.deepEqual(draftMetadata, { title: 'Example', section: 'scraps' });
+    assert.equal(await readFile(draftPath, 'utf8'), '');
+    run('checkPublishedPosts.mjs');
+    await writeFile(draftPath, 'Author prose.\n');
+
+    for (const category of [null, '', 42]) {
+      await writeFile(draftMetadataPath, JSON.stringify({ ...draftMetadata, category }));
+      assert.throws(() => run('checkPublishedPosts.mjs'), /optional metadata field "category"/);
+      assert.throws(() => run('publishPost.mjs', ['example']), /non-empty category/);
+    }
+    await writeFile(draftMetadataPath, JSON.stringify({ ...draftMetadata, subcategory: 'Films' }));
+    assert.throws(() => run('checkPublishedPosts.mjs'), /subcategory requires a category/);
+    assert.throws(() => run('publishPost.mjs', ['example']), /Subcategory requires a category/);
+    await writeFile(draftMetadataPath, JSON.stringify({ ...draftMetadata, section: 'posts' }));
+    assert.throws(() => run('checkPublishedPosts.mjs'), /non-empty string "category"/);
+    assert.throws(() => run('publishPost.mjs', ['example']), /non-empty category/);
+    await writeFile(draftMetadataPath, JSON.stringify({ ...draftMetadata, category: 'Unknown' }));
+    assert.throws(() => run('publishPost.mjs', ['example']), /not registered/);
+
+    await writeFile(draftMetadataPath, JSON.stringify(draftMetadata));
+    run('publishPost.mjs', ['example', '--at', '2026-09-01T09:00:00+09:00']);
+    let published = JSON.parse(await readFile(publicMetadataPath, 'utf8'));
+    assert.equal('category' in published, false);
+    assert.equal('subcategory' in published, false);
+    assert.throws(() => run('checkPublishedPosts.mjs'), /waiting for whole-post Lens review/);
+
+    await writeFile(draftPath, 'Author prose.\n');
+    await writeFile(draftMetadataPath, JSON.stringify(draftMetadata));
+    run('publishPost.mjs', ['example']);
+    run('finishPostPublication.mjs', ['example', '--lens-reviewed']);
+    run('checkPublishedPosts.mjs');
+
+    await writeFile(publicPath, (await readFile(publicPath, 'utf8')) + '\nAn additional paragraph.\n');
+    assert.throws(() => run('checkPublishedPosts.mjs'), /reader-visible post content changed/);
+    run('markPostUpdated.mjs', ['example', '--lens-reviewed', '--at', '2026-09-02T09:00:00+09:00']);
+    run('checkPublishedPosts.mjs');
+
+    published = JSON.parse(await readFile(publicMetadataPath, 'utf8'));
+    await writeFile(publicMetadataPath, JSON.stringify({ ...published, category: null }));
+    assert.throws(() => run('checkPublishedPosts.mjs'), /optional metadata field "category"/);
+    await writeFile(publicMetadataPath, JSON.stringify({ ...published, subcategory: 'Films' }));
+    assert.throws(() => run('checkPublishedPosts.mjs'), /subcategory requires a category/);
+    await writeFile(publicMetadataPath, JSON.stringify({ ...published, section: 'posts' }));
+    assert.throws(() => run('checkPublishedPosts.mjs'), /non-empty string "category"/);
+    await writeFile(publicMetadataPath, JSON.stringify({ ...published, section: 'posts', category: 'Unknown' }));
+    assert.throws(() => run('checkPublishedPosts.mjs'), /not registered/);
+
+    await writeFile(publicMetadataPath, JSON.stringify({ ...published, section: 'posts', category: 'Culture', subcategory: 'Films' }));
+    assert.throws(() => run('checkPublishedPosts.mjs'), /reader-visible post content changed/);
+    run('markPostUpdated.mjs', ['example', '--lens-reviewed', '--at', '2026-09-03T09:00:00+09:00']);
+    run('checkPublishedPosts.mjs');
+    const promoted = JSON.parse(await readFile(publicMetadataPath, 'utf8'));
+    assert.equal(promoted.publishedAt, '2026-09-01T09:00:00+09:00');
+    assert.equal(promoted.updatedAt, '2026-09-03T09:00:00+09:00');
+    assert.equal(promoted.section, 'posts');
+    assert.equal(promoted.category, 'Culture');
+  } finally {
+    assert.equal(path.dirname(fixture), path.resolve(os.tmpdir()));
+    await rm(fixture, { recursive: true, force: true });
+  }
+});
+
 test('atomic writes expose complete files and serialize competing target writes', async () => {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'post-metadata-atomic-'));
   const targetPath = path.join(tempDir, 'example.json');

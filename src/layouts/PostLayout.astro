@@ -12,7 +12,7 @@ const isScrap = section === 'scraps';
 
 const title = metadata?.title ?? 'Untitled';
 const description = metadata?.description ?? '';
-const category = metadata?.category ?? 'PS';
+const category = metadata?.category ?? '';
 const subcategory = metadata?.subcategory ?? '';
 const isFilmReview = category === 'Culture' && subcategory === 'Films';
 
@@ -43,9 +43,6 @@ const hasUpdatedAt =
   updatedAt !== null &&
   formatDate(updatedAt) !== formatDate(publishedAt);
 
-const formatCategory = (category, subcategory) =>
-  subcategory ? `${category} / ${subcategory}` : category;
-
 const categoryHref = `/posts/?category=${encodeURIComponent(category)}`;
 const subcategoryHref = subcategory
   ? `${categoryHref}&subcategory=${encodeURIComponent(subcategory)}`
@@ -61,11 +58,7 @@ const subcategoryHref = subcategory
         <span class="article-category-meta">
           {
             isScrap ? (
-              <>
-                <a href="/scraps/">Scraps</a>
-                <span aria-hidden="true">/</span>
-                <span>{formatCategory(category, subcategory)}</span>
-              </>
+              <a href="/scraps/">Scraps</a>
             ) : (
               <>
                 <a href={categoryHref}>{category}</a>

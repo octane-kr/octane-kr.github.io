@@ -14,7 +14,7 @@ import {
 } from './postMetadata.mjs';
 
 const usage =
-  'Usage: npm.cmd run post:new -- <slug> --title "..." --category "..." [--subcategory "..."] [--description "..."] [--section posts|scraps]';
+  'Usage: npm.cmd run post:new -- <slug> --title "..." [--category "..."] [--subcategory "..."] [--description "..."] [--section posts|scraps] (category is required for Posts)';
 const args = process.argv.slice(2);
 const slug = args.shift();
 
@@ -32,8 +32,9 @@ while (args.length > 0) {
   options[key.slice(2)] = value;
 }
 
-if (!options.title || !options.category) throw new Error(usage);
+if (!options.title || (options.section !== 'scraps' && !options.category)) throw new Error(usage);
 if (!isValidPostSection(options.section)) throw new Error('Section must be "posts" or "scraps".');
+if (options.subcategory && !options.category) throw new Error('Subcategory requires a category.');
 
 const draftPath = draftPostPathForSlug(slug);
 const draftMetadataPath = draftMetadataPathForSlug(slug);
@@ -54,7 +55,7 @@ for (const filePath of [publishedPostPathForSlug(slug), metadataPathForSlug(slug
 
 const metadata = {
   title: options.title,
-  category: options.category,
+  ...(options.category ? { category: options.category } : {}),
   ...(options.subcategory ? { subcategory: options.subcategory } : {}),
   ...(options.description ? { description: options.description } : {}),
   ...(options.section ? { section: options.section } : {}),
@@ -87,7 +88,7 @@ console.log(`${action} local draft: src/drafts/posts/${slug}.md`);
 console.log(`${action} Codex-owned metadata: src/drafts/posts/${slug}.json`);
 const categoryCatalog = await readCategoryCatalog();
 const registeredSubcategories = categoryCatalog.get(metadata.category);
-if (!registeredSubcategories) {
+if (metadata.category && !registeredSubcategories) {
   console.warn(
     `Draft category "${metadata.category}" is provisional; register it in src/data/categories.txt before publishing.`,
   );

@@ -2,7 +2,7 @@ export type PostMetadata = {
   title: string;
   publishedAt: string;
   updatedAt: string;
-  category: string;
+  category?: string;
   subcategory?: string;
   description?: string;
   section?: 'posts' | 'scraps';

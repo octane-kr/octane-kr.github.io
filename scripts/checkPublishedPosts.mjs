@@ -87,6 +87,18 @@ const assertOptionalString = (metadata, key, sourcePath) => {
   return true;
 };
 
+const assertCategoryMetadata = (metadata, sourcePath) => {
+  const validCategory = metadata.section === 'scraps'
+    ? assertOptionalString(metadata, 'category', sourcePath)
+    : assertRequiredString(metadata, 'category', sourcePath);
+  const validSubcategory = assertOptionalString(metadata, 'subcategory', sourcePath);
+  if (metadata.subcategory && !metadata.category) {
+    addError(sourcePath, 'subcategory requires a category');
+    return false;
+  }
+  return validCategory && validSubcategory;
+};
+
 const readMetadata = async (filePath) => {
   const sourcePath = toSourcePath(filePath);
   try {
@@ -226,11 +238,10 @@ for (const filePath of publishedPostFiles) {
   if (!assertAllowedKeys(metadata, publishedMetadataKeys, metadataSourcePath)) continue;
 
   const hasTitle = assertRequiredString(metadata, 'title', metadataSourcePath);
-  const hasCategory = assertRequiredString(metadata, 'category', metadataSourcePath);
+  const hasValidCategory = assertCategoryMetadata(metadata, metadataSourcePath);
   const hasPublishedAt = assertRequiredString(metadata, 'publishedAt', metadataSourcePath);
   const hasUpdatedAt = assertRequiredString(metadata, 'updatedAt', metadataSourcePath);
   const hasContentHash = assertRequiredString(metadata, 'contentHash', metadataSourcePath);
-  assertOptionalString(metadata, 'subcategory', metadataSourcePath);
   assertOptionalString(metadata, 'description', metadataSourcePath);
   assertPostSection(metadata, metadataSourcePath);
 
@@ -248,7 +259,7 @@ for (const filePath of publishedPostFiles) {
     }
   }
 
-  if (hasCategory) {
+  if (hasValidCategory && metadata.category) {
     const subcategories = categoryCatalog.get(metadata.category);
     if (!subcategories) {
       addError(metadataSourcePath, `category "${metadata.category}" is not registered in src/data/categories.txt`);
@@ -278,7 +289,7 @@ for (const filePath of publishedPostFiles) {
 
   if (hasContentHash && !contentHashPattern.test(metadata.contentHash)) {
     addError(metadataSourcePath, 'contentHash must use the sha256-v1:<64 lowercase hex> format');
-  } else if (hasTitle && hasCategory && hasContentHash && !isPublicationPending) {
+  } else if (hasTitle && hasValidCategory && hasContentHash && !isPublicationPending) {
     const actualHash = calculateContentHash(metadata, markdown);
     if (metadata.contentHash !== actualHash) {
       addError(
@@ -320,8 +331,7 @@ for (const filePath of draftPostFiles) {
   if (!assertAllowedKeys(metadata, draftMetadataKeys, metadataSourcePath)) continue;
 
   assertRequiredString(metadata, 'title', metadataSourcePath);
-  assertRequiredString(metadata, 'category', metadataSourcePath);
-  assertOptionalString(metadata, 'subcategory', metadataSourcePath);
+  assertCategoryMetadata(metadata, metadataSourcePath);
   assertOptionalString(metadata, 'description', metadataSourcePath);
   assertPostSection(metadata, metadataSourcePath);
 }

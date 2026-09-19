@@ -33,6 +33,9 @@ mutable metadata back into post Markdown.
 
 - The optional metadata field `section` is either `posts` (the default when
   omitted) or `scraps`. It is separate from category and publication status.
+- Leave `category` and `subcategory` out of Scraps. Their list and article
+  headers do not display classifications. Assign a category when promoting a
+  Scrap to a regular Post; Posts still require a registered category.
 - Codex-organized records such as the conversational film reviews belong in
   `scraps`. Choose this explicitly from the actual writing process; do not
   classify every film review or every mention of AI as a Scrap.
@@ -42,13 +45,14 @@ mutable metadata back into post Markdown.
 - Keep published files and URLs under `src/pages/posts/<slug>.md` and
   `/posts/<slug>/` so existing links, comments, and reactions retain their
   identity. A Scrap's navigation and list link point back to Scraps.
-- Start a local Scrap with `post:new -- <slug> --title "..." --category "..."
-  --section scraps`. Publication still requires an explicit request and the
+- Start a local Scrap with `post:new -- <slug> --title "..." --section scraps`.
+  Publication still requires an explicit request and the
   same Lens review and finish-publication steps below.
 - Moving an already published entry between Posts and Scraps is a
   reader-visible classification change: edit its metadata `section`, review
   Lens, then run `post:mark-updated -- <slug> --lens-reviewed`. Promote a
-  polished Scrap by setting `section` to `posts` or removing the field.
+  polished Scrap by assigning a registered `category` (and optional
+  `subcategory`), then setting `section` to `posts` or removing the field.
 
 ## Film reviews
 
@@ -97,16 +101,17 @@ npm.cmd run post:new -- <slug> --title "..." --category "..."
 ```
 
 Optional fields are `--subcategory "..."`, `--description "..."`, and
-`--section posts|scraps`. The
+`--section posts|scraps`. Omit `--category` for a Scrap; it is required for
+regular Posts. A subcategory always requires a category. The
 command safely resumes an identical partial/existing draft pair, but refuses
 conflicting metadata or a published slug. The Markdown file is empty by design
 when the request is only to create a shell.
 
 Draft sidecars contain only reader-facing metadata. They never contain
 `publishedAt`, `updatedAt`, `contentHash`, `layout`, or `draft`; physical
-location is the draft state. A draft category may remain provisional while the
-article is unfinished, but publication rejects it until it is registered in
-`src/data/categories.txt`.
+location is the draft state. Scraps need no category. A supplied draft category
+may remain provisional while the article is unfinished, but publication rejects
+it until it is registered in `src/data/categories.txt`.
 
 ## Publish
 
@@ -115,8 +120,8 @@ Publication always requires an explicit user request. A statement such as
 asks to publish.
 
 1. Read the complete draft and its sidecar. Do not silently rewrite prose.
-2. Confirm the body is non-empty and its category/subcategory exists in
-   `src/data/categories.txt`.
+2. Confirm the body is non-empty. Regular Posts require a category; any supplied
+   category/subcategory must exist in `src/data/categories.txt`.
 3. Run `npm.cmd run post:publish -- <slug>`. For a user-supplied historical
    time, append `--at YYYY-MM-DDTHH:mm:ss+09:00`.
 4. The command adds the fixed layout hook, moves the prose into the public

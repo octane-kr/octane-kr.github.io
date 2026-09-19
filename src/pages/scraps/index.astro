@@ -32,7 +32,6 @@ const scraps = Object.entries(postMetadataBySlug)
         <article class="post-card" data-post-slug={scrap.slug}>
           <a class="post-title" href={`/posts/${scrap.slug}/`}>{scrap.title}</a>
           <div class="post-meta">
-            <span>{[scrap.category, scrap.subcategory].filter(Boolean).join(' / ')}</span>
             <span>{dateFormatter.format(new Date(scrap.publishedAt))}</span>
           </div>
           {scrap.description && <p class="post-description">{scrap.description}</p>}

@@ -67,7 +67,10 @@ const validateDraftMetadata = async (metadata) => {
   if (typeof metadata.title !== 'string' || metadata.title.trim() === '') {
     throw new Error('Draft metadata requires a non-empty title.');
   }
-  if (typeof metadata.category !== 'string' || metadata.category.trim() === '') {
+  if (
+    (metadata.section !== 'scraps' || 'category' in metadata) &&
+    (typeof metadata.category !== 'string' || metadata.category.trim() === '')
+  ) {
     throw new Error('Draft metadata requires a non-empty category.');
   }
   for (const key of ['subcategory', 'description']) {
@@ -78,6 +81,11 @@ const validateDraftMetadata = async (metadata) => {
   if (!isValidPostSection(metadata.section)) {
     throw new Error('Section must be "posts" or "scraps".');
   }
+  if (metadata.subcategory && !metadata.category) {
+    throw new Error('Subcategory requires a category.');
+  }
+
+  if (!metadata.category) return;
 
   const categoryCatalog = await readCategoryCatalog();
   const subcategories = categoryCatalog.get(metadata.category);
@@ -178,7 +186,7 @@ publishedMetadata = {
   title: draftMetadata.title,
   publishedAt: timestamp,
   updatedAt: timestamp,
-  category: draftMetadata.category,
+  ...(draftMetadata.category ? { category: draftMetadata.category } : {}),
   ...(draftMetadata.subcategory ? { subcategory: draftMetadata.subcategory } : {}),
   ...(draftMetadata.description ? { description: draftMetadata.description } : {}),
   ...(draftMetadata.section ? { section: draftMetadata.section } : {}),

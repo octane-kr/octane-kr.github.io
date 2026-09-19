@@ -4,8 +4,9 @@ Each published `src/pages/posts/<slug>.md` has exactly one tracked
 `<slug>.json` sidecar here. These files are Codex-owned; the author writes only
 the post prose.
 
-- `title`, optional `description`, `category`, and optional `subcategory` are
-  reader-visible metadata.
+- `title` and optional `description` are reader-visible metadata. Regular Posts
+  require `category` and may have `subcategory`. Leave both out of Scraps and
+  assign them when promoting a Scrap to a Post. A subcategory requires a category.
 - Optional `section` is `posts` (the default) or `scraps`. Scraps are listed only
   under `/scraps/`; their existing article URLs remain stable. Section changes
   require revision acknowledgement just like category changes.
