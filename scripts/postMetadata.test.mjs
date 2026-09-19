@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
@@ -8,6 +9,7 @@ import {
   calculateContentHash,
   formatKstTimestamp,
   isValidKstTimestamp,
+  isValidPostSection,
   splitPostMarkdown,
   writeTextFileAtomic,
 } from './postMetadata.mjs';
@@ -53,6 +55,54 @@ test('content hash changes with reader-visible metadata or body', () => {
     calculateContentHash(metadata, 'hard break  \nnext\n'),
     calculateContentHash(metadata, 'hard break\nnext\n'),
   );
+});
+
+test('moving between Posts and Scraps requires revision acknowledgement without invalidating existing Posts', () => {
+  const originalHash = calculateContentHash(metadata, 'Body');
+  assert.equal(calculateContentHash({ ...metadata, section: 'posts' }, 'Body'), originalHash);
+  assert.notEqual(calculateContentHash({ ...metadata, section: 'scraps' }, 'Body'), originalHash);
+});
+
+test('post sections reject misspellings and malformed values', () => {
+  for (const value of [undefined, 'posts', 'scraps']) {
+    assert.equal(isValidPostSection(value), true);
+  }
+  for (const value of ['scrap', 'Scraps', '', null, true, 1, ['scraps']]) {
+    assert.equal(isValidPostSection(value), false);
+  }
+});
+
+test('draft creation and publication preserve Scraps and reject conflicting resume metadata', async () => {
+  const fixture = await mkdtemp(path.join(os.tmpdir(), 'post-section-workflow-'));
+  const run = (script, args) => execFileSync(process.execPath, [path.join(fixture, 'scripts', script), ...args], {
+    cwd: fixture,
+    encoding: 'utf8',
+    stdio: 'pipe',
+  });
+  try {
+    for (const directory of ['scripts', 'src/data', 'src/pages/posts', 'src/post-metadata']) {
+      await mkdir(path.join(fixture, directory), { recursive: true });
+    }
+    for (const script of ['postMetadata.mjs', 'createPostDraft.mjs', 'publishPost.mjs']) {
+      await copyFile(new URL(script, import.meta.url), path.join(fixture, 'scripts', script));
+    }
+    await writeFile(path.join(fixture, 'src/data/categories.txt'), 'Culture\n- Films\n');
+    run('createPostDraft.mjs', ['example', '--title', 'Example', '--category', 'Culture', '--subcategory', 'Films', '--section', 'scraps']);
+    const draftPath = path.join(fixture, 'src/drafts/posts/example.md');
+    const draftMetadataPath = path.join(fixture, 'src/drafts/posts/example.json');
+    const draftMetadata = JSON.parse(await readFile(draftMetadataPath, 'utf8'));
+    assert.equal(draftMetadata.section, 'scraps');
+    await writeFile(draftPath, 'Author prose.\n');
+    run('publishPost.mjs', ['example']);
+    const published = JSON.parse(await readFile(path.join(fixture, 'src/post-metadata/example.json'), 'utf8'));
+    assert.equal(published.section, 'scraps');
+
+    await writeFile(draftPath, 'Author prose.\n');
+    await writeFile(draftMetadataPath, JSON.stringify({ ...draftMetadata, section: 'posts' }));
+    assert.throws(() => run('publishPost.mjs', ['example']), /disagree on "section"/);
+  } finally {
+    await rm(fixture, { recursive: true, force: true });
+  }
 });
 
 test('KST timestamps are strict and second-precision', () => {

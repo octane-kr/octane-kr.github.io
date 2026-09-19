@@ -1,0 +1,43 @@
+---
+import BlogLayout from '../../layouts/BlogLayout.astro';
+import { getPostSection, postMetadataBySlug } from '../../lib/postMetadata';
+
+const description = '제가 던진 글 뭉치를 Codex가 정리한 기록들입니다. 추후 다듬어 정식 Post로 업로드될 수 있습니다.';
+const dateFormatter = new Intl.DateTimeFormat('ko-KR', {
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+});
+
+const scraps = Object.entries(postMetadataBySlug)
+  .filter(([, metadata]) => getPostSection(metadata) === 'scraps')
+  .map(([slug, metadata]) => ({ slug, ...metadata }))
+  .sort((a, b) =>
+    new Date(b.publishedAt).valueOf() - new Date(a.publishedAt).valueOf()
+    || a.slug.localeCompare(b.slug),
+  );
+---
+
+<BlogLayout title="Scraps" description={description}>
+  <section class="hero">
+    <h1>Scraps</h1>
+    <p>{description}</p>
+  </section>
+
+  <section class="post-list-section" aria-label="Scraps 목록">
+    {scraps.length === 0 && <p class="empty-state">아직 작성된 기록이 없습니다.</p>}
+    <div class="post-list">
+      {scraps.map((scrap) => (
+        <article class="post-card" data-post-slug={scrap.slug}>
+          <a class="post-title" href={`/posts/${scrap.slug}/`}>{scrap.title}</a>
+          <div class="post-meta">
+            <span>{[scrap.category, scrap.subcategory].filter(Boolean).join(' / ')}</span>
+            <span>{dateFormatter.format(new Date(scrap.publishedAt))}</span>
+          </div>
+          {scrap.description && <p class="post-description">{scrap.description}</p>}
+        </article>
+      ))}
+    </div>
+  </section>
+</BlogLayout>

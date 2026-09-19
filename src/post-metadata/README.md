@@ -6,6 +6,9 @@ the post prose.
 
 - `title`, optional `description`, `category`, and optional `subcategory` are
   reader-visible metadata.
+- Optional `section` is `posts` (the default) or `scraps`. Scraps are listed only
+  under `/scraps/`; their existing article URLs remain stable. Section changes
+  require revision acknowledgement just like category changes.
 - `publishedAt` is set by explicit publication. Normal revision commands leave
   it unchanged; correcting it requires an explicit user request.
 - `updatedAt` advances with every acknowledged reader-visible revision.

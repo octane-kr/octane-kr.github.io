@@ -5,6 +5,7 @@ export type PostMetadata = {
   category: string;
   subcategory?: string;
   description?: string;
+  section?: 'posts' | 'scraps';
   contentHash: string;
   workflowState?: 'lens-review-pending';
 };
@@ -22,3 +23,5 @@ export const postMetadataBySlug = Object.fromEntries(
 ) as Record<string, PostMetadata>;
 
 export const getPostMetadata = (slug: string) => postMetadataBySlug[slug];
+
+export const getPostSection = (metadata?: PostMetadata) => metadata?.section ?? 'posts';

@@ -29,6 +29,27 @@ layout: ../../layouts/PostLayout.astro
 Do not put `title`, category fields, timestamps, `draft`, Lens fields, or other
 mutable metadata back into post Markdown.
 
+## Posts and Scraps
+
+- The optional metadata field `section` is either `posts` (the default when
+  omitted) or `scraps`. It is separate from category and publication status.
+- Codex-organized records such as the conversational film reviews belong in
+  `scraps`. Choose this explicitly from the actual writing process; do not
+  classify every film review or every mention of AI as a Scrap.
+- Scraps appear only in `/scraps/`, not the blog home's Recent Posts, the Posts
+  list, its category filters, or its title/body search index.
+- The Scraps introduction is exactly: "제가 던진 글 뭉치를 Codex가 정리한 기록들입니다. 추후 다듬어 정식 Post로 업로드될 수 있습니다."
+- Keep published files and URLs under `src/pages/posts/<slug>.md` and
+  `/posts/<slug>/` so existing links, comments, and reactions retain their
+  identity. A Scrap's navigation and list link point back to Scraps.
+- Start a local Scrap with `post:new -- <slug> --title "..." --category "..."
+  --section scraps`. Publication still requires an explicit request and the
+  same Lens review and finish-publication steps below.
+- Moving an already published entry between Posts and Scraps is a
+  reader-visible classification change: edit its metadata `section`, review
+  Lens, then run `post:mark-updated -- <slug> --lens-reviewed`. Promote a
+  polished Scrap by setting `section` to `posts` or removing the field.
+
 ## Film reviews
 
 Match the blog's existing review titles: the film name followed by `후기`.
@@ -75,7 +96,8 @@ Use:
 npm.cmd run post:new -- <slug> --title "..." --category "..."
 ```
 
-Optional fields are `--subcategory "..."` and `--description "..."`. The
+Optional fields are `--subcategory "..."`, `--description "..."`, and
+`--section posts|scraps`. The
 command safely resumes an identical partial/existing draft pair, but refuses
 conflicting metadata or a published slug. The Markdown file is empty by design
 when the request is only to create a shell.
@@ -129,7 +151,7 @@ review.
 The workflow treats `publishedAt` as immutable after first publication; normal
 revision commands preserve it, and corrections require an explicit user
 request. `updatedAt` records the last acknowledged reader-visible revision. The
-revision hash covers the body, title, description, category, and subcategory;
+revision hash covers the body, title, description, category, subcategory, and section;
 it excludes timestamps, the fixed layout hook, Lens documents, and site code.
 It hashes normalized Markdown source conservatively so reader-visible code
 examples cannot slip through.

@@ -8,6 +8,7 @@ import {
   isReservedPostSlug,
   isSafeSlug,
   isValidKstTimestamp,
+  isValidPostSection,
   postLayoutValue,
   postMetadataDir,
   publicationPendingState,
@@ -27,12 +28,14 @@ const publishedMetadataKeys = new Set([
   'description',
   'contentHash',
   'workflowState',
+  'section',
 ]);
 const draftMetadataKeys = new Set([
   'title',
   'category',
   'subcategory',
   'description',
+  'section',
 ]);
 
 const listFilesByExtension = async (dir, extension, allowMissing = false) => {
@@ -91,6 +94,12 @@ const readMetadata = async (filePath) => {
   } catch (error) {
     addError(sourcePath, `invalid JSON (${error.message})`);
     return null;
+  }
+};
+
+const assertPostSection = (metadata, sourcePath) => {
+  if (!isValidPostSection(metadata.section)) {
+    addError(sourcePath, 'section must be "posts" or "scraps" when present');
   }
 };
 
@@ -223,6 +232,7 @@ for (const filePath of publishedPostFiles) {
   const hasContentHash = assertRequiredString(metadata, 'contentHash', metadataSourcePath);
   assertOptionalString(metadata, 'subcategory', metadataSourcePath);
   assertOptionalString(metadata, 'description', metadataSourcePath);
+  assertPostSection(metadata, metadataSourcePath);
 
   const isPublicationPending = metadata.workflowState === publicationPendingState;
   if ('workflowState' in metadata) {
@@ -313,6 +323,7 @@ for (const filePath of draftPostFiles) {
   assertRequiredString(metadata, 'category', metadataSourcePath);
   assertOptionalString(metadata, 'subcategory', metadataSourcePath);
   assertOptionalString(metadata, 'description', metadataSourcePath);
+  assertPostSection(metadata, metadataSourcePath);
 }
 
 if (errors.length > 0) {

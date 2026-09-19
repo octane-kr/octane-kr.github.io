@@ -5,22 +5,26 @@ import '../styles/global.css';
 const {
   title = '코끼리 뿌우',
   description = '',
+  activeSection: sectionOverride,
 } = Astro.props;
 
 const siteTitle = '코끼리 뿌우';
 const pageTitle = title === siteTitle ? siteTitle : `${title} - ${siteTitle}`;
 const pathname = Astro.url.pathname;
-const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
-  ? 'posts'
-  : pathname === '/projects'
-      || pathname.startsWith('/projects/')
-      || ['/codeforces-lab', '/codeforces-lab/', '/ucpc-scoreboard', '/ucpc-scoreboard/'].includes(pathname)
-    ? 'projects'
-    : pathname === '/about' || pathname === '/about/'
-      ? 'about'
-      : pathname === '/blog' || pathname === '/blog/'
-        ? 'home'
-        : '';
+const routeSection = pathname === '/scraps' || pathname.startsWith('/scraps/')
+  ? 'scraps'
+  : pathname === '/posts' || pathname.startsWith('/posts/')
+    ? 'posts'
+    : pathname === '/projects'
+        || pathname.startsWith('/projects/')
+        || ['/codeforces-lab', '/codeforces-lab/', '/ucpc-scoreboard', '/ucpc-scoreboard/'].includes(pathname)
+      ? 'projects'
+      : pathname === '/about' || pathname === '/about/'
+        ? 'about'
+        : pathname === '/blog' || pathname === '/blog/'
+          ? 'home'
+          : '';
+const activeSection = sectionOverride ?? routeSection;
 ---
 
 <!doctype html>
@@ -39,6 +43,7 @@ const activeSection = pathname === '/posts' || pathname.startsWith('/posts/')
         <nav class="site-nav" aria-label="주요 메뉴">
           <a href="/blog/" aria-current={activeSection === 'home' ? 'page' : undefined}>Home</a>
           <a href="/posts/" aria-current={activeSection === 'posts' ? 'page' : undefined}>Posts</a>
+          <a href="/scraps/" aria-current={activeSection === 'scraps' ? 'page' : undefined}>Scraps</a>
           <a href="/projects/" aria-current={activeSection === 'projects' ? 'page' : undefined}>Toys</a>
           <a href="/about/" aria-current={activeSection === 'about' ? 'page' : undefined}>About</a>
         </nav>

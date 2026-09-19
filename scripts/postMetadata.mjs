@@ -23,6 +23,8 @@ export const toSourcePath = (filePath) =>
 
 export const isSafeSlug = (slug) => /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/u.test(slug);
 export const isReservedPostSlug = (slug) => reservedPostSlugs.has(slug);
+export const isValidPostSection = (value) =>
+  value === undefined || value === 'posts' || value === 'scraps';
 
 export const assertSafeSlug = (slug) => {
   if (!isSafeSlug(slug)) {
@@ -59,6 +61,8 @@ export const calculateContentHash = (metadata, markdown) => {
     description: String(metadata.description ?? ''),
     category: String(metadata.category ?? ''),
     subcategory: String(metadata.subcategory ?? ''),
+    // Keep hashes for existing Posts stable while tracking section changes.
+    ...(metadata.section === 'scraps' ? { section: 'scraps' } : {}),
     body: normalizeRevisionBody(authorBody),
   };
   const digest = createHash('sha256').update(JSON.stringify(revision), 'utf8').digest('hex');

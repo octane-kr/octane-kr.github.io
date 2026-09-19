@@ -7,6 +7,7 @@ import {
   draftPostPathForSlug,
   formatKstTimestamp,
   isValidKstTimestamp,
+  isValidPostSection,
   metadataPathForSlug,
   postLayoutFrontmatter,
   publicationPendingState,
@@ -40,7 +41,7 @@ const draftPath = draftPostPathForSlug(slug);
 const draftMetadataPath = draftMetadataPathForSlug(slug);
 const publishedPath = publishedPostPathForSlug(slug);
 const publishedMetadataPath = metadataPathForSlug(slug);
-const allowedDraftFields = new Set(['title', 'category', 'subcategory', 'description']);
+const allowedDraftFields = new Set(['title', 'category', 'subcategory', 'description', 'section']);
 
 const readTextIfExists = async (filePath) => {
   try {
@@ -74,6 +75,9 @@ const validateDraftMetadata = async (metadata) => {
       throw new Error(`Optional draft metadata field "${key}" must be a non-empty string.`);
     }
   }
+  if (!isValidPostSection(metadata.section)) {
+    throw new Error('Section must be "posts" or "scraps".');
+  }
 
   const categoryCatalog = await readCategoryCatalog();
   const subcategories = categoryCatalog.get(metadata.category);
@@ -92,6 +96,9 @@ const assertDraftMetadataMatchesPublished = (draftMetadata, publishedMetadata) =
     if ((draftMetadata[key] ?? '') !== (publishedMetadata[key] ?? '')) {
       throw new Error(`Cannot resume publication: draft and public metadata disagree on "${key}".`);
     }
+  }
+  if ((draftMetadata.section ?? 'posts') !== (publishedMetadata.section ?? 'posts')) {
+    throw new Error('Cannot resume publication: draft and public metadata disagree on "section".');
   }
 };
 
@@ -174,6 +181,7 @@ publishedMetadata = {
   category: draftMetadata.category,
   ...(draftMetadata.subcategory ? { subcategory: draftMetadata.subcategory } : {}),
   ...(draftMetadata.description ? { description: draftMetadata.description } : {}),
+  ...(draftMetadata.section ? { section: draftMetadata.section } : {}),
   workflowState: publicationPendingState,
 };
 publishedMetadata.contentHash = calculateContentHash(publishedMetadata, expectedPublishedMarkdown);

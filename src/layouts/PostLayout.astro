@@ -2,11 +2,13 @@
 import BlogLayout from './BlogLayout.astro';
 import PostInteractions from '../components/PostInteractions.astro';
 import ReferenceLens from '../components/ReferenceLens.astro';
-import { getPostMetadata } from '../lib/postMetadata';
+import { getPostMetadata, getPostSection } from '../lib/postMetadata';
 
 const pathnameParts = Astro.url.pathname.split('/').filter(Boolean);
 const postSlug = pathnameParts[pathnameParts.length - 1] ?? '';
 const metadata = getPostMetadata(postSlug);
+const section = getPostSection(metadata);
+const isScrap = section === 'scraps';
 
 const title = metadata?.title ?? 'Untitled';
 const description = metadata?.description ?? '';
@@ -51,18 +53,28 @@ const subcategoryHref = subcategory
 
 ---
 
-<BlogLayout title={title} description={description}>
+<BlogLayout title={title} description={description} activeSection={section}>
   <article class="article">
     <header class="article-header">
       <h1>{title}</h1>
       <div class="article-meta">
         <span class="article-category-meta">
-          <a href={categoryHref}>{category}</a>
           {
-            subcategory && (
+            isScrap ? (
               <>
+                <a href="/scraps/">Scraps</a>
                 <span aria-hidden="true">/</span>
-                <a href={subcategoryHref}>{subcategory}</a>
+                <span>{formatCategory(category, subcategory)}</span>
+              </>
+            ) : (
+              <>
+                <a href={categoryHref}>{category}</a>
+                {subcategory && (
+                  <>
+                    <span aria-hidden="true">/</span>
+                    <a href={subcategoryHref}>{subcategory}</a>
+                  </>
+                )}
               </>
             )
           }
@@ -80,5 +92,5 @@ const subcategoryHref = subcategory
     <PostInteractions postSlug={postSlug} placement="bottom" showComments={true} />
   </article>
 
-  {!isFilmReview && <ReferenceLens postSlug={postSlug} />}
+  {!isFilmReview && !isScrap && <ReferenceLens postSlug={postSlug} />}
 </BlogLayout>

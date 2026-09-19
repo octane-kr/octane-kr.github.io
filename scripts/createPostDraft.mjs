@@ -5,6 +5,7 @@ import {
   draftMetadataPathForSlug,
   draftPostPathForSlug,
   draftPostsDir,
+  isValidPostSection,
   metadataPathForSlug,
   publishedPostPathForSlug,
   readCategoryCatalog,
@@ -13,7 +14,7 @@ import {
 } from './postMetadata.mjs';
 
 const usage =
-  'Usage: npm.cmd run post:new -- <slug> --title "..." --category "..." [--subcategory "..."] [--description "..."]';
+  'Usage: npm.cmd run post:new -- <slug> --title "..." --category "..." [--subcategory "..."] [--description "..."] [--section posts|scraps]';
 const args = process.argv.slice(2);
 const slug = args.shift();
 
@@ -23,7 +24,7 @@ assertSafeSlug(slug);
 const options = {};
 while (args.length > 0) {
   const key = args.shift();
-  if (!['--title', '--category', '--subcategory', '--description'].includes(key)) {
+  if (!['--title', '--category', '--subcategory', '--description', '--section'].includes(key)) {
     throw new Error(`Unknown option "${key}". ${usage}`);
   }
   const value = args.shift();
@@ -32,6 +33,7 @@ while (args.length > 0) {
 }
 
 if (!options.title || !options.category) throw new Error(usage);
+if (!isValidPostSection(options.section)) throw new Error('Section must be "posts" or "scraps".');
 
 const draftPath = draftPostPathForSlug(slug);
 const draftMetadataPath = draftMetadataPathForSlug(slug);
@@ -55,6 +57,7 @@ const metadata = {
   category: options.category,
   ...(options.subcategory ? { subcategory: options.subcategory } : {}),
   ...(options.description ? { description: options.description } : {}),
+  ...(options.section ? { section: options.section } : {}),
 };
 
 const [existingDraft, existingMetadataSource] = await Promise.all([
