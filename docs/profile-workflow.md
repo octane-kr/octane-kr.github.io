@@ -8,6 +8,9 @@ career facts into templates. The `about` and `documents` arrays select, group,
 and order records for each audience. An intentionally omitted CV item is still
 available in the shared source and About.
 
+The public domain is `https://ohtae.in/`. Keep `website` in the profile data,
+Astro's `site`, and `public/CNAME` consistent. Verify CV downloads on this domain.
+
 - About: full relevant profile, with Leadership & Service and Arts & Activities.
 - Academic CV: education, research interests, teaching, academic participation,
   selected honors, contest results, and university service.

@@ -3,7 +3,7 @@ import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
 export default defineConfig({
-  site: 'https://octane-kr.github.io',
+  site: 'https://ohtae.in',
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],

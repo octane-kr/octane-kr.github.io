@@ -1,6 +1,6 @@
 # 코끼리 뿌우
 
-[octane-kr.github.io](https://octane-kr.github.io)에 배포되는 Astro 기반 개인 블로그입니다.
+[ohtae.in](https://ohtae.in)에 배포되는 Astro 기반 개인 블로그입니다.
 
 ## Commands
 
