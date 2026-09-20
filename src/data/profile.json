@@ -91,7 +91,7 @@
     {"id": "icpc", "label": "ICPC", "url": "https://icpc.global/ICPCID/DSTKB8C1U659", "description": "Official contest participation and results"},
     {"id": "codeforces", "label": "Codeforces", "url": "https://codeforces.com/profile/octane", "description": "Peak: International Master (2368)"},
     {"id": "atcoder", "label": "AtCoder", "url": "https://atcoder.jp/users/octanec8h18", "description": "Peak: 1 Kyu (1948)"},
-    {"id": "doj", "label": "DOJ", "url": "https://doj.kr/ko/user/octane", "description": "Peak: Expert (1674)"},
+    {"id": "doj", "label": "DOJ", "url": "https://doj.kr/ko/user/octane", "description": "Peak: Expert (1756)"},
     {"id": "solved", "label": "solved.ac", "url": "https://solved.ac/profile/octane", "description": "Ruby V (2745); 1,336 problems solved"}
   ],
   "documents": {

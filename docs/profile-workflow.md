@@ -55,7 +55,7 @@ too. They are not silently rewritten by the CV generator.
 | Lunatic | Author confirmed Fall 2024 locking practice team lead; supplied club membership history spans 2023-2025. This does not claim to have led the whole club or choreographed performances. |
 | Ghutto's | Author confirmed SoundCloud uploads and performances at STadium, Saeteo, and the Student Cultural Festival. The festival performance year was recalled as probably 2024: do not print that year as certain. Membership history spans 2023-2025. Do not claim composition, production, or a particular track without confirmation. |
 | G-inK | Author confirmed Fall 2024-Spring 2025, communications/exchange department: contact with campus offices, campus clubs, and clubs at other universities. The English duty description is descriptive, not an official department title. Public Instagram cards show the organization's work but do not prove the author's contribution to specific projects. |
-| Ratings | Latest values previously confirmed in this conversation: CF 2368, AtCoder 1948, DOJ 1674. solved.ac statistics retain the prior About snapshot; they are not live counters. Refresh from the profile when the author requests a rating update. |
+| Ratings | Latest values confirmed in this conversation: CF 2368, AtCoder 1948; DOJ peak Expert (1756), verified on the public DOJ profile on 2026-09-20. solved.ac statistics retain the prior About snapshot; they are not live counters. Refresh from the profile when the author requests a rating update. |
 
 Useful sources:
 
