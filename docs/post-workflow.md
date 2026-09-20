@@ -29,6 +29,34 @@ layout: ../../layouts/PostLayout.astro
 Do not put `title`, category fields, timestamps, `draft`, Lens fields, or other
 mutable metadata back into post Markdown.
 
+## Inline typography
+
+Use the same rules in new and existing posts. Before a layout or typography
+cleanup, inspect related older posts as well as the current post. For a request
+to unify existing posts, inventory all published posts and local drafts; do not
+limit the review to recent posts or a filename pattern.
+
+- Personal account handles and individual contest display names use inline
+  code: `gs20036`, `abra_stone`, `졸업못함연구쉬었음청년`. Keep Korean particles
+  and honorifics outside the backticks. Use inline code for linked handles too,
+  such as `` [`gs20036`](https://codeforces.com/profile/gs20036) ``; a person's
+  real name stays in ordinary text.
+- Team names use ordinary text, including single-word and identifier-like
+  names: HeyJinhwi, Kokiri is cute, Reboot Ssal Game, 1MiB, floorsum. Preserve
+  the author's spelling, capitalization, spacing, and existing quotation marks.
+- In contest narration, problem labels (A, B, A번), verdicts and submission
+  counts (AC, WA, 2WA, 1TLE), elapsed times, and ordinary numeric limits use
+  ordinary text. Do not mark them as code just because they are short or ASCII.
+- Literal code, identifiers, types, calls, search queries, and exact output
+  strings use inline code: `long long`, `arr[i]`, `printf`, `Oh no!`. Algorithm
+  names and ordinary prose, including link labels, do not need code styling.
+  Preserve existing mathematical notation and code blocks.
+- Formatting does not authorize rewriting sentences, changing facts, renaming
+  people or teams, or changing link destinations. Inspect rendered output and
+  verify that only the intended formatting changed. Published-body formatting
+  changes still require the Lens review, revision acknowledgement, and build
+  described below.
+
 ## Posts and Scraps
 
 - The optional metadata field `section` is either `posts` (the default when

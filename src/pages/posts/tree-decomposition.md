@@ -18,7 +18,7 @@ $G$에서 인접하지 않은 정점이라고 $T$에서 떨어져 있어야 할 
 
 만약 $G$가 cycle이라면 어떨까? $G$에서 정점 하나를 떼면 path가 나온다. 뗀 정점을 $v$라고 하자. 이때 path는 자명히 tree이므로 위와 같은 방법으로 $G-v$의 tree decomposition을 구할 수 있다. 그 다음, 그냥 모든 bag에 $v$를 넣어버리면 $G$의 valid한 tree decomposition을 얻을 수 있다.
 
-위 두 예시에서 가장 큰 bag의 크기를 관찰해보자. Tree의 경우에는 bag의 최대 크기가 2이고, cycle의 경우는 bag의 최대 크기가 3이다. 이로부터 느낄 수 있는 사실은, 그래프가 tree에서 벗어날수록 작은 bag만으로 tree decomposition을 만들 수 없을 것 같다는 점이다. 참고로 tree와 cycle에서 위 예시보다 작은 최대 bag을 가지는 tree decomposition은 없음이 알려져 있다($G$가 정점 1개짜리 tree일 때 크기 1의 bag만으로 표현이 가능하기 때문에 불편하다면 당신은 높은 확률로 [parkky](https://codeforces.com/profile/parkky)이다).
+위 두 예시에서 가장 큰 bag의 크기를 관찰해보자. Tree의 경우에는 bag의 최대 크기가 2이고, cycle의 경우는 bag의 최대 크기가 3이다. 이로부터 느낄 수 있는 사실은, 그래프가 tree에서 벗어날수록 작은 bag만으로 tree decomposition을 만들 수 없을 것 같다는 점이다. 참고로 tree와 cycle에서 위 예시보다 작은 최대 bag을 가지는 tree decomposition은 없음이 알려져 있다($G$가 정점 1개짜리 tree일 때 크기 1의 bag만으로 표현이 가능하기 때문에 불편하다면 당신은 높은 확률로 [`parkky`](https://codeforces.com/profile/parkky)이다).
 
 따라서, **tree decomposition의 최대 bag의 크기**는 그래프가 tree와 얼마나 비슷한지를 나타내는 유의미한 척도가 될 것이라고 생각할 수 있다. 이를 tree decomposition의 width라고 하자. 이때 자연스럽게 $G$가 고정되었을 때 가능한 tree decomposition 중 width가 가장 작은 것을 택하고 싶을 것이다. 이를 optimal tree decomposition이라고 하며, optimal tree decomposition의 width를 **$G$의 treewidth**라고 한다.
 

@@ -4,7 +4,7 @@ layout: ../../layouts/PostLayout.astro
 
 문제 링크: https://oj.uz/problem/view/KAISTRUN26SPRING_F
 
-지난 RUN 봄대회에 출제된 ibm2006의 문제다. 정해가 매우 아름다워 풀이 공개 시간에 박수를 받은 문제이기도 하여 소개한다.
+지난 RUN 봄대회에 출제된 `ibm2006`의 문제다. 정해가 매우 아름다워 풀이 공개 시간에 박수를 받은 문제이기도 하여 소개한다.
 
 ## 문제
 
