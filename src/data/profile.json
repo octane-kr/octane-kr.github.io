@@ -16,7 +16,7 @@
       "date": "2023–2026", "pdfDate": "Mar. 2023 - Aug. 2026",
       "details": ["B.S. in Mathematical Sciences and Computing (Double Major)"]
     },
-    "high-school": {"title": "Seoul Science High School", "date": "", "details": ["32nd graduating class"]},
+    "high-school": {"title": "Seoul Science High School", "date": "", "details": ["32nd graduating class"], "pdfDetails": []},
     "ps-head-ta": {
       "title": "Head Teaching Assistant (lecturer), CS.20002 Problem Solving", "koreanTitle": "문제해결기법", "date": "Fall 2026",
       "details": ["Korea Advanced Institute of Science and Technology (KAIST)"]
@@ -115,7 +115,7 @@
       "label": "General CV", "filename": "taein-oh-general-cv.pdf",
       "pages": [
         [
-          {"title": "Education", "ids": ["masters", "bachelors"]},
+          {"title": "Education", "ids": ["masters", "bachelors", "high-school"]},
           {"title": "Selected Programming Contest Results", "ids": ["soong-ko-han", "apac", "hcmc"]},
           {"title": "Finals & Qualifications", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"], "compact": true},
           {"title": "Selected Honors & Awards", "ids": ["university-math", "koi"], "compact": true},

@@ -25,6 +25,11 @@ too. They are not silently rewritten by the CV generator.
 
 - Use factual roles and short descriptions, not promotional summaries.
 - Use established LaTeX templates, not a custom AI-designed PDF layout.
+- Keep Seoul Science High School as a single school-name entry after the KAIST
+  degrees in the General CV. Academic CV education stays focused on KAIST;
+  About keeps its existing school entry. Do not infer graduation dates or add
+  promotional labels. `pdfDetails` may shorten an entry for PDFs while retaining
+  its full `details` in About.
 - Do not list ICPC preliminary ranks. Seoul onsite participation is one
   2024-2025 entry; the full record is accessible through the ICPC profile.
 - Competition names/results in About are plain text. Keep the ICPC link in

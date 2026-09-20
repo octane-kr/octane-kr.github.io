@@ -17,7 +17,7 @@ function sectionTex(section, variant) {
     const title = tex(record.pdfTitle ?? record.title);
     const date = tex(record.pdfDate ?? record.date);
     const result = record.result ? `${record.result}${record.team ? `; ${record.team}` : ''}` : '';
-    const description = [result, ...(record.details ?? [])].filter(Boolean).map(tex).join('\\newline ');
+    const description = [result, ...(record.pdfDetails ?? record.details ?? [])].filter(Boolean).map(tex).join('\\newline ');
     text += variant === 'academic'
       ? `\\cvitem{${date}}{\\textbf{${title}}${description ? `\\newline ${description}` : ''}}\n`
       : `\\${section.compact ? 'resumeCompact' : 'resumeEntry'}{${title}}{${date}}{${description}}\n`;
