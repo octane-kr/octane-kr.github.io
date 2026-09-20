@@ -29,7 +29,7 @@ too. They are not silently rewritten by the CV generator.
   2024-2025 entry; the full record is accessible through the ICPC profile.
 - Competition names/results in About are plain text. Keep the ICPC link in
   Online Profiles, and retain the existing problem link in RUN service.
-- Favely: president title and dates only. Do not add a revival narrative,
+- Favely: president in 2025 only, not Spring 2026. Keep title and dates only. Do not add a revival narrative,
   numerical growth claim, or an inferred personal interest in fashion.
 - Proctor: actually led class sessions and mentored freshmen. Program planning
   belonged to the Freshman Program Designers. Do not relabel this as an
@@ -50,7 +50,7 @@ too. They are not silently rewritten by the CV generator.
 | Soong-Ko-Han Div. 1 | Author supplied the 2026 scoreboard and explicitly confirmed it is final: kokiri is cute, external team, 1st place, 10 solves. The Korean name is preserved in About. The PDF name is an English rendering, not a claim of official English branding. Do not invent a medal or an internal-team award. |
 | ICPC | Author's official ICPCID excerpt; APAC 47th separately confirmed by the final standings |
 | KOI | Author confirmed 2022 Round 2, Silver Medal, 21st place |
-| Favely | Author confirmed presidency in 2025; supplied SPARCS Clubs history also identifies the author as president in Spring 2026. The term ends at Spring 2026 in the PDFs. |
+| Favely | Author explicitly clarified that the presidency was in 2025 and did not include Spring 2026. The SPARCS Clubs display must not be used to extend the actual term. Use 2025 in About and the General CV; the role is not selected for the Academic CV. |
 | RUN | Existing vice-president, study-leader, contest operation, and problem-setting facts; author confirmed continued active participation; membership history begins in 2023 |
 | Lunatic | Author confirmed Fall 2024 locking practice team lead; supplied club membership history spans 2023-2025. This does not claim to have led the whole club or choreographed performances. |
 | Ghutto's | Author confirmed SoundCloud uploads and performances at STadium, Saeteo, and the Student Cultural Festival. The festival performance year was recalled as probably 2024: do not print that year as certain. Membership history spans 2023-2025. Do not claim composition, production, or a particular track without confirmation. |
