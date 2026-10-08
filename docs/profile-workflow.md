@@ -49,6 +49,8 @@ too. They are not silently rewritten by the CV generator.
   its full `details` in About.
 - Do not list ICPC preliminary ranks. Seoul onsite participation is one
   2024-2025 entry; the full record is accessible through the ICPC profile.
+- Keep the 2022 KOI silver medal in About and the General CV only. The author
+  excluded it from the Academic CV on 2026-10-08.
 - Competition names/results in About are plain text. Keep the ICPC link in
   Online Profiles, and retain the existing problem link in RUN service.
 - Favely: president in 2025 only, not Spring 2026. Keep title and dates only. Do not add a revival narrative,

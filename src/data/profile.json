@@ -130,7 +130,7 @@
           {"title": "Selected Coursework", "ids": ["math-coursework", "theory-coursework"], "layout": "subjects"},
           {"title": "Teaching (KAIST)", "ids": ["ps-head-ta", "automata-ta", "ps-ta"], "omitDetails": true},
           {"title": "Schools & Workshops (participant)", "ids": ["summer-school", "kscw"], "omitDetails": true},
-          {"title": "Selected Honors & Awards", "ids": ["hcmc", "university-math", "koi", "re-math", "graduation-math"], "compact": true, "omitTeam": true}
+          {"title": "Selected Honors & Awards", "ids": ["hcmc", "university-math", "re-math", "graduation-math"], "compact": true, "omitTeam": true}
         ]
       ]
     },
