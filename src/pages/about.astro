@@ -2,6 +2,23 @@
 import BlogLayout from '../layouts/BlogLayout.astro';
 import ProfileRecords from '../components/ProfileRecords.astro';
 import profile from '../data/profile.json';
+
+// Match the displayed rank, so a later rank change cannot inherit a stale color.
+const ratingPatterns: Record<string, RegExp> = {
+  codeforces: /International Master \(\d+\)/,
+  atcoder: /1 Kyu \(\d+\)/,
+  doj: /Expert \(\d+\)/,
+  solved: /Ruby V \(\d+\)/,
+};
+const onlineProfiles = profile.profiles.map((entry) => {
+  const match = ratingPatterns[entry.id]?.exec(entry.description);
+  return {
+    ...entry,
+    before: match ? entry.description.slice(0, match.index) : entry.description,
+    rating: match?.[0],
+    after: match ? entry.description.slice(match.index + match[0].length) : '',
+  };
+});
 ---
 
 <BlogLayout title="About">
@@ -29,9 +46,9 @@ import profile from '../data/profile.json';
     <section class="cv-section" aria-labelledby="profiles-heading">
       <h2 id="profiles-heading">Online Profiles</h2>
       <ul class="cv-profile-list" aria-label="competitive programming profiles">
-        {profile.profiles.map((entry) => <li>
+        {onlineProfiles.map((entry) => <li data-platform={entry.id}>
           <a href={entry.url}>{entry.label}</a>
-          <span>{entry.description}</span>
+          <span>{entry.before}{entry.rating && <span class="cv-profile-rating">{entry.rating}</span>}{entry.after}</span>
         </li>)}
       </ul>
     </section>
@@ -48,6 +65,12 @@ import profile from '../data/profile.json';
 </BlogLayout>
 
 <style>
+  .cv-profile-list .cv-profile-rating { font-weight: 600; }
+  /* Rank hues, darkened where needed for readable text on white. */
+  [data-platform="codeforces"] .cv-profile-rating { color: #b36200; }
+  [data-platform="atcoder"] .cv-profile-rating { color: #0000cc; }
+  [data-platform="doj"] .cv-profile-rating { color: #2563eb; }
+  [data-platform="solved"] .cv-profile-rating { color: #c9004a; }
   .cv-downloads { border-top: 1px solid var(--line); padding-top: 20px; }
   .cv-downloads p { margin: 0; }
   .cv-downloads a { display: inline-block; color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
