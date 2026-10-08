@@ -12,8 +12,11 @@ The public domain is `https://ohtae.in/`. Keep `website` in the profile data,
 Astro's `site`, and `public/CNAME` consistent. Verify CV downloads on this domain.
 
 - About: full relevant profile, with Leadership & Service and Arts & Activities.
-- Academic CV: education, research interests, teaching, academic participation,
-  selected honors, contest results, and university service.
+- Academic CV: a concise mathematics/theoretical-CS profile: education, research
+  interests, supervised individual study, selected mathematics/theory coursework,
+  teaching, schools/workshops, and a small selection of honors. Currently one page
+  at the existing 11pt moderncv size. Broad club/service detail stays in About and
+  General CV; do not treat the profiles of ML/engineering peers as its content plan.
 - General CV: education, contest results, qualifications, teaching, leadership,
   service, and selected arts activities. Two pages; no invented skills inventory.
 
@@ -25,6 +28,20 @@ too. They are not silently rewritten by the CV generator.
 
 - Use factual roles and short descriptions, not promotional summaries.
 - Use established LaTeX templates, not a custom AI-designed PDF layout.
+- The author completed Individual Study (CS.91100) with Prof. Sebastian Wiederrecht
+  from Spring 2025 through Spring 2026. Keep period and supervisor only unless the
+  author supplies a concrete topic/result. Do not claim extensive paper reading,
+  formal presentations, publications, a paid RA position, or a named theorem.
+- Selected Coursework should represent completed mathematical/theoretical training,
+  not a list of the best grades. Withdrawn courses (including Advanced Graph Theory,
+  Advanced Discrete Geometry, Machine Learning, and Quantum Algorithms) are not
+  completed coursework. NP-Hard algorithms was later completed after a withdrawal.
+- Do not copy GPA, core-GPA definitions, qualifications, or research metrics from
+  reference CVs. The 2026-09-21 calculation from the author's complete pasted list
+  remains a private reconstruction under ignored `output/pdf/gpa-audit.*`, with
+  AP/exchange-credit scenarios and explicit subject scopes. Official cumulative
+  and major GPA are unconfirmed, so GPA is currently omitted from the public profile
+  and submission PDFs. Do not publish the grade inventory or calculations by accident.
 - Keep Seoul Science High School as a single school-name entry after the KAIST
   degrees in the General CV. Academic CV education stays focused on KAIST;
   About keeps its existing school entry. Do not infer graduation dates or add
@@ -48,9 +65,14 @@ too. They are not silently rewritten by the CV generator.
 
 ## Evidence and qualifications (2026-09-20)
 
+The individual-study and coursework entries were confirmed/added on 2026-09-21.
+Their deferred release is included in the author's 2026-10-08 profile refresh.
+
 | Records | Basis / limitation |
 | --- | --- |
 | Education, GRASP Lab, advisor, email | Current `src/pages/index.astro`; M.S. from Sep. 2026, B.S. Mar. 2023-Aug. 2026 |
+| Individual Study | Author confirmed Spring 2025-Spring 2026 with Prof. Sebastian Wiederrecht, mostly discussions in meetings. CS.91100 appears four times with final grade S in the supplied course list. No specific research contribution or output is claimed. |
+| Selected Coursework | Completed final grades in the author-supplied list: Analysis I/II, Modern Algebra I/II, Topology; Algorithmic Graph Theory; Graph Classes, Algorithms, Logic; Algorithms Design and Analysis for NP-Hard Problems. Grades are not listed in the CV. |
 | Teaching and academic events | Existing `src/pages/teaching.astro`, `activities.astro`, and About; event participation does not imply a talk |
 | Soong-Ko-Han Div. 1 | Author supplied the 2026 scoreboard and explicitly confirmed it is final: kokiri is cute, external team, 1st place, 10 solves. The Korean name is preserved in About. The PDF name is an English rendering, not a claim of official English branding. Do not invent a medal or an internal-team award. |
 | ICPC | Author's official ICPCID excerpt; APAC 47th separately confirmed by the final standings |
@@ -73,6 +95,29 @@ Useful sources:
 - https://kaistvision.kaist.ac.kr/article/11/7 (Saeteo)
 - https://gistnews.co.kr/?p=6389 (STadium)
 - https://herald.kaist.ac.kr/news/articleView.html?idxno=20126 (Ghutto's spelling)
+
+## Refresh audit (2026-10-08)
+
+The author requested a full review of About and related profile surfaces after
+publishing the SW-IT review. Preserve the earlier audience/selection decisions.
+
+| Surface / records | Evidence checked and decision |
+| --- | --- |
+| Home, blog introduction, education, advisor | Checked `/`, `/blog/`, shared education records, and the live [GRASP member page](https://grasp-kaist.github.io/members). Current M.S. status remains correct. No new degree or advisor change established. |
+| About and both CVs | Release the previously confirmed individual study/coursework and the one-page Academic / two-page General selections, then regenerate both PDFs with `updated = 2026-10-08`. |
+| SW-IT 2026 | Author's published account plus the [official scoreboard](https://aoj.anacnu.kr/contests/19/scoreboard): Kokiri is cute, 1st, 14 solves, 364 displayed penalty. The [official event site](https://2026-swit-contest.anacnu.kr/) lists 대상 for one team and the issuing award as 충남대학교데이터보안활용 혁신융합대학사업단장상. About uses 대상 (1st place); `pdfResult` provides the descriptive English rendering Grand Prize, 1st place. Add to About / General CV only. |
+| Contest service | [DOJ Contest 7](https://doj.kr/ko/contests/doj-contest-7) and [DOJ Beginner Contest 11](https://doj.kr/ko/contests/bcd11) publicly list octane as a setter. Checked all 20 contests linked from the current DOJ contest index; these are the two matching staff listings. BCD 11 is ongoing; this is a setter credit, not a contest result. The author also states in the SW-IT review that they reviewed the 2025 contest. Add one service record to About / General CV, without duplicating RUN service. |
+| Online profiles | Rechecked [Codeforces](https://codeforces.com/profile/octane), [AtCoder](https://atcoder.jp/users/octanec8h18), [DOJ](https://doj.kr/ko/user/octane), and [solved.ac](https://solved.ac/profile/octane). Existing peak values 2368 / 1948 / 1756 and solved.ac Ruby V 2745, 1,336 solved remain accurate. Preserve peak versus current distinctions. |
+| ICPC and other contest records | Read the live official ICPCID. The new 2026 first-round entry has no result; Huawei Online Challenge participation is not a finalist/award record. Preserve the selected results and do not add preliminary ranks. Reviewed the site's contest posts for later results; SW-IT is the new selected result. |
+| Research, academic activities, historical awards, leadership, arts | Reviewed the complete shared record inventory, Activities page, existing evidence table, GRASP pages, and focused name/handle searches. No additional attributable completed research output, talk, academic event, or role change established. Retain author-confirmed historical facts; do not join unrelated namesakes or turn scheduled participation into attendance. |
+| Teaching roles and materials | Existing Fall 2026 roles remain current. Add the prepared `02-hw1-solutions/week-3-lecture-slides.pdf` from the CS.20002 workspace, removing only source page 30 (the student interview notice). The public copy has 29 pages and preserves original slide numbering. The source has no printed lecture date, so the link does not invent one. Keep the source PDF intact. |
+| Supplementary PDFs | Inspected the v1.1 release, but the author explicitly excluded these from publication. Do not copy or link the PS tips, mint, or OJ guide PDFs. |
+
+The lecture source is under
+`C:/octane/Project/2026Aug CS.20002/current/2026/course-materials/02-hw1-solutions/`.
+Before replacing the public copy, inspect the source for student-specific pages
+again; never blindly copy the entire PDF. Do not reproduce student IDs in this
+repository's documentation or release records.
 
 ## Templates
 

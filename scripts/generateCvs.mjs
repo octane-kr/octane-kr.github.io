@@ -15,11 +15,17 @@ function sectionTex(section, variant) {
   for (const id of section.ids ?? []) {
     const record = profile.records[id];
     const title = tex(record.pdfTitle ?? record.title);
-    const date = tex(record.pdfDate ?? record.date);
-    const result = record.result ? `${record.result}${record.team ? `; ${record.team}` : ''}` : '';
-    const description = [result, ...(record.pdfDetails ?? record.details ?? [])].filter(Boolean).map(tex).join('\\newline ');
+    const date = tex(record.pdfDate ?? record.date).replace(/\b(Spring|Summer|Fall|Winter|Jan\.|Feb\.|Mar\.|Apr\.|May|Jun\.|Jul\.|Aug\.|Sep\.|Oct\.|Nov\.|Dec\.) (\d{4})/g, '$1~$2');
+    const resultText = record.pdfResult ?? record.result;
+    const result = resultText ? `${resultText}${record.team && !section.omitTeam ? `; ${record.team}` : ''}` : '';
+    const details = section.omitDetails ? [] : (record.pdfDetails ?? record.details ?? []);
+    const description = [result, ...details].filter(Boolean).map(tex).join('\\newline ');
+    if (variant === 'academic' && section.layout === 'subjects') {
+      text += `\\cvitem{${title}}{${description}}\n`;
+      continue;
+    }
     text += variant === 'academic'
-      ? `\\cvitem{${date}}{\\textbf{${title}}${description ? `\\newline ${description}` : ''}}\n`
+      ? `\\cvitem{${date}}{\\textbf{${title}}${description ? `${section.compact ? ': ' : '\\newline '}${description}` : ''}}\n`
       : `\\${section.compact ? 'resumeCompact' : 'resumeEntry'}{${title}}{${date}}{${description}}\n`;
   }
   for (const id of section.profiles ?? []) {

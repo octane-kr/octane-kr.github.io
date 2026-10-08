@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-20",
+  "updated": "2026-10-08",
   "name": "Taein Oh",
   "summary": "M.S. student in the School of Computing at KAIST.",
   "email": "octanec8h18@kaist.ac.kr",
@@ -17,6 +17,19 @@
       "details": ["B.S. in Mathematical Sciences and Computing (Double Major)"]
     },
     "high-school": {"title": "Seoul Science High School", "date": "", "details": ["32nd graduating class"], "pdfDetails": []},
+    "individual-study": {
+      "title": "Individual Study (CS.91100), KAIST",
+      "date": "Spring 2025–Spring 2026",
+      "details": ["Supervisor: Prof. Sebastian Wiederrecht."]
+    },
+    "math-coursework": {
+      "title": "Mathematics", "date": "",
+      "details": ["Analysis I & II; Modern Algebra I & II; Topology."]
+    },
+    "theory-coursework": {
+      "title": "Graph theory and algorithms", "pdfTitle": "Theory", "date": "",
+      "details": ["Algorithmic Graph Theory; Graph Classes, Algorithms, Logic; Algorithms Design and Analysis for NP-Hard Problems."]
+    },
     "ps-head-ta": {
       "title": "Head Teaching Assistant (lecturer), CS.20002 Problem Solving", "koreanTitle": "문제해결기법", "date": "Fall 2026",
       "details": ["Korea Advanced Institute of Science and Technology (KAIST)"]
@@ -33,6 +46,10 @@
       "title": "Study Leader, RUN Intermediate Study", "date": "Spring 2024, Fall 2024", "pdfDate": "Spring & Fall 2024",
       "details": ["KAIST Algorithmic Problem Solving Club RUN"]
     },
+    "contest-service": {
+      "title": "Contest Problem Setter and Reviewer", "date": "2025–2026",
+      "details": ["Problem setter: DOJ Contest 7 and DOJ Beginner Contest 11 (2026).", "Problem reviewer: SW-IT Contest (2025)."]
+    },
     "favely": {"title": "President, KAIST Fashion Club Favely", "date": "2025", "details": []},
     "proctor": {
       "title": "Proctor, KAIST Freshman Advisor Group 16", "date": "2024–2025",
@@ -46,6 +63,10 @@
       "title": "Vice President, KAIST Algorithmic Problem Solving Club RUN", "date": "2024",
       "details": ["Reviewed problems and helped operate the 2024 KAIST RUN Spring Contest and the 2024 KAIST 14th ICPC Mock Competition.", "Set one problem for the mock competition: G. Make RUN Great Again.", "Active member of RUN since 2023."],
       "reference": {"label": "G. Make RUN Great Again", "url": "https://qoj.ac/contest/3633/problem/17880"}
+    },
+    "sw-it": {
+      "title": "SW-IT Contest", "date": "2026",
+      "result": "대상 (1st place)", "pdfResult": "Grand Prize, 1st place", "team": "Kokiri is cute"
     },
     "soong-ko-han": {
       "title": "숭고한 알고리즘 경진대회 Div. 1", "pdfTitle": "Soong-Ko-Han Algorithm Contest, Div. 1", "date": "2026",
@@ -74,10 +95,14 @@
   },
   "about": [
     {"id": "education", "title": "Education", "groups": [{"style": "items", "ids": ["masters", "bachelors", "high-school"]}]},
+    {"id": "research", "title": "Research & Coursework", "groups": [
+      {"style": "items", "ids": ["individual-study"]},
+      {"title": "Selected Coursework", "style": "items", "ids": ["math-coursework", "theory-coursework"]}
+    ]},
     {"id": "teaching", "title": "Teaching & Mentoring", "groups": [{"style": "items", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]}]},
-    {"id": "service", "title": "Leadership & Service", "groups": [{"style": "items", "ids": ["favely", "proctor", "gink", "run-vp"]}]},
+    {"id": "service", "title": "Leadership & Service", "groups": [{"style": "items", "ids": ["contest-service", "favely", "proctor", "gink", "run-vp"]}]},
     {"id": "cp", "title": "Competitive Programming", "groups": [
-      {"title": "Selected Team Results", "style": "list", "ids": ["soong-ko-han", "apac", "hcmc"]},
+      {"title": "Selected Team Results", "style": "list", "ids": ["sw-it", "soong-ko-han", "apac", "hcmc"]},
       {"title": "Finals & Qualifications", "style": "list", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"]}
     ]},
     {"id": "awards", "title": "Honors & Awards", "groups": [
@@ -101,13 +126,11 @@
         [
           {"title": "Education", "ids": ["masters", "bachelors"]},
           {"title": "Research Interests", "text": "Structural graph theory; algorithmic graph theory."},
-          {"title": "Teaching & Mentoring", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]},
-          {"title": "Academic Activities", "ids": ["summer-school", "kscw"]}
-        ],
-        [
-          {"title": "Selected Honors & Awards", "ids": ["university-math", "koi", "re-math", "graduation-math"]},
-          {"title": "Selected Programming Contest Results", "ids": ["soong-ko-han", "apac", "hcmc"]},
-          {"title": "Service & Mentoring", "ids": ["run-vp", "proctor", "gink"]}
+          {"title": "Research Experience", "ids": ["individual-study"]},
+          {"title": "Selected Coursework", "ids": ["math-coursework", "theory-coursework"], "layout": "subjects"},
+          {"title": "Teaching (KAIST)", "ids": ["ps-head-ta", "automata-ta", "ps-ta"], "omitDetails": true},
+          {"title": "Schools & Workshops (participant)", "ids": ["summer-school", "kscw"], "omitDetails": true},
+          {"title": "Selected Honors & Awards", "ids": ["hcmc", "university-math", "koi", "re-math", "graduation-math"], "compact": true, "omitTeam": true}
         ]
       ]
     },
@@ -116,15 +139,16 @@
       "pages": [
         [
           {"title": "Education", "ids": ["masters", "bachelors", "high-school"]},
-          {"title": "Selected Programming Contest Results", "ids": ["soong-ko-han", "apac", "hcmc"]},
+          {"title": "Research Experience", "ids": ["individual-study"]},
+          {"title": "Selected Programming Contest Results", "ids": ["sw-it", "soong-ko-han", "apac", "hcmc"]},
           {"title": "Finals & Qualifications", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"], "compact": true},
-          {"title": "Selected Honors & Awards", "ids": ["university-math", "koi"], "compact": true},
-          {"title": "Online Profiles", "profiles": ["codeforces", "atcoder", "doj", "solved", "icpc"]}
+          {"title": "Selected Honors & Awards", "ids": ["university-math", "koi"], "compact": true}
         ],
         [
           {"title": "Teaching & Mentoring", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]},
-          {"title": "Leadership & Service", "ids": ["favely", "proctor", "gink", "run-vp"]},
-          {"title": "Arts & Activities", "ids": ["lunatic", "ghuttos"]}
+          {"title": "Leadership & Service", "ids": ["contest-service", "favely", "proctor", "gink", "run-vp"]},
+          {"title": "Arts & Activities", "ids": ["lunatic", "ghuttos"]},
+          {"title": "Online Profiles", "profiles": ["codeforces", "atcoder", "doj", "solved", "icpc"]}
         ]
       ]
     }

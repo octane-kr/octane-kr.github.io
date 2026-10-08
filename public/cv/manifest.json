@@ -1,16 +1,16 @@
 {
-  "updated": "2026-09-20",
-  "sourceSha256": "b510d218abc720e599718991ac3bce9e951a79a55f20358c79558fa7635d3c36",
+  "updated": "2026-10-08",
+  "sourceSha256": "c3c88901da870ee50ca0bd5ceb0e526da5787ad71a3429efd70573f576139c85",
   "files": {
     "academic": {
       "filename": "taein-oh-academic-cv.pdf",
-      "sha256": "98985b17fcf06c5f215eb066546663ed1ef6f83368907c78bfe283e980e02969",
-      "pages": 2,
+      "sha256": "59ca1a9f8a0237180590db1f3bb4656a6b29789b9d9c069921995f16ac63cb62",
+      "pages": 1,
       "template": "docs/cv/templates/academic.tex"
     },
     "general": {
       "filename": "taein-oh-general-cv.pdf",
-      "sha256": "41346cb5e646244c64d08e1c1c1f1bc16311db8f52a47cfe9a0d2a439341b1fb",
+      "sha256": "676a0d0385a3e4cc6b6ef24b01d56b791290628a0f66e359d9f3a3e9a1757d9d",
       "pages": 2,
       "template": "docs/cv/templates/general.tex"
     }
