@@ -66,11 +66,12 @@ const onlineProfiles = profile.profiles.map((entry) => {
 
 <style>
   .cv-profile-list .cv-profile-rating { font-weight: 600; }
-  /* Rank hues, darkened where needed for readable text on white. */
-  [data-platform="codeforces"] .cv-profile-rating { color: #b36200; }
-  [data-platform="atcoder"] .cv-profile-rating { color: #0000cc; }
-  [data-platform="doj"] .cv-profile-rating { color: #2563eb; }
-  [data-platform="solved"] .cv-profile-rating { color: #c9004a; }
+  /* Exact computed rank colors on the official profile pages (2026-10-08):
+     Codeforces .user-orange; AtCoder .user-blue; DOJ Expert; solved.ac Ruby V. */
+  [data-platform="codeforces"] .cv-profile-rating { color: #ff8c00; }
+  [data-platform="atcoder"] .cv-profile-rating { color: #0000ff; }
+  [data-platform="doj"] .cv-profile-rating { color: #3b82f6; }
+  [data-platform="solved"] .cv-profile-rating { color: #e0004c; }
   .cv-downloads { border-top: 1px solid var(--line); padding-top: 20px; }
   .cv-downloads p { margin: 0; }
   .cv-downloads a { display: inline-block; color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
