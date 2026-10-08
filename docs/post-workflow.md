@@ -56,6 +56,9 @@ limit the review to recent posts or a filename pattern.
   verify that only the intended formatting changed. Published-body formatting
   changes still require the Lens review, revision acknowledgement, and build
   described below.
+- Preserve the author's paragraph boundaries. Proofreading or layout cleanup
+  does not authorize splitting or merging prose paragraphs; change them only
+  when the author explicitly requests it.
 
 ## Posts and Scraps
 
