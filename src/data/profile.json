@@ -53,15 +53,15 @@
     "favely": {"title": "President, KAIST Fashion Club Favely", "date": "2025", "details": []},
     "proctor": {
       "title": "Proctor, KAIST Freshman Advisor Group 16", "date": "2024–2025",
-      "details": ["Led class sessions for Happy College Life and Exciting College Life, KAIST's required freshman courses, and mentored first-year students."]
+      "details": ["Led Happy College Life and Exciting College Life sessions; mentored freshmen."]
     },
     "gink": {
       "title": "Member, Green in KAIST (G-inK)", "date": "Fall 2024–Spring 2025",
-      "details": ["Communications and outreach, KAIST's environmental student organization. Coordinated contact with KAIST offices and student clubs, and supported exchanges with student organizations at other universities."]
+      "details": []
     },
     "run-vp": {
       "title": "Vice President, KAIST Algorithmic Problem Solving Club RUN", "date": "2024",
-      "details": ["Reviewed problems and helped operate the 2024 KAIST RUN Spring Contest and the 2024 KAIST 14th ICPC Mock Competition.", "Set one problem for the mock competition: G. Make RUN Great Again.", "Active member of RUN since 2023."],
+      "details": ["Reviewed problems and helped operate the 2024 KAIST RUN Spring Contest and the 2024 KAIST 14th ICPC Mock Competition.", "Set one problem for the mock competition: G. Make RUN Great Again.", "Member since 2023."],
       "reference": {"label": "G. Make RUN Great Again", "url": "https://qoj.ac/contest/3633/problem/17880"}
     },
     "sw-it": {
@@ -90,12 +90,12 @@
     "kmo-middle": {"title": "Korean Mathematical Olympiad (KMO), Middle School Division", "result": "Silver Award, First Round; Gold Award, Second Round", "date": "2018"},
     "summer-school": {"title": "Summer School on Combinatorics and Algorithms", "date": "Aug. 10–14, 2026", "details": ["Participant; KAIST, Daejeon, Korea."]},
     "kscw": {"title": "Korean Student Combinatorics Workshop (KSCW2026)", "date": "Jul. 27–31, 2026", "details": ["Participant; Gongju Hanok Village, Gongju, Korea."]},
-    "lunatic": {"title": "Member, KAIST Street Dance Club Lunatic", "date": "2023–2025", "details": ["Led locking practice sessions as a practice team leader in Fall 2024."]},
-    "ghuttos": {"title": "Member, KAIST Hip-Hop and R&B Club Ghutto's", "date": "2023–2025", "details": ["Uploaded tracks to SoundCloud and performed at STadium, KAIST's freshman orientation (Saeteo), and the KAIST Student Cultural Festival."]}
+    "lunatic": {"title": "Member, KAIST Street Dance Club Lunatic", "date": "2023–2025", "details": ["Locking practice team leader, Fall 2024."]},
+    "ghuttos": {"title": "Member, KAIST Hip-Hop and R&B Club Ghutto's", "date": "2023–2025", "details": ["SoundCloud uploads; performances at STadium, Saeteo, and the KAIST Student Cultural Festival."]}
   },
   "about": [
     {"id": "education", "title": "Education", "groups": [{"style": "items", "ids": ["masters", "bachelors", "high-school"]}]},
-    {"id": "research", "title": "Research & Coursework", "groups": [
+    {"id": "research", "title": "Study & Coursework", "groups": [
       {"style": "items", "ids": ["individual-study"]},
       {"title": "Selected Coursework", "style": "items", "ids": ["math-coursework", "theory-coursework"]}
     ]},
@@ -126,7 +126,7 @@
         [
           {"title": "Education", "ids": ["masters", "bachelors"]},
           {"title": "Research Interests", "text": "Structural graph theory; algorithmic graph theory."},
-          {"title": "Research Experience", "ids": ["individual-study"]},
+          {"title": "Supervised Study", "ids": ["individual-study"]},
           {"title": "Selected Coursework", "ids": ["math-coursework", "theory-coursework"], "layout": "subjects"},
           {"title": "Teaching (KAIST)", "ids": ["ps-head-ta", "automata-ta", "ps-ta"], "omitDetails": true},
           {"title": "Schools & Workshops (participant)", "ids": ["summer-school", "kscw"], "omitDetails": true},
@@ -139,7 +139,7 @@
       "pages": [
         [
           {"title": "Education", "ids": ["masters", "bachelors", "high-school"]},
-          {"title": "Research Experience", "ids": ["individual-study"]},
+          {"title": "Supervised Study", "ids": ["individual-study"]},
           {"title": "Selected Programming Contest Results", "ids": ["sw-it", "soong-ko-han", "apac", "hcmc"]},
           {"title": "Finals & Qualifications", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"], "compact": true},
           {"title": "Selected Honors & Awards", "ids": ["university-math", "koi"], "compact": true}

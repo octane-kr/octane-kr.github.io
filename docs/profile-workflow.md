@@ -27,6 +27,15 @@ too. They are not silently rewritten by the CV generator.
 ## Editorial decisions confirmed by the author
 
 - Use factual roles and short descriptions, not promotional summaries.
+- For prose audits, inspect every shared record, profile description, section
+  heading, and separately maintained Home/Activities/Teaching/blog introduction.
+  A fact being supported does not justify a long role narrative. Do not fill
+  short entries with guessed accomplishments to make their lengths uniform.
+- G-inK currently uses membership and period only; omit the expanded outreach
+  narrative. Proctor, Lunatic, and Ghutto's use brief, concrete activity lines.
+  Avoid evaluative modifiers such as "active" for membership.
+- Label the individual-study course as Supervised Study in the PDFs and Study
+  & Coursework in About, rather than suggesting a separate research position.
 - Use established LaTeX templates, not a custom AI-designed PDF layout.
 - The author completed Individual Study (CS.91100) with Prof. Sebastian Wiederrecht
   from Spring 2025 through Spring 2026. Keep period and supervisor only unless the
@@ -123,6 +132,35 @@ The lecture source is under
 Before replacing the public copy, inspect the source for student-specific pages
 again; never blindly copy the entire PDF. Do not reproduce student IDs in this
 repository's documentation or release records.
+
+## Full copy review (2026-10-08)
+
+Reviewed all 37 shared records, all five online-profile descriptions, About
+section headings, both CV selections/templates, and the separately maintained
+Home, Activities, Teaching, and blog introduction. This was a prose and claim
+scope review against the recorded evidence above, not a new independent
+verification of every historical credential.
+
+| Records / surface | Decision |
+| --- | --- |
+| masters, bachelors, high-school | Retain school, degree, dates, advisor and existing school-class detail; no added achievements. |
+| individual-study, math-coursework, theory-coursework | Retain course names, period and supervisor. Use study headings instead of Research Experience for the single individual-study course. |
+| ps-head-ta, automata-ta, ps-ta, run-study | Retain confirmed roles, courses, institution and periods. |
+| contest-service | Retain the two named DOJ setter credits; do not restore the removed reviewing credit. |
+| favely | Retain president and 2025 only. Do not invent duties to match the length of other entries. |
+| proctor | Shorten to the two named class sessions and freshman mentoring; remove the explanatory course/program narrative. |
+| gink | Keep membership and period; remove the entire expanded outreach description. No claim that the author has approved deleting membership itself. |
+| run-vp | Retain the named events, operations and linked problem. Replace evaluative Active member with Member since 2023. |
+| sw-it, soong-ko-han, apac, hcmc | Retain contest, result, team and year; no superlatives or inferred award upgrades. |
+| scpc, acpc, ucpc, ucpc-qualification, seoul, mobis, nypc | Retain the existing participation/qualification records and explicit 2026 UCPC nonattendance. |
+| university-math, koi, re-math, graduation-math, fkmo, kmo-high, kmo-middle | Retain factual award records; preserve each document's selection, including KOI's exclusion from Academic CV. |
+| summer-school, kscw | Retain participant, event, date and location; do not suggest invited talks. |
+| lunatic | Replace the repeated led/team leader sentence with Locking practice team leader, Fall 2024. |
+| ghuttos | Keep SoundCloud uploads and named performances as a brief list; do not infer composition or production. |
+| Online Profiles | Retain five factual descriptions, peak/current distinction and exact official rank colors. |
+| Home and blog introduction | Retain the supplied affiliation and education copy; no promotional summary added. |
+| Activities and Teaching | Retain event/role/material facts and the functional note about omitted private slides; no promotional copy found. |
+| CV templates and remaining headings | Keep the established templates, factual contact/affiliation lines and section labels. No layout redesign or unrelated selection changes. |
 
 ## Templates
 
