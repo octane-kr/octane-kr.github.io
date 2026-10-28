@@ -7,7 +7,7 @@ import profile from '../data/profile.json';
 const ratingPatterns: Record<string, RegExp> = {
   codeforces: /International Master \(\d+\)/,
   atcoder: /1 Kyu \(\d+\)/,
-  doj: /Expert \(\d+\)/,
+  doj: /Candidate Master \(\d+\)/,
   solved: /Ruby V \(\d+\)/,
 };
 const onlineProfiles = profile.profiles.map((entry) => {
@@ -66,11 +66,11 @@ const onlineProfiles = profile.profiles.map((entry) => {
 
 <style>
   .cv-profile-list .cv-profile-rating { font-weight: 600; }
-  /* Exact computed rank colors on the official profile pages (2026-10-08):
-     Codeforces .user-orange; AtCoder .user-blue; DOJ Expert; solved.ac Ruby V. */
+  /* Official profile rank colors: Codeforces .user-orange, AtCoder .user-blue,
+     and solved.ac Ruby V checked 2026-10-08; DOJ Candidate Master checked 2026-10-28. */
   [data-platform="codeforces"] .cv-profile-rating { color: #ff8c00; }
   [data-platform="atcoder"] .cv-profile-rating { color: #0000ff; }
-  [data-platform="doj"] .cv-profile-rating { color: #3b82f6; }
+  [data-platform="doj"] .cv-profile-rating { color: #8b5cf6; }
   [data-platform="solved"] .cv-profile-rating { color: #e0004c; }
   .cv-downloads { border-top: 1px solid var(--line); padding-top: 20px; }
   .cv-downloads p { margin: 0; }

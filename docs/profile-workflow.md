@@ -56,8 +56,11 @@ too. They are not silently rewritten by the CV generator.
   About keeps its existing school entry. Do not infer graduation dates or add
   promotional labels. `pdfDetails` may shorten an entry for PDFs while retaining
   its full `details` in About.
-- Do not list ICPC preliminary ranks. Seoul onsite participation is one
-  2024-2025 entry; the full record is accessible through the ICPC profile.
+- Keep ordinary ICPC preliminary participation/rank history in the linked ICPC
+  profile. The 2026 Korea National First Round national runner-up is selected as
+  a representative team result in About and the General CV for the 2026-10-28
+  refresh. Seoul onsite attendance stays one 2024-2025 entry; the 2026 qualification
+  does not establish attendance at the November contest.
 - Keep the 2022 KOI silver medal in About and the General CV only. The author
   excluded it from the Academic CV on 2026-10-08.
 - Competition names/results in About are plain text. Keep the ICPC link in
@@ -161,6 +164,49 @@ verification of every historical credential.
 | Home and blog introduction | Retain the supplied affiliation and education copy; no promotional summary added. |
 | Activities and Teaching | Retain event/role/material facts and the functional note about omitted private slides; no promotional copy found. |
 | CV templates and remaining headings | Keep the established templates, factual contact/affiliation lines and section labels. No layout redesign or unrelated selection changes. |
+
+## DOJ profile refresh (2026-10-27)
+
+Rechecked the [official octane profile](https://doj.kr/ko/user/octane).
+Current and peak rating are both 1808, Candidate Master; the official rank color
+is `#8b5cf6`. Replace the older `Peak: Expert (1756)` Online Profiles entry in
+the shared data and regenerate both CVs while preserving their existing selections.
+
+The newest rating record is DOJ Contest 8 (2026 GSHS CS Seminar), 23rd place,
+1780 to 1808 (+28). The profile dates that record to 2026-10-18 10:00 KST;
+2026-10-27 is the verification date, not the contest date. The profile also shows
+95 solved problems. Keep the existing peak-rating description format rather
+than adding a new contest-result or problem-count entry.
+
+## Full profile refresh (2026-10-28)
+
+The author requested a complete About/CV update and a review of changes made in
+other tasks. Reviewed the entire shared record inventory, all five profile
+descriptions, both document selections/templates, Home, Activities, Teaching,
+the blog introduction, and the staged/unstaged profile diff. No post prose or
+unrelated Lens edits are part of this release.
+
+| Area | Evidence / editorial decision |
+| --- | --- |
+| New ICPC result | [Official final scoreboard](https://static.icpckorea.net/2026/preliminary/scoreboard/) embeds `publish-data`: team 91, Kokiri is cute, KAIST, `icpcRank = domesticRank = 2`, 11 solved, 1209 penalty. This matches the author's published 2026 first-round account. Add one representative result to About / General CV, without a medal claim or per-problem details. |
+| Qualification versus attendance | [2026-10-22 official promotion announcement](https://icpckorea.org/archives/3515/) lists KAIST / Kokiri is cute for the November 13-14 Seoul Regional. Include qualification in the same result line; do not extend the past onsite attendance period to 2026. The scoreboard's `mode: preliminary` names the first-round/promotions view; it is not evidence that the displayed rank is still provisional. |
+| DOJ | Public octane profile verified current and peak 1808, Candidate Master. Release the pending 2026-10-27 correction and purple rank color `#8b5cf6`. The profile now shows 97 solved; do not add a moving counter, Power tier, or ordinary contest ranks to the CV. |
+| Other online profiles | Codeforces public API confirms maxRating 2368 / maxRank International Master (current 1922 is not the peak). AtCoder confirms highest 1948 / 1 Kyu (current 1911). Keep those peaks. solved.ac profile and API returned HTTP 403, including a normal browser request; preserve the last confirmed 2026-10-08 Ruby V 2745 / 1,336-solved snapshot, without claiming a fresh verification. |
+| Contest service | Enumerated all three pages of the current DOJ contest index and inspected all 55 distinct contest pages; no fetch failures. The only staff listings matching octane remain DOJ Contest 7 and BCD 11. Both contests are finished. Keep the two setter credits, and do not restore the excluded selective reviewing credit or add an unaccepted proposal. |
+| Education and study | Reviewed masters, bachelors, high-school, individual-study, math-coursework, theory-coursework and the corresponding Home text. Live GRASP members page still lists Taein Oh as M.S. student. Preserve established dates, advisor, completed coursework, supervised-study scope, and omission of unconfirmed GPA. No new paper, theorem, talk, or research appointment established. |
+| Teaching | Reviewed all four shared teaching/study-leader records and the separately maintained Teaching page. Fall 2026 roles remain current. Retain the existing three public lecture PDFs and their privacy note. This profile refresh does not publish additional course material or the previously excluded supplementary PDFs. |
+| Existing team results and qualifications | Reviewed sw-it, soong-ko-han, apac, hcmc, scpc, acpc, ucpc, ucpc-qualification, seoul, mobis, nypc against the recorded evidence and current contest-post inventory. Preserve results and explicit UCPC nonattendance. Do not turn low preliminary ranks into extra entries. |
+| Historical awards | Reviewed university-math, koi, re-math, graduation-math, fkmo, kmo-high, kmo-middle. Preserve recorded facts and the author's KOI exclusion from the Academic CV. These historical credentials were not independently re-verified in this refresh. |
+| Leadership and arts | Reviewed favely, proctor, gink, run-vp, lunatic, ghuttos and their previous/full-copy audit diffs. Keep concise role/period descriptions. Favely remains 2025 only; no club-revival claim. G-inK remains membership/period. No inflated outreach, research or production narrative is restored. |
+| Academic events | Reviewed summer-school, kscw, and the Activities page. Keep confirmed participant events; no new attendance inferred from a future schedule. |
+| Document layout | Academic stays the one-page mathematics/theoretical-CS selection, without adding this preliminary result. General keeps all existing selected facts on two pages: move its two honors to page 2 to accommodate the new representative result at the top of page 1. |
+
+Verification sources:
+
+- https://doj.kr/ko/user/octane
+- https://codeforces.com/api/user.info?handles=octane
+- https://atcoder.jp/users/octanec8h18?lang=en
+- https://grasp-kaist.github.io/members
 
 ## Templates
 
