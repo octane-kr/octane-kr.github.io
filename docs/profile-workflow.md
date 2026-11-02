@@ -246,9 +246,11 @@ descending, penalty then last solve ascending) gives Kokiri is cute 9 solves and
 and first among internal teams. All 34 team IDs are displayed; the configuration's
 example excluded IDs 1000-1002 do not occur in this feed.
 
-Add one 2026 result, 2nd place overall, to About and the General CV's selected
-team/programming-contest results. Keep the team name's exact capitalization. No
-medal or named award is established by the scoreboard, so do not invent one.
+Add one 2026 result, Citadel Prize, 2nd place overall, to About and the General
+CV's selected team/programming-contest results. The author confirmed the named
+award Citadel Prize on 2026-11-02; the scoreboard independently establishes the
+rank, not the award name. Keep the team name's exact capitalization. Do not
+infer a medal, award tier, or other title from the placing or sponsor name.
 Do not add a separate internal-first-place entry or the solve/penalty breakdown
 to the CV. Keep the Academic CV selection and the author's seminar omission.
 
