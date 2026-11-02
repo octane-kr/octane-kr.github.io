@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28",
+  "updated": "2026-11-02",
   "name": "Taein Oh",
   "summary": "M.S. student in the School of Computing at KAIST.",
   "email": "octanec8h18@kaist.ac.kr",
@@ -27,8 +27,8 @@
       "details": ["Analysis I & II; Modern Algebra I & II; Topology."]
     },
     "theory-coursework": {
-      "title": "Graph theory and algorithms", "pdfTitle": "Theory", "date": "",
-      "details": ["Algorithmic Graph Theory; Graph Classes, Algorithms, Logic; Algorithms Design and Analysis for NP-Hard Problems."]
+      "title": "Theoretical computer science", "pdfTitle": "Theory", "date": "",
+      "details": ["Algorithmic Graph Theory; Graph Classes, Algorithms, Logic; Design and Analysis of Algorithm; Algorithms Design and Analysis for NP-Hard Problems; Formal Languages and Automata."]
     },
     "ps-head-ta": {
       "title": "Head Teaching Assistant (lecturer), CS.20002 Problem Solving", "koreanTitle": "문제해결기법", "date": "Fall 2026",
@@ -63,6 +63,10 @@
       "title": "Vice President, KAIST Algorithmic Problem Solving Club RUN", "date": "2024",
       "details": ["Reviewed problems and helped operate the 2024 KAIST RUN Spring Contest and the 2024 KAIST 14th ICPC Mock Competition.", "Set one problem for the mock competition: G. Make RUN Great Again.", "Member since 2023."],
       "reference": {"label": "G. Make RUN Great Again", "url": "https://qoj.ac/contest/3633/problem/17880"}
+    },
+    "run-mock-2026": {
+      "title": "KAIST 16th ICPC Mock Competition", "date": "2026",
+      "result": "2nd place overall", "team": "Kokiri is cute"
     },
     "icpc-korea-2026": {
       "title": "ICPC Asia Korea National First Round Programming Contest", "date": "2026",
@@ -107,7 +111,7 @@
     {"id": "teaching", "title": "Teaching & Mentoring", "groups": [{"style": "items", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]}]},
     {"id": "service", "title": "Leadership & Service", "groups": [{"style": "items", "ids": ["contest-service", "favely", "proctor", "gink", "run-vp"]}]},
     {"id": "cp", "title": "Competitive Programming", "groups": [
-      {"title": "Selected Team Results", "style": "list", "ids": ["icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
+      {"title": "Selected Team Results", "style": "list", "ids": ["run-mock-2026", "icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
       {"title": "Finals & Qualifications", "style": "list", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"]}
     ]},
     {"id": "awards", "title": "Honors & Awards", "groups": [
@@ -145,7 +149,7 @@
         [
           {"title": "Education", "ids": ["masters", "bachelors", "high-school"]},
           {"title": "Supervised Study", "ids": ["individual-study"]},
-          {"title": "Selected Programming Contest Results", "ids": ["icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
+          {"title": "Selected Programming Contest Results", "ids": ["run-mock-2026", "icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
           {"title": "Finals & Qualifications", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"], "compact": true}
         ],
         [

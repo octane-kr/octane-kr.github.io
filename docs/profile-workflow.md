@@ -208,6 +208,50 @@ Verification sources:
 - https://atcoder.jp/users/octanec8h18?lang=en
 - https://grasp-kaist.github.io/members
 
+## Coursework selection (2026-10-30)
+
+The author requested a revised Selected Coursework selection after reviewing the
+completed-course inventory. Keep the mathematical foundation (Analysis I & II,
+Modern Algebra I & II, Topology) and the three previously selected graph/algorithm
+courses. Add Design and Analysis of Algorithm (CS.50000) and Formal Languages
+and Automata (CS.30202). Both additions have completed final grades in the
+supplied transcript; retain its English course titles without publishing grades.
+Seminar in Theoretical Computer Science (CS.49902) was completed but is
+intentionally omitted at the author's subsequent request. Do not re-add it
+automatically from the transcript.
+
+Use Mathematics and Theoretical computer science as the two About categories;
+the latter remains shortened to Theory in the Academic CV. This broadens the
+selection beyond the three specialized graph/algorithm courses without adding
+introductory programming courses or a full transcript. Keep the Academic CV at
+one page in its existing template/font. The General CV continues to omit
+coursework; regenerate it only to keep the shared-source artifacts current.
+Supervised Study stays separate. No other profile selections or facts change.
+
+## RUN ICPC mock result (2026-11-02)
+
+The author reported second place and supplied the official
+[onsite scoreboard](https://scoreboard.kaist.run/main/). Its public
+[contest feed](https://scoreboard.kaist.run/main/feed/contest.json) identifies
+team 2, Kokiri is cute, with azberjibiou, octane, and onjo0127, in the internal
+category. The event title is 2026 KAIST 16th ICPC Mock Competition; the
+[official notice](https://kaist.run/ko/notices/2026-fall-contest/) dates the onsite
+event to October 31, 2026. Do not confuse it with the November 1 Open Contest.
+
+The final [run feed](https://scoreboard.kaist.run/main/feed/runs.json) has
+`noMoreUpdate = true`, 34 teams, and 552 runs. Applying the scoreboard's published
+scoring (accepted time plus 20 minutes per prior failed attempt, solved count
+descending, penalty then last solve ascending) gives Kokiri is cute 9 solves and
+1499 penalty: second overall, behind Reboot SeveranSsal (9 solves, 1252 penalty),
+and first among internal teams. All 34 team IDs are displayed; the configuration's
+example excluded IDs 1000-1002 do not occur in this feed.
+
+Add one 2026 result, 2nd place overall, to About and the General CV's selected
+team/programming-contest results. Keep the team name's exact capitalization. No
+medal or named award is established by the scoreboard, so do not invent one.
+Do not add a separate internal-first-place entry or the solve/penalty breakdown
+to the CV. Keep the Academic CV selection and the author's seminar omission.
+
 ## Templates
 
 - Academic: moderncv's `classic` style, black, roman font, from its standard
