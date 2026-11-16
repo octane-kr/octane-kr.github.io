@@ -14,19 +14,23 @@ interface Props {
   style: string;
 }
 const { records, ids, style } = Astro.props;
+const compact = style === 'list';
 const placementPattern = /(\b\d+(?:st|nd|rd|th) place(?: overall)?\b)/g;
 ---
 
-<ul class:list={['cv-records', { 'cv-records-compact': style === 'list' }]} role="list">
+<ul class:list={['cv-records', { 'cv-records-compact': compact }]} role="list">
   {ids.map((id) => {
     const entry = records[id];
-    const hasDetail = entry.result || entry.team || entry.details?.length;
-    return <li class:list={['cv-record', { 'cv-record-brief': !hasDetail }]} data-record={id}>
+    const inlineResult = compact && !entry.team;
+    return <li class="cv-record" data-record={id}>
       <div class="cv-record-heading">
-        <span class="cv-record-title">{entry.title}{entry.koreanTitle && <> (<span lang="ko">{entry.koreanTitle}</span>)</>}</span>
+        <div class="cv-record-label">
+          <span class="cv-record-title">{entry.title}{entry.koreanTitle && <> (<span lang="ko">{entry.koreanTitle}</span>)</>}</span>
+          {inlineResult && entry.result && <>{' '}<span class="cv-record-note">(<span class="cv-record-result">{entry.result}</span>)</span></>}
+        </div>
         {entry.date && <span class="cv-meta">{entry.date}</span>}
       </div>
-      {(entry.result || entry.team) && <p class="cv-record-outcome">
+      {!inlineResult && (entry.result || entry.team) && <p class="cv-record-outcome">
         {entry.result && <span class="cv-record-result">{entry.result.split(placementPattern).map((part, index) =>
           index % 2 === 0 ? part : <span class="cv-record-placement">{part}</span>
         )}</span>}
@@ -46,18 +50,20 @@ const placementPattern = /(\b\d+(?:st|nd|rd|th) place(?: overall)?\b)/g;
 
 <style>
   .cv-records { margin: 0; padding: 0; list-style: none; }
-  .cv-record + .cv-record { margin-top: 1rem; }
-  .cv-records-compact .cv-record-brief + .cv-record-brief { margin-top: 0.45rem; }
+  .cv-record + .cv-record { margin-top: 0.85rem; }
+  .cv-records-compact .cv-record + .cv-record { margin-top: 0.48rem; }
+  .cv-records-compact:has(.cv-record-team) .cv-record + .cv-record { margin-top: 0.76rem; }
   .cv-record-heading {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     align-items: baseline;
     column-gap: clamp(0.65rem, 3vw, 1.5rem);
-    line-height: 1.42;
+    line-height: 1.5;
   }
   .cv-record-heading:has(.cv-meta) { grid-template-columns: minmax(0, 1fr) auto; }
-  .cv-record-title { font-weight: 650; overflow-wrap: anywhere; text-wrap: pretty; }
-  .cv-records-compact .cv-record-brief .cv-record-title { font-weight: 400; }
+  .cv-record-label { overflow-wrap: anywhere; text-wrap: pretty; }
+  .cv-record-title, .cv-record-result { font-weight: 400; }
+  .cv-record-note { color: var(--muted); font-size: 0.875rem; }
   .cv-meta {
     max-inline-size: 24ch;
     color: var(--muted);
@@ -67,9 +73,9 @@ const placementPattern = /(\b\d+(?:st|nd|rd|th) place(?: overall)?\b)/g;
     overflow-wrap: anywhere;
   }
   .cv-record-outcome, .cv-record-detail {
-    margin: 0.18rem 0 0;
-    font-size: 0.9375rem;
-    line-height: 1.55;
+    margin: 0.12rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
     overflow-wrap: anywhere;
     text-wrap: pretty;
   }
@@ -80,10 +86,9 @@ const placementPattern = /(\b\d+(?:st|nd|rd|th) place(?: overall)?\b)/g;
     gap: 0.1rem 0.85rem;
   }
   .cv-record-result, .cv-record-team { min-inline-size: 0; }
-  .cv-record-result { font-weight: 500; }
-  .cv-record-result:only-child { color: #4b5563; }
+  .cv-record-outcome > .cv-record-result { color: #4b5563; }
   .cv-record-placement { white-space: nowrap; }
-  .cv-record-team { color: var(--muted); font-size: 0.875rem; }
+  .cv-record-team { color: var(--muted); font-size: 0.8125rem; }
   .cv-record-detail { color: #4b5563; }
   .cv-record-detail a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
   @media (max-width: 480px) {

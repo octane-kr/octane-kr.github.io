@@ -30,12 +30,14 @@ const onlineProfiles = profile.profiles.map((entry) => {
 
     {profile.about.map((section) => <section class="cv-section" aria-labelledby={`${section.id}-heading`}>
       <h2 id={`${section.id}-heading`}>{section.title}</h2>
-      {section.groups.map((group) => (
-        <div class="cv-group">
-          {'title' in group && <h3>{group.title}</h3>}
-          <ProfileRecords records={profile.records} ids={group.ids} style={group.style} />
-        </div>
-      ))}
+      <div class="cv-section-body">
+        {section.groups.map((group) => (
+          <div class="cv-group">
+            {'title' in group && <h3>{group.title}</h3>}
+            <ProfileRecords records={profile.records} ids={group.ids} style={group.style} />
+          </div>
+        ))}
+      </div>
     </section>)}
 
     <section class="cv-section" aria-labelledby="interests-heading">
@@ -67,19 +69,26 @@ const onlineProfiles = profile.profiles.map((entry) => {
 </BlogLayout>
 
 <style>
-  .cv-page { max-width: 760px; margin: 0 auto; }
-  .cv-header { padding-bottom: clamp(1.75rem, 5vw, 2.65rem); }
+  .cv-page { max-width: 800px; margin: 0 auto; font-size: 0.96875rem; }
+  .cv-header { padding-bottom: 1.7rem; }
   .cv-header h1 {
     margin: 0 0 0.45rem;
-    font-size: clamp(2.15rem, 6vw, 2.75rem);
+    font-size: clamp(2rem, 5vw, 2.6rem);
+    font-weight: 650;
     line-height: 1.12;
     letter-spacing: -0.025em;
   }
-  .cv-header p { margin: 0; color: var(--muted); font-size: 1.0625rem; text-wrap: pretty; }
-  .cv-section { border-top: 1px solid var(--line); padding: 1.25rem 0 clamp(1.7rem, 4vw, 2.25rem); }
-  .cv-section h2 { margin: 0 0 0.85rem; font-size: 1.375rem; line-height: 1.3; }
-  .cv-group + .cv-group { margin-top: 1.3rem; }
-  .cv-group h3 { margin: 0 0 0.6rem; font-size: 0.875rem; line-height: 1.4; font-weight: 700; color: #4b5563; }
+  .cv-header p { margin: 0; color: var(--muted); font-size: 1rem; text-wrap: pretty; }
+  .cv-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    border-top: 1px solid var(--line);
+    padding: 1.4rem 0;
+  }
+  .cv-section h2 { margin: 0; font-size: 1.125rem; line-height: 1.38; font-weight: 650; }
+  .cv-group + .cv-group { margin-top: 1.18rem; }
+  .cv-group h3 { margin: 0 0 0.42rem; font-size: 0.8125rem; line-height: 1.5; font-weight: 600; color: var(--muted); }
   .cv-interests { margin: 0; text-wrap: pretty; }
   .cv-profile-list { display: grid; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
   .cv-profile-list li {
@@ -91,7 +100,6 @@ const onlineProfiles = profile.profiles.map((entry) => {
   }
   .cv-profile-list a { justify-self: start; }
   .cv-profile-list li > span { color: #4b5563; overflow-wrap: anywhere; }
-  .cv-profile-list .cv-profile-rating { font-weight: 600; }
   /* Official profile rank colors: Codeforces .user-orange, AtCoder .user-blue,
      and solved.ac Ruby V checked 2026-10-08; DOJ Candidate Master checked 2026-10-28. */
   [data-platform="codeforces"] .cv-profile-rating { color: #ff8c00; }
@@ -103,4 +111,13 @@ const onlineProfiles = profile.profiles.map((entry) => {
   .cv-download-row ul { gap: 0.35rem 1.2rem; margin: 0; padding: 0; list-style: none; }
   .cv-profile-list a, .cv-downloads a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
   .cv-updated { margin: 0; color: var(--muted); font-size: 0.8125rem; }
+  @media (min-width: 740px) {
+    .cv-section {
+      grid-template-columns: 9.2rem minmax(0, 1fr);
+      align-items: start;
+      column-gap: 2rem;
+      padding: 1.45rem 0;
+    }
+    .cv-section h2 { font-size: 1rem; line-height: 1.5; }
+  }
 </style>
