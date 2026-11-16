@@ -59,8 +59,8 @@ too. They are not silently rewritten by the CV generator.
 - Keep ordinary ICPC preliminary participation/rank history in the linked ICPC
   profile. The 2026 Korea National First Round national runner-up is selected as
   a representative team result in About and the General CV for the 2026-10-28
-  refresh. Seoul onsite attendance stays one 2024-2025 entry; the 2026 qualification
-  does not establish attendance at the November contest.
+  refresh. Keep 2024-2025 Seoul onsite attendance grouped and the 2026 onsite
+  result separate; qualification alone does not establish attendance.
 - Keep the 2022 KOI silver medal in About and the General CV only. The author
   excluded it from the Academic CV on 2026-10-08.
 - Competition names/results in About are plain text. Keep the ICPC link in
@@ -253,6 +253,21 @@ rank, not the award name. Keep the team name's exact capitalization. Do not
 infer a medal, award tier, or other title from the placing or sponsor name.
 Do not add a separate internal-first-place entry or the solve/penalty breakdown
 to the CV. Keep the Academic CV selection and the author's seminar omission.
+
+## ICPC Seoul Regional result (2026-11-16)
+
+The [organizer's results announcement](https://icpckorea.org/archives/3520/)
+links the [final scoreboard](https://static.icpckorea.net/2026/regional/scoreboard/).
+Its embedded final standings show team 54, Kokiri is cute (KAIST), with 7 solves,
+807 penalty, 12th overall, 8th domestically, and 3rd at KAIST. Use the final
+snapshot, not indexed freeze-time standings. The author confirmed the team's
+bronze award was in the three-team category, which the
+[contest organizers' notice](https://hknu.ac.kr/bbs/hkcommath/268/98637/artclView.do)
+identifies as the NIA President's Award (한국지능정보사회진흥원장상), separate
+from the single KIISE bronze award. List the award and 12th place overall in
+About and General CV; retain the 2026 preliminary runner-up and the 2024-2025
+onsite participation record. Do not infer an APAC invitation from the rank or
+invitation simulator.
 
 ## Templates
 

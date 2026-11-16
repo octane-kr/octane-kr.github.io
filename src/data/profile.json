@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-02",
+  "updated": "2026-11-16",
   "name": "Taein Oh",
   "summary": "M.S. student in the School of Computing at KAIST.",
   "email": "octanec8h18@kaist.ac.kr",
@@ -64,6 +64,12 @@
       "details": ["Reviewed problems and helped operate the 2024 KAIST RUN Spring Contest and the 2024 KAIST 14th ICPC Mock Competition.", "Set one problem for the mock competition: G. Make RUN Great Again.", "Member since 2023."],
       "reference": {"label": "G. Make RUN Great Again", "url": "https://qoj.ac/contest/3633/problem/17880"}
     },
+    "icpc-seoul-2026": {
+      "title": "ICPC Asia Seoul Regional Onsite Contest", "date": "2026",
+      "result": "동상 (한국지능정보사회진흥원장상), 12th place overall",
+      "pdfResult": "Bronze Award (NIA President's Award), 12th place overall",
+      "team": "Kokiri is cute, KAIST"
+    },
     "run-mock-2026": {
       "title": "KAIST 16th ICPC Mock Competition", "date": "2026",
       "result": "Citadel Prize, 2nd place overall", "team": "Kokiri is cute"
@@ -111,7 +117,7 @@
     {"id": "teaching", "title": "Teaching & Mentoring", "groups": [{"style": "items", "ids": ["ps-head-ta", "automata-ta", "ps-ta", "run-study"]}]},
     {"id": "service", "title": "Leadership & Service", "groups": [{"style": "items", "ids": ["contest-service", "favely", "proctor", "gink", "run-vp"]}]},
     {"id": "cp", "title": "Competitive Programming", "groups": [
-      {"title": "Selected Team Results", "style": "list", "ids": ["run-mock-2026", "icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
+      {"title": "Selected Team Results", "style": "list", "ids": ["icpc-seoul-2026", "run-mock-2026", "icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
       {"title": "Finals & Qualifications", "style": "list", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"]}
     ]},
     {"id": "awards", "title": "Honors & Awards", "groups": [
@@ -149,7 +155,7 @@
         [
           {"title": "Education", "ids": ["masters", "bachelors", "high-school"]},
           {"title": "Supervised Study", "ids": ["individual-study"]},
-          {"title": "Selected Programming Contest Results", "ids": ["run-mock-2026", "icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
+          {"title": "Selected Programming Contest Results", "ids": ["icpc-seoul-2026", "run-mock-2026", "icpc-korea-2026", "sw-it", "soong-ko-han", "apac", "hcmc"]},
           {"title": "Finals & Qualifications", "ids": ["scpc", "acpc", "ucpc", "ucpc-qualification", "seoul", "mobis", "nypc"], "compact": true}
         ],
         [
