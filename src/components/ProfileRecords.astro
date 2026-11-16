@@ -14,40 +14,79 @@ interface Props {
   style: string;
 }
 const { records, ids, style } = Astro.props;
+const placementPattern = /(\b\d+(?:st|nd|rd|th) place(?: overall)?\b)/g;
 ---
 
-{style === 'list' ? (
-  <ul class="cv-dated-list">
-    {ids.map((id) => {
-      const entry = records[id];
-      return <li>
-        <span>{entry.title}{entry.result && ` — ${entry.result}`}{entry.team && `; ${entry.team}`}</span>
-        <span class="cv-meta">{entry.date}</span>
-      </li>;
-    })}
-  </ul>
-) : ids.map((id) => {
-  const entry = records[id];
-  return <div class="cv-item">
-    <div class="cv-item-main">
-      <h3>{entry.title}{entry.koreanTitle && <> (<span lang="ko">{entry.koreanTitle}</span>)</>}</h3>
-      {entry.result && <p>{entry.result}</p>}
+<ul class:list={['cv-records', { 'cv-records-compact': style === 'list' }]} role="list">
+  {ids.map((id) => {
+    const entry = records[id];
+    const hasDetail = entry.result || entry.team || entry.details?.length;
+    return <li class:list={['cv-record', { 'cv-record-brief': !hasDetail }]} data-record={id}>
+      <div class="cv-record-heading">
+        <span class="cv-record-title">{entry.title}{entry.koreanTitle && <> (<span lang="ko">{entry.koreanTitle}</span>)</>}</span>
+        {entry.date && <span class="cv-meta">{entry.date}</span>}
+      </div>
+      {(entry.result || entry.team) && <p class="cv-record-outcome">
+        {entry.result && <span class="cv-record-result">{entry.result.split(placementPattern).map((part, index) =>
+          index % 2 === 0 ? part : <span class="cv-record-placement">{part}</span>
+        )}</span>}
+        {entry.team && <span class="cv-record-team">{entry.team}</span>}
+      </p>}
       {entry.details?.map((detail) => {
         const reference = entry.reference;
         if (reference && detail.includes(reference.label)) {
           const [before, after] = detail.split(reference.label);
-          return <p>{before}<a href={reference.url}>{reference.label}</a>{after}</p>;
+          return <p class="cv-record-detail">{before}<a href={reference.url}>{reference.label}</a>{after}</p>;
         }
-        return <p>{detail}</p>;
+        return <p class="cv-record-detail">{detail}</p>;
       })}
-    </div>
-    {entry.date && <p class="cv-meta">{entry.date}</p>}
-  </div>;
-})}
+    </li>;
+  })}
+</ul>
 
 <style>
-  .cv-dated-list { margin: 8px 0 0; padding: 0; list-style: none; }
-  .cv-dated-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: start; margin: 0; padding: 0.3em 0; }
-  .cv-dated-list .cv-meta { margin-top: 0.15em; text-align: right; }
-  @media (max-width: 420px) { .cv-dated-list li { gap: 12px; } }
+  .cv-records { margin: 0; padding: 0; list-style: none; }
+  .cv-record + .cv-record { margin-top: 1rem; }
+  .cv-records-compact .cv-record-brief + .cv-record-brief { margin-top: 0.45rem; }
+  .cv-record-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: clamp(0.65rem, 3vw, 1.5rem);
+    line-height: 1.42;
+  }
+  .cv-record-heading:has(.cv-meta) { grid-template-columns: minmax(0, 1fr) auto; }
+  .cv-record-title { font-weight: 650; overflow-wrap: anywhere; text-wrap: pretty; }
+  .cv-records-compact .cv-record-brief .cv-record-title { font-weight: 400; }
+  .cv-meta {
+    max-inline-size: 24ch;
+    color: var(--muted);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+    overflow-wrap: anywhere;
+  }
+  .cv-record-outcome, .cv-record-detail {
+    margin: 0.18rem 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+  .cv-record-outcome {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.1rem 0.85rem;
+  }
+  .cv-record-result, .cv-record-team { min-inline-size: 0; }
+  .cv-record-result { font-weight: 500; }
+  .cv-record-result:only-child { color: #4b5563; }
+  .cv-record-placement { white-space: nowrap; }
+  .cv-record-team { color: var(--muted); font-size: 0.875rem; }
+  .cv-record-detail { color: #4b5563; }
+  .cv-record-detail a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 480px) {
+    .cv-meta { max-inline-size: 12ch; }
+  }
 </style>

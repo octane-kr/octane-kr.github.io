@@ -22,7 +22,7 @@ const onlineProfiles = profile.profiles.map((entry) => {
 ---
 
 <BlogLayout title="About">
-  <article class="cv-page">
+  <article class="cv-page" lang="en">
     <header class="cv-header">
       <h1>{profile.name}</h1>
       <p>{profile.summary}</p>
@@ -30,22 +30,22 @@ const onlineProfiles = profile.profiles.map((entry) => {
 
     {profile.about.map((section) => <section class="cv-section" aria-labelledby={`${section.id}-heading`}>
       <h2 id={`${section.id}-heading`}>{section.title}</h2>
-      {section.groups.map((group) => 'title' in group ? (
-        <div class="cv-subsection">
-          <h3>{group.title}</h3>
+      {section.groups.map((group) => (
+        <div class="cv-group">
+          {'title' in group && <h3>{group.title}</h3>}
           <ProfileRecords records={profile.records} ids={group.ids} style={group.style} />
         </div>
-      ) : <ProfileRecords records={profile.records} ids={group.ids} style={group.style} />)}
+      ))}
     </section>)}
 
     <section class="cv-section" aria-labelledby="interests-heading">
       <h2 id="interests-heading">Interests</h2>
-      <p>{profile.interests.join('; ')}</p>
+      <p class="cv-interests">{profile.interests.join(' · ')}</p>
     </section>
 
     <section class="cv-section" aria-labelledby="profiles-heading">
       <h2 id="profiles-heading">Online Profiles</h2>
-      <ul class="cv-profile-list" aria-label="competitive programming profiles">
+      <ul class="cv-profile-list" role="list" aria-label="Competitive programming profiles">
         {onlineProfiles.map((entry) => <li data-platform={entry.id}>
           <a href={entry.url}>{entry.label}</a>
           <span>{entry.before}{entry.rating && <span class="cv-profile-rating">{entry.rating}</span>}{entry.after}</span>
@@ -53,18 +53,44 @@ const onlineProfiles = profile.profiles.map((entry) => {
       </ul>
     </section>
 
-    <footer class="cv-downloads" aria-label="Download CVs">
-      <p>
-        <a href={`/cv/${profile.documents.academic.filename}`}>Academic CV (PDF)</a>
-        <span aria-hidden="true"> · </span>
-        <a href={`/cv/${profile.documents.general.filename}`}>General CV (PDF)</a>
-      </p>
-      <p class="cv-updated">Updated <time datetime={profile.updated}>{profile.updated}</time></p>
+    <footer class="cv-section cv-downloads" aria-labelledby="cv-heading">
+      <h2 id="cv-heading">CVs</h2>
+      <div class="cv-download-row">
+        <ul role="list">
+          <li><a href={`/cv/${profile.documents.academic.filename}`}>Academic CV (PDF)</a></li>
+          <li><a href={`/cv/${profile.documents.general.filename}`}>General CV (PDF)</a></li>
+        </ul>
+        <p class="cv-updated">Updated <time datetime={profile.updated}>{profile.updated}</time></p>
+      </div>
     </footer>
   </article>
 </BlogLayout>
 
 <style>
+  .cv-page { max-width: 760px; margin: 0 auto; }
+  .cv-header { padding-bottom: clamp(1.75rem, 5vw, 2.65rem); }
+  .cv-header h1 {
+    margin: 0 0 0.45rem;
+    font-size: clamp(2.15rem, 6vw, 2.75rem);
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+  .cv-header p { margin: 0; color: var(--muted); font-size: 1.0625rem; text-wrap: pretty; }
+  .cv-section { border-top: 1px solid var(--line); padding: 1.25rem 0 clamp(1.7rem, 4vw, 2.25rem); }
+  .cv-section h2 { margin: 0 0 0.85rem; font-size: 1.375rem; line-height: 1.3; }
+  .cv-group + .cv-group { margin-top: 1.3rem; }
+  .cv-group h3 { margin: 0 0 0.6rem; font-size: 0.875rem; line-height: 1.4; font-weight: 700; color: #4b5563; }
+  .cv-interests { margin: 0; text-wrap: pretty; }
+  .cv-profile-list { display: grid; gap: 0.45rem; margin: 0; padding: 0; list-style: none; }
+  .cv-profile-list li {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 0.85rem;
+    font-size: 0.9375rem;
+  }
+  .cv-profile-list a { justify-self: start; }
+  .cv-profile-list li > span { color: #4b5563; overflow-wrap: anywhere; }
   .cv-profile-list .cv-profile-rating { font-weight: 600; }
   /* Official profile rank colors: Codeforces .user-orange, AtCoder .user-blue,
      and solved.ac Ruby V checked 2026-10-08; DOJ Candidate Master checked 2026-10-28. */
@@ -72,8 +98,9 @@ const onlineProfiles = profile.profiles.map((entry) => {
   [data-platform="atcoder"] .cv-profile-rating { color: #0000ff; }
   [data-platform="doj"] .cv-profile-rating { color: #8b5cf6; }
   [data-platform="solved"] .cv-profile-rating { color: #e0004c; }
-  .cv-downloads { border-top: 1px solid var(--line); padding-top: 20px; }
-  .cv-downloads p { margin: 0; }
-  .cv-downloads a { display: inline-block; color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
-  .cv-downloads .cv-updated { margin-top: 6px; color: var(--muted); font-size: 13px; }
+  .cv-download-row, .cv-download-row ul { display: flex; flex-wrap: wrap; align-items: baseline; }
+  .cv-download-row { justify-content: space-between; gap: 0.45rem 1.25rem; }
+  .cv-download-row ul { gap: 0.35rem 1.2rem; margin: 0; padding: 0; list-style: none; }
+  .cv-profile-list a, .cv-downloads a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+  .cv-updated { margin: 0; color: var(--muted); font-size: 0.8125rem; }
 </style>

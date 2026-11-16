@@ -24,6 +24,11 @@ The profile site's home, teaching, and activities pages predate this data source
 When an education, teaching, or academic-activity fact changes, check those pages
 too. They are not silently rewritten by the CV generator.
 
+About uses one record list for dated and undated entries. Keep the date aligned
+with the title on the right, with the result and muted team name on a separate
+line that can use the full width. Title-only contest entries remain compact.
+About-only layout edits do not change the profile data, PDF selection, or CV date.
+
 ## Editorial decisions confirmed by the author
 
 - Use factual roles and short descriptions, not promotional summaries.
