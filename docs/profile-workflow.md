@@ -33,6 +33,10 @@ About-only layout edits do not change the profile data, PDF selection, or CV dat
 ## Editorial decisions confirmed by the author
 
 - Use factual roles and short descriptions, not promotional summaries.
+- Online Profiles: show only the solved-problem count for Baekjoon, not authored
+  or reviewed counts. Show only tier and rating for solved.ac, not its solved
+  total. The author removed those extra counters on 2026-11-24; do not restore
+  them in About or General CV just because a later API response includes them.
 - For prose audits, inspect every shared record, profile description, section
   heading, and separately maintained Home/Activities/Teaching/blog introduction.
   A fact being supported does not justify a long role narrative. Do not fill

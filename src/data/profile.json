@@ -132,8 +132,8 @@
     {"id": "codeforces", "label": "Codeforces", "url": "https://codeforces.com/profile/octane", "description": "Peak: International Master (2368)"},
     {"id": "atcoder", "label": "AtCoder", "url": "https://atcoder.jp/users/octanec8h18", "description": "Peak: 1 Kyu (1948)"},
     {"id": "doj", "label": "DOJ", "url": "https://doj.kr/ko/user/octane", "description": "Peak: Candidate Master (1823)"},
-    {"id": "boj", "label": "Baekjoon", "url": "https://www.acmicpc.net/user/octane", "description": "1,338 problems solved; 1 problem authored; 36 reviewed"},
-    {"id": "solved", "label": "solved.ac", "url": "https://solved.ac/profile/octane", "description": "Ruby V (2766); 1,580 problems solved"}
+    {"id": "boj", "label": "Baekjoon", "url": "https://www.acmicpc.net/user/octane", "description": "1,338 problems solved"},
+    {"id": "solved", "label": "solved.ac", "url": "https://solved.ac/profile/octane", "description": "Ruby V (2766)"}
   ],
   "documents": {
     "academic": {
