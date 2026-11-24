@@ -341,6 +341,23 @@ data, frontend code, command arguments, logs, or deployment artifacts.
 - Recheck the official OpenAPI specification when changing the request contract.
   A successful local lookup does not itself authorize automatic profile edits:
   review the selected values and preserve the established CV selections.
+- The credential directory and file have protected Windows permissions allowing
+  the current account, SYSTEM, and Administrators only. Preserve these permissions
+  when rotating the local secret, and verify Git still ignores the file.
+
+## Authenticated solved.ac verification (2026-11-24)
+
+After the privacy policy was live, the owner-provided app credentials succeeded
+against `GET https://solved.ac/api/v4/users/octane?lang=en`. The checked response
+at 2026-11-24T06:29:23.824Z reported handle octane, tier 26 (Ruby V), rating 2766,
+and solvedCount 1580. Only these selected statistics and the check time were
+returned by the local tool; the complete profile response was not persisted.
+
+Update the solved.ac description in About and General CV from the old tier-only
+snapshot to Ruby V (2766); 1,580 problems solved. Keep the separate author-provided
+BOJ tally of 1,338 solved, 1 authored, and 36 reviewed. These are different
+platform counters; do not infer how the 242-problem difference is composed.
+Preserve all career records, document selections, and the existing About design.
 
 ## Templates
 
