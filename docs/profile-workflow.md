@@ -321,6 +321,27 @@ previously confirmed tier snapshot. The new BOJ count is not a fresh solved.ac
 count or rating verification, especially after DOJ integration. Never replace
 solved.ac rating or solve totals by inferring them from BOJ statistics.
 
+## Authenticated solved.ac reader
+
+The owner-created octane-codex app uses local app credentials in the ignored
+`work/solved-ac-api/.env`. Never copy credentials into this document, profile
+data, frontend code, command arguments, logs, or deployment artifacts.
+
+- `npm.cmd run profile:solved` makes exactly one authenticated GET to the official
+  v4 public profile endpoint for octane. There is no OAuth flow, automatic retry,
+  background scheduling, or account mutation. The complete API response is never
+  persisted; only handle, tier, rating, solved count, and check time are printed.
+- The app privacy policy is `/apps/octane-codex/privacy/`. Publish it before the
+  first authenticated data request. The Backstage privacy-policy URL field still
+  needs to be set by the owner; a successful site deployment does not update the
+  developer console.
+- `npm.cmd run check:solved-api` tests credential handling, the fixed request,
+  minimal output, validation, safe errors, blocks, and rate-limit behavior without
+  using real credentials or contacting solved.ac. It is also part of prebuild.
+- Recheck the official OpenAPI specification when changing the request contract.
+  A successful local lookup does not itself authorize automatic profile edits:
+  review the selected values and preserve the established CV selections.
+
 ## Templates
 
 - Academic: moderncv's `classic` style, black, roman font, from its standard
