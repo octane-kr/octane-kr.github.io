@@ -303,6 +303,24 @@ release; preserve the existing document selections and About layout.
   BCD 11. The author's problem page lists only the two corresponding problems,
   Déjà vu and 너희는 두더지 함부로 만지지 마라. No new setter credit is added.
 
+## Baekjoon profile excerpt (2026-11-24)
+
+The author supplied a complete current Baekjoon profile excerpt: handle octane,
+1,338 solved problems, 1 problem authored, and 36 problems reviewed. The pasted
+solved list contains exactly 1,338 distinct IDs, matching the displayed counter.
+Use this author-supplied source; do not scrape the BOJ profile or submissions.
+
+Add [Baekjoon](https://www.acmicpc.net/user/octane) to Online Profiles in About
+and General CV, with those three counts. Do not copy the problem lists, attempt
+statistics, submission count, or moving leaderboard rank into the profile. The
+unnamed contest-runner-up counter does not establish another competition award.
+Keep the existing academic selection and individual contest-service records.
+
+Remove the old 1,336-solved suffix from solved.ac, leaving Ruby V (2745) as the
+previously confirmed tier snapshot. The new BOJ count is not a fresh solved.ac
+count or rating verification, especially after DOJ integration. Never replace
+solved.ac rating or solve totals by inferring them from BOJ statistics.
+
 ## Templates
 
 - Academic: moderncv's `classic` style, black, roman font, from its standard

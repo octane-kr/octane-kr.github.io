@@ -132,7 +132,8 @@
     {"id": "codeforces", "label": "Codeforces", "url": "https://codeforces.com/profile/octane", "description": "Peak: International Master (2368)"},
     {"id": "atcoder", "label": "AtCoder", "url": "https://atcoder.jp/users/octanec8h18", "description": "Peak: 1 Kyu (1948)"},
     {"id": "doj", "label": "DOJ", "url": "https://doj.kr/ko/user/octane", "description": "Peak: Candidate Master (1823)"},
-    {"id": "solved", "label": "solved.ac", "url": "https://solved.ac/profile/octane", "description": "Ruby V (2745); 1,336 problems solved"}
+    {"id": "boj", "label": "Baekjoon", "url": "https://www.acmicpc.net/user/octane", "description": "1,338 problems solved; 1 problem authored; 36 reviewed"},
+    {"id": "solved", "label": "solved.ac", "url": "https://solved.ac/profile/octane", "description": "Ruby V (2745)"}
   ],
   "documents": {
     "academic": {
@@ -163,7 +164,7 @@
           {"title": "Leadership & Service", "ids": ["contest-service", "favely", "proctor", "gink", "run-vp"]},
           {"title": "Arts & Activities", "ids": ["lunatic", "ghuttos"]},
           {"title": "Selected Honors & Awards", "ids": ["university-math", "koi"], "compact": true},
-          {"title": "Online Profiles", "profiles": ["codeforces", "atcoder", "doj", "solved", "icpc"]}
+          {"title": "Online Profiles", "profiles": ["codeforces", "atcoder", "doj", "boj", "solved", "icpc"]}
         ]
       ]
     }
