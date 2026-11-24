@@ -275,6 +275,34 @@ About and General CV; retain the 2026 preliminary runner-up and the 2024-2025
 onsite participation record. Do not infer an APAC invitation from the rank or
 invitation simulator.
 
+## Online-profile refresh (2026-11-24)
+
+Checked all five linked profiles, the complete current DOJ contest inventory,
+and the author's published-problem page. Only the DOJ peak changes in this
+release; preserve the existing document selections and About layout.
+
+- [DOJ](https://doj.kr/ko/user/octane): current and peak 1823, Candidate Master.
+  The latest rated entry is BCD 14, 1808 to 1823 (+15), dated October 25; November
+  24 is the verification date. Do not add the 172-solved/Power counters or routine
+  participation ranks. The existing purple Candidate Master styling still applies.
+- [Codeforces API](https://codeforces.com/api/user.info?handles=octane): maximum
+  2368 / International Master unchanged; current 1885 is not the peak.
+- [AtCoder](https://atcoder.jp/users/octanec8h18?lang=en): highest 1948 / 1 Kyu
+  unchanged; current 1911, last competed September 6.
+- [solved.ac](https://solved.ac/profile/octane): public profile, ranking page,
+  and documented v4 user endpoint returned a Cloudflare 403 challenge. The
+  [official API notice](https://solved.ac/en/notices/261117-api) says v3 is being
+  retired. Do not bypass the challenge or claim a current tier/count verification;
+  retain the existing Ruby V 2745 / 1,336 snapshot. The November 20 DOJ integration
+  notice does not prove that this account's rating or solved count has changed.
+- [ICPC public profile API](https://icpc.global/api/person/icpcid/public/DSTKB8C1U659):
+  all report entries reviewed. Seoul 2026 now explicitly records 12th place,
+  matching the existing profile record. No new result or APAC invitation found.
+- DOJ service: all four index pages and all 67 distinct contest pages fetched
+  successfully. The only staff lists matching octane remain DOJ Contest 7 and
+  BCD 11. The author's problem page lists only the two corresponding problems,
+  Déjà vu and 너희는 두더지 함부로 만지지 마라. No new setter credit is added.
+
 ## Templates
 
 - Academic: moderncv's `classic` style, black, roman font, from its standard
